@@ -1,0 +1,54 @@
+server:
+  port: 8080
+  shutdown: graceful
+
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 60s
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: 6379
+      password: ${REDIS_PASSWORD}
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST}:5432/postgres
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  mail:
+    host: ${EMAIL_HOST}
+    port: 587
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL:validate}
+    database: postgresql
+    properties:
+      hibernate:
+        default_schema: public
+        show_sql: true
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URIS}
+
+jwt:
+  header: ${JWT_HEADER}
+  prefix: ${JWT_PREFIX}
+  access_token_expiration_time: ${JWT_ACCESS_TOKEN_TIME}
+  refresh_token_expiration_time: ${JWT_REFRESH_TOKEN_TIME}
+  secret_key: ${JWT_SECRET_KEY}
