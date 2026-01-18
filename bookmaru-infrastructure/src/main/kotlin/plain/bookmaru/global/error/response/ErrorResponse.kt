@@ -1,4 +1,4 @@
-package plain.bookmaruinfrastructure.global.error.response
+package plain.bookmaru.global.error.response
 
 
 data class ErrorResponse(

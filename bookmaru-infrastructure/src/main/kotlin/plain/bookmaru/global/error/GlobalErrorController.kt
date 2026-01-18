@@ -1,4 +1,4 @@
-package plain.bookmaruinfrastructure.global.error
+package plain.bookmaru.global.error
 
 import jakarta.servlet.RequestDispatcher
 import jakarta.servlet.http.HttpServletRequest
@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import plain.bookmaruinfrastructure.global.error.response.ErrorResponse
+import plain.bookmaru.global.error.response.ErrorResponse
 
 @RestController
 @RequestMapping("/error")

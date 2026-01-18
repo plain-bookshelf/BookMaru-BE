@@ -1,4 +1,4 @@
-package plain.bookmaruinfrastructure
+package plain.bookmaru
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
