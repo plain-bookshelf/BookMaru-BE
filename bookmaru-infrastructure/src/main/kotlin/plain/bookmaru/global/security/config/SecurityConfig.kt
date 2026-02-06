@@ -5,9 +5,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer
-import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -15,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain
 
 @EnableWebSecurity
 @Configuration
-open class SecurityConfig(
+class SecurityConfig(
 ) {
     @Bean
     fun passwordEncoder(): PasswordEncoder {
@@ -23,7 +20,7 @@ open class SecurityConfig(
     }
 
     @Bean
-    protected fun securityFilterChain(http: HttpSecurity) : SecurityFilterChain {
+    fun securityFilterChain(http: HttpSecurity) : SecurityFilterChain {
         http
             .csrf { csrfConfigurer -> csrfConfigurer.disable() }
             .cors { cors -> {} }
