@@ -5,4 +5,4 @@ import org.springframework.transaction.annotation.Transactional
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @Transactional(readOnly = true)
-annotation class ReadOnlyUseCase()
+annotation class ReadOnlyService()

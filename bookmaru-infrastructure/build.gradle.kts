@@ -5,6 +5,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
     runtimeOnly("org.postgresql:postgresql")
 
     // security
@@ -19,6 +21,9 @@ dependencies {
 
     // aop
     implementation("org.springframework.boot:spring-boot-starter-aop")
+
+    // coroutine
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
     // config
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

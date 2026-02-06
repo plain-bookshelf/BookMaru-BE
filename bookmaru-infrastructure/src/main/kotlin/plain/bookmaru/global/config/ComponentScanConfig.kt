@@ -3,8 +3,8 @@ package plain.bookmaru.global.config
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType
-import plain.bookmaru.common.annotation.ReadOnlyUseCase
-import plain.bookmaru.common.annotation.UseCase
+import plain.bookmaru.common.annotation.ReadOnlyService
+import plain.bookmaru.common.annotation.Service
 
 @Configuration
 @ComponentScan(
@@ -13,8 +13,8 @@ import plain.bookmaru.common.annotation.UseCase
         ComponentScan.Filter(
             type = FilterType.ANNOTATION,
             classes = [
-                UseCase::class,
-                ReadOnlyUseCase::class
+                Service::class,
+                ReadOnlyService::class
             ]
         )
     ]

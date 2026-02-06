@@ -31,9 +31,11 @@ subprojects {
 
     dependencies {
         // 모든 자식 모듈이 공통
+        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect")
         "implementation"("com.fasterxml.jackson.module:jackson-module-kotlin")
-        "implementation"("io.github.oshai:kotlin-logging-jvm:5.1.0")    }
+        "implementation"("io.github.oshai:kotlin-logging-jvm:5.1.0")
+    }
 
     tasks.withType<Test> {
         useJUnitPlatform()
