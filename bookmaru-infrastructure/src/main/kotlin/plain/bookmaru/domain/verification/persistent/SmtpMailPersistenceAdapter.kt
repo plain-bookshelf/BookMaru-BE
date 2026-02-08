@@ -25,7 +25,7 @@ class SmtpMailPersistenceAdapter(
 
         val htmlContent = templateEngine.process("EmailVerification", context)
 
-        helper.setTo(email)
+        helper.setTo(email.toString())
         helper.setSubject("[책마루] 인증 번호 안내")
         helper.setText(htmlContent, true)
 

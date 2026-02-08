@@ -30,7 +30,16 @@ class SecurityConfig(
             .authorizeHttpRequests { auth ->
                 auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 auth.requestMatchers(
-                    "/api/email/send"
+                    /*
+                    email
+                     */
+                    "/api/email/send",
+                    "/api/email/verification",
+
+                    /*
+                    member
+                     */
+                    "/api/member/signup-member"
                 ).permitAll()
             }
         return http.build()

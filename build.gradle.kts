@@ -1,9 +1,10 @@
 plugins {
     id("org.springframework.boot") version "3.5.9" apply false
-    id("io.spring.dependency-management") version "1.1.4" apply false
-    kotlin("jvm") version "1.9.22" apply false
-    kotlin("plugin.spring") version "1.9.22" apply false
-    kotlin("plugin.jpa") version "1.9.22" apply false
+    id("io.spring.dependency-management") version "1.1.6" apply false
+    kotlin("jvm") version "1.9.25" apply false
+    kotlin("plugin.spring") version "1.9.25" apply false
+    kotlin("plugin.jpa") version "1.9.25" apply false
+    kotlin("kapt") version "2.0.21" apply false
 }
 
 allprojects {
@@ -22,6 +23,7 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
     apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
+    apply(plugin = "org.jetbrains.kotlin.kapt")
 
     configure<JavaPluginExtension> {
         toolchain {

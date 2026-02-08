@@ -1,0 +1,35 @@
+package plain.bookmaru.domain.member.persistent
+
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.springframework.stereotype.Component
+import plain.bookmaru.domain.affiliation.persistent.repository.AffiliationRepository
+import plain.bookmaru.domain.member.model.Member
+import plain.bookmaru.domain.member.persistent.mapper.MemberMapper
+import plain.bookmaru.domain.member.persistent.repository.MemberRepository
+import plain.bookmaru.domain.member.port.out.MemberPort
+
+@Component
+class MemberPersistenceAdapter(
+    private val memberRepository: MemberRepository,
+    private val memberMapper: MemberMapper,
+    private val affiliationRepository: AffiliationRepository
+) : MemberPort {
+    override suspend fun save(member: Member) {
+        withContext(Dispatchers.IO) {
+            val affiliationName = member.affiliation.affiliation
+
+            val affiliationEntity = affiliationRepository.findByAffiliationName(affiliationName)
+
+            val memberEntity = memberMapper.toEntity(member, affiliationEntity)
+
+            memberRepository.save(memberEntity)
+        }
+    }
+
+    override suspend fun findByUsername(username: String): Member? = withContext(Dispatchers.IO) {
+        memberRepository.findByUsername(username)?.let {
+            memberMapper.toDomain(it)
+        }
+    }
+}

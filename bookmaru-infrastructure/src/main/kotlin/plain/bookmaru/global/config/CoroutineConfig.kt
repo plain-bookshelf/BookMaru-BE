@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import plain.bookmaru.domain.verificationcode.scope.MailCoroutineScope
+import plain.bookmaru.domain.verification.scope.MailCoroutineScope
 
 @Configuration
 class CoroutineConfig {

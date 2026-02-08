@@ -21,9 +21,11 @@ class GlobalExceptionHandler : ErrorController {
     fun handlerBaseException(e: BaseException): ResponseEntity<ErrorResponse> {
         val errorCode : ErrorCode = e.errorCode
 
+        log.error {"Error Code: [${errorCode.message}], Error Message: [{${errorCode.message}}], Details: [${e.details}]"}
+
         return ResponseEntity
             .status(errorCode.status.value)
-            .body(ErrorResponse(errorCode.name, errorCode.message, errorCode.status.value))
+            .body(ErrorResponse(errorCode.code, errorCode.message, errorCode.status.value))
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -34,6 +36,16 @@ class GlobalExceptionHandler : ErrorController {
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST.value())
             .body(ErrorResponse("VALID_ERROR", "유효하지 않은 값이 들어왔습니다.", HttpStatus.BAD_REQUEST.value()))
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handlerIllegalArgumentException(e: IllegalArgumentException): ResponseEntity<ErrorResponse> {
+        log.error { "IllegalArgumentException: ${e.message}" }
+
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST.value())
+            .body(ErrorResponse("ILLEGAL_ARGUMENT_ERROR", "유효하지 않은 값이 들어왔습니다.", HttpStatus.BAD_REQUEST.value()))
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
