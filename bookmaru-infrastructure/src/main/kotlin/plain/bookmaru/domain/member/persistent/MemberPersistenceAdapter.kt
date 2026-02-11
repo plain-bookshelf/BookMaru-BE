@@ -8,6 +8,7 @@ import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.persistent.mapper.MemberMapper
 import plain.bookmaru.domain.member.persistent.repository.MemberRepository
 import plain.bookmaru.domain.member.port.out.MemberPort
+import plain.bookmaru.domain.member.vo.Email
 
 @Component
 class MemberPersistenceAdapter(
@@ -24,6 +25,12 @@ class MemberPersistenceAdapter(
             val memberEntity = memberMapper.toEntity(member, affiliationEntity)
 
             memberRepository.save(memberEntity)
+        }
+    }
+
+    override suspend fun findByEmail(email: Email): Member? = withContext(Dispatchers.IO) {
+        memberRepository.findByEmail(email)?.let {
+            memberMapper.toDomain(it)
         }
     }
 

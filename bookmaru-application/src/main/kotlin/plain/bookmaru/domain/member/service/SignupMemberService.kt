@@ -4,11 +4,11 @@ import plain.bookmaru.common.annotation.Service
 import plain.bookmaru.common.vo.ObjectTime
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
 import plain.bookmaru.domain.member.exception.AlreadyExistsMemberException
+import plain.bookmaru.domain.member.exception.AlreadyUsedEmailException
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.port.`in`.MemberUseCase
 import plain.bookmaru.domain.member.port.`in`.command.SignupMemberCommand
 import plain.bookmaru.domain.member.port.out.MemberPort
-import plain.bookmaru.domain.member.vo.Email
 import plain.bookmaru.domain.verification.exception.NotFoundEmailException
 import plain.bookmaru.domain.verification.port.out.EmailVerifiedPort
 import java.time.LocalDateTime
@@ -35,6 +35,9 @@ class SignupMemberService(
             val emailProxy = emailVerifiedPort.load(email.email)
             if (emailProxy == null) {
                 throw NotFoundEmailException("잘못된 이메일 입니다 : $email")
+            }
+            if (memberPort.findByEmail(email) != null) {
+                throw AlreadyUsedEmailException("Already used email : ${email.email}")
             }
         }
 

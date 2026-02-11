@@ -20,12 +20,13 @@ class SmtpMailPersistenceAdapter(
         val helper = MimeMessageHelper(message, true, "UTF-8")
 
         val context = Context().apply {
+            setVariable("email", email)
             setVariable("code", code)
         }
 
         val htmlContent = templateEngine.process("EmailVerification", context)
 
-        helper.setTo(email.toString())
+        helper.setTo(email)
         helper.setSubject("[책마루] 인증 번호 안내")
         helper.setText(htmlContent, true)
 

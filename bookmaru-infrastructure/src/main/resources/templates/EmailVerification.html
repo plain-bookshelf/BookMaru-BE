@@ -1,63 +1,64 @@
-<!DOCTYPE html>
-<html lang="ko">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>책마루 인증코드</title>
-    <style>
-        /* 기본 리셋 */
-        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
-        img { -ms-interpolation-mode: bicubic; }
-
-        /* 모바일 반응형 스타일 (화면 폭 600px 이하일 때 적용) */
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>이메일 인증</title>
+    <style type="text/css">
+        body { margin: 0; padding: 0; background-color: #f4f4f4; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        /* 반응형 처리 */
         @media screen and (max-width: 600px) {
-            .mobile-padding {
-                padding: 20px !important; /* 모바일에서는 여백을 줄임 */
-            }
-            .mobile-font {
-                font-size: 14px !important; /* 모바일 폰트 크기 조정 */
-            }
+            .container { width: 100% !important; }
         }
     </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f4f4f4; width: 100% !important;">
+<body style="margin: 0; padding: 0; background-color: #f4f4f4;">
 
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f4f4f4;">
-        <tr>
-            <td align="center" style="padding: 20px 0;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="height: 100%;">
+    <tr>
+        <td align="center" style="padding: 10px 0;">
 
-                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                    <tr>
-                        <td class="mobile-padding" style="padding: 40px; text-align: center;">
+            <table border="0" cellpadding="0" cellspacing="0" width="600" class="container" style="background-color: #ffffff; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
 
-                            <h1 style="color: #333333; margin: 0 0 20px 0; font-family: 'Arial', sans-serif; font-size: 24px;">
-                                인증 번호 안내
-                            </h1>
+                <tr>
+                    <td align="center" style="background: linear-gradient(135deg, #42E695 0%, #3BB2B8 100%); padding: 30px 0;">
+                        <img src="https://imgur.com/vPIw1pG.png" alt="App Logo" width="100" style="display: block; border: 0;">
+                    </td>
+                </tr>
 
-                            <p class="mobile-font" style="color: #666666; font-family: 'Arial', sans-serif; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
-                                안녕하세요!<br>
-                                요청하신 인증 번호를 보내드립니다.<br>
-                                아래 번호를 입력창에 입력해주세요.
-                            </p>
+                <tr>
+                    <td style="padding: 30px 40px; text-align: center;">
+                        <h1 style="color: #333333; font-size: 24px; font-weight: bold; margin-bottom: 15px;">이메일 인증 코드</h1>
 
-                            <div style="background-color: #f0f8ff; border: 2px dashed #007bff; border-radius: 8px; padding: 20px; margin: 0 0 30px 0;">
-                                    <span style="font-family: 'Arial', sans-serif; font-size: 28px; font-weight: bold; letter-spacing: 5px; color: #007bff; display: block;" th:text="${code}">
-                                        123456
-                                    </span>
-                            </div>
+                        <p style="color: #666666; font-size: 16px; line-height: 1.6; margin-bottom: 25px;">
+                            안녕하세요,
+                            <span style="white-space: nowrap;">
+                                <span th:text="${email}" style="color: #333333; font-weight: bold;">회원</span>님,
+                            </span><br>
+                            아래 인증 코드를 입력해주세요.
+                        </p>
 
-                            <p style="color: #999999; font-family: 'Arial', sans-serif; font-size: 12px; line-height: 1.5; margin: 0;">
-                                이 인증 번호는 5분 뒤에 만료됩니다.<br>
-                                본인이 요청한 것이 아니라면 이 메일을 무시하세요.
-                            </p>
+                        <div style="background-color: #f8f9fa; border: 2px dashed #3BB2B8; border-radius: 12px; padding: 15px 20px; margin: 0 auto 25px auto; display: inline-block;">
+                            <span th:text="${code}" style="color: #3BB2B8; font-size: 32px; font-weight: bold; letter-spacing: 6px; font-family: monospace;">123456</span>
+                        </div>
 
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+                        <p style="color: #999999; font-size: 14px; margin: 0;">
+                            이 코드는 5분간 유효합니다.
+                        </p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color: #fcfcfc; padding: 15px; text-align: center; border-top: 1px solid #eeeeee;">
+                        <p style="color: #cccccc; font-size: 12px; margin: 0;">
+                            &copy; 2024 Bookmaru. All rights reserved.
+                        </p>
+                    </td>
+                </tr>
+            </table>
+
+        </td>
+    </tr>
+</table>
 
 </body>
 </html>
