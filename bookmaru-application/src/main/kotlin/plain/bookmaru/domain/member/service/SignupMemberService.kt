@@ -30,6 +30,7 @@ class SignupMemberService(
 ) : SignupUseCase {
 
     override suspend fun signupMember(command: SignupMemberCommand) : TokenResult {
+
         val affiliationName = command.affiliationName
         val profile = command.profile
         val accountInfo = command.accountInfo

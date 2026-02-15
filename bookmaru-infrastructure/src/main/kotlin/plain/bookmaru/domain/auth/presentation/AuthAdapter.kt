@@ -1,6 +1,5 @@
 package plain.bookmaru.domain.auth.presentation
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -10,14 +9,13 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import plain.bookmaru.common.annotation.LogExecution
 import plain.bookmaru.common.error.CustomHttpStatus
 import plain.bookmaru.common.success.SuccessResponse
 import plain.bookmaru.domain.auth.port.`in`.LoginUseCase
 import plain.bookmaru.domain.auth.port.`in`.ReissueUseCase
 import plain.bookmaru.domain.auth.port.`in`.command.ReissueCommand
 import plain.bookmaru.domain.auth.presentation.dto.request.LoginMemberRequestDto
-
-private val log = KotlinLogging.logger {}
 
 @RestController
 @RequestMapping("/api/auth")
@@ -27,6 +25,7 @@ class AuthAdapter(
 ) {
 
     @PostMapping("/login-member")
+    @LogExecution
     suspend fun login(
         @RequestBody request: LoginMemberRequestDto,
         @RequestParam platformType: String
@@ -42,11 +41,11 @@ class AuthAdapter(
     }
 
     @PutMapping("/reissue")
+    @LogExecution
     suspend fun reissue(
         @RequestHeader("X-Refresh-Token") token: String,
         @RequestParam platformType: String
     ): ResponseEntity<SuccessResponse> {
-        log.info { "토큰 재발급 시도" }
 
         val command = ReissueCommand.toCommand(token, platformType)
 

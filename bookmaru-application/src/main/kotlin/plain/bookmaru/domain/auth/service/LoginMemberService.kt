@@ -45,6 +45,8 @@ class LoginMemberService(
         if (!securityPort.isPasswordMatch(command.accountInfo.password, member.accountInfo.password))
             throw PasswordNotMatchException("${command.accountInfo.password} 비밀번호가 일치하지 않습니다.")
 
+        log.info { "로그인 성공" }
+
         return jwtPort.responseToken(
             id = member.id!!,
             username = member.accountInfo.username,
