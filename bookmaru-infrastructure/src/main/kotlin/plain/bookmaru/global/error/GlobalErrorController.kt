@@ -2,6 +2,7 @@ package plain.bookmaru.global.error
 
 import jakarta.servlet.RequestDispatcher
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.boot.web.servlet.error.ErrorController
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -10,12 +11,24 @@ import plain.bookmaru.global.error.response.ErrorResponse
 
 @RestController
 @RequestMapping("/error")
-class GlobalErrorController {
+class GlobalErrorController : ErrorController {
 
     @RequestMapping
     fun handlerError(request : HttpServletRequest) : ResponseEntity<ErrorResponse> {
         val status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)
             ?.toString()?.toIntOrNull() ?: 500
+
+        if (status == HttpStatus.UNAUTHORIZED.value()) {
+            return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponse("UNAUTHORIZED", "유저 정보가 잘못 되었습니다", HttpStatus.FORBIDDEN.value()))
+        }
+
+        if (status == HttpStatus.FORBIDDEN.value()) {
+            return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(ErrorResponse("FORBIDDEN", "이 리소스에 접근할 권한이 부족합니다", HttpStatus.FORBIDDEN.value()))
+        }
 
         if (status == HttpStatus.NOT_FOUND.value()) {
             return ResponseEntity

@@ -1,8 +1,8 @@
 package plain.bookmaru.domain.member.port.`in`.command
 
-import plain.bookmaru.domain.affiliation.vo.Affiliation
-import plain.bookmaru.domain.auth.model.AccountInfo
-import plain.bookmaru.domain.auth.model.Authority
+import plain.bookmaru.domain.auth.vo.AccountInfo
+import plain.bookmaru.domain.auth.vo.Authority
+import plain.bookmaru.domain.auth.vo.PlatformType
 import plain.bookmaru.domain.member.vo.Profile
 import plain.bookmaru.domain.member.vo.Email
 
@@ -11,5 +11,6 @@ data class SignupMemberCommand(
     val authority: Authority,
     val affiliationName: String,
     val profile: Profile,
-    val email: Email? = null
+    val email: Email? = null,
+    val platformType: PlatformType
 )

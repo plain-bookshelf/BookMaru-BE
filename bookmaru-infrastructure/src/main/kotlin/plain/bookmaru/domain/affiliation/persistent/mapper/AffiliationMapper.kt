@@ -9,12 +9,14 @@ class AffiliationMapper {
 
     fun toDomain(entity: AffiliationEntity?) : Affiliation {
         return Affiliation(
+            id = entity?.id,
             affiliation = entity?.affiliationName ?: ""
         )
     }
 
     fun toEntity(domain: Affiliation) : AffiliationEntity {
         return AffiliationEntity(
+            id = domain.id,
             affiliationName = domain.affiliation
         )
     }

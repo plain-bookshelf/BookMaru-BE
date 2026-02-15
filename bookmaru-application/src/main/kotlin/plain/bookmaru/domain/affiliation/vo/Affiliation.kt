@@ -1,6 +1,7 @@
 package plain.bookmaru.domain.affiliation.vo
 
 data class Affiliation(
+    val id: Long? = null,
     val affiliation: String
 ) {
     init {

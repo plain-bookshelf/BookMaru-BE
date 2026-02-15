@@ -1,4 +1,4 @@
-package plain.bookmaru.domain.auth.model
+package plain.bookmaru.domain.auth.vo
 
 enum class Authority {
     ROLE_USER,
@@ -6,5 +6,6 @@ enum class Authority {
     ROLE_LIBRARIAN,
     ROLE_TEACHER,
     ROLE_OVERDUE,
-    ROLE_ADMIN
+    ROLE_ADMIN,
+    ROLE_BANNED
 }

@@ -16,16 +16,15 @@ class MemberPersistenceAdapter(
     private val memberMapper: MemberMapper,
     private val affiliationRepository: AffiliationRepository
 ) : MemberPort {
-    override suspend fun save(member: Member) {
-        withContext(Dispatchers.IO) {
-            val affiliationName = member.affiliation.affiliation
+    override suspend fun save(member: Member) : Member = withContext(Dispatchers.IO) {
+        val affiliationName = member.affiliation.affiliation
 
-            val affiliationEntity = affiliationRepository.findByAffiliationName(affiliationName)
+        val affiliationEntity = affiliationRepository.findByAffiliationName(affiliationName)
 
-            val memberEntity = memberMapper.toEntity(member, affiliationEntity)
+        val memberEntity = memberMapper.toEntity(member, affiliationEntity)
 
-            memberRepository.save(memberEntity)
-        }
+        val savedEntity = memberRepository.save(memberEntity)
+        return@withContext memberMapper.toDomain(savedEntity)
     }
 
     override suspend fun findByEmail(email: Email): Member? = withContext(Dispatchers.IO) {

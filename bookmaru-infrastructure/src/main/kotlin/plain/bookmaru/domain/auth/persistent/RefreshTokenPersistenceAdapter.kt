@@ -1,0 +1,25 @@
+package plain.bookmaru.domain.auth.persistent
+
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.springframework.stereotype.Component
+import plain.bookmaru.domain.auth.model.JwtRefreshToken
+import plain.bookmaru.domain.auth.persistent.mapper.RefreshTokenMapper
+import plain.bookmaru.domain.auth.persistent.repository.RefreshTokenRepository
+import plain.bookmaru.domain.auth.port.out.RefreshTokenPort
+import plain.bookmaru.domain.auth.vo.PlatformType
+
+@Component
+class RefreshTokenPersistenceAdapter(
+    private val refreshTokenRepository: RefreshTokenRepository,
+    private val refreshTokenMapper: RefreshTokenMapper
+) : RefreshTokenPort {
+    override suspend fun findByTokenAndPlatformType(
+        token: String,
+        platformType: PlatformType
+    ) : JwtRefreshToken? = withContext(Dispatchers.IO) {
+        refreshTokenRepository.findByTokenAndPlatformType(token, platformType)?.let {
+            refreshTokenMapper.toDomain(it)
+        }
+    }
+}

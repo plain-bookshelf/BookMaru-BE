@@ -3,8 +3,8 @@ package plain.bookmaru.domain.member.model
 import plain.bookmaru.common.annotation.Aggregate
 import plain.bookmaru.common.vo.ObjectTime
 import plain.bookmaru.domain.affiliation.vo.Affiliation
-import plain.bookmaru.domain.auth.model.AccountInfo
-import plain.bookmaru.domain.auth.model.Authority
+import plain.bookmaru.domain.auth.vo.AccountInfo
+import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.member.vo.Profile
 import plain.bookmaru.domain.member.vo.Email
 

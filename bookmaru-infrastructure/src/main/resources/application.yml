@@ -12,6 +12,10 @@ spring:
       port: 6379
       password: ${REDIS_PASSWORD}
 
+      db-index:
+        auth: 0
+        cache: 1
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${DB_HOST}:5432/${DB_NAME}
@@ -43,6 +47,7 @@ spring:
       hibernate:
         default_schema: public
         show_sql: true
+        default_batch_fetch_size: 100
 
   jackson:
     property-naming-strategy: SNAKE_CASE
@@ -53,6 +58,6 @@ spring:
 jwt:
   header: ${JWT_HEADER}
   prefix: ${JWT_PREFIX}
-  access_token_expiration_time: ${JWT_ACCESS_TOKEN_TIME}
-  refresh_token_expiration_time: ${JWT_REFRESH_TOKEN_TIME}
-  secret_key: ${JWT_SECRET_KEY}
+  accessExp: ${JWT_ACCESS_TOKEN_TIME}
+  refreshExp: ${JWT_REFRESH_TOKEN_TIME}
+  secret: ${JWT_SECRET_KEY}

@@ -14,7 +14,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.SequenceGenerator
 import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
-import plain.bookmaru.domain.auth.model.Authority
+import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.member.persistent.converter.EmailConverter
 import plain.bookmaru.domain.member.vo.Email
 import plain.bookmaru.global.entity.BaseEntity
@@ -41,7 +41,7 @@ class MemberEntity(
     @Column(nullable = false, length = 20)
     val nickname: String,
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 100)
     val password: String,
 
     @Column(unique = true,length = 45)

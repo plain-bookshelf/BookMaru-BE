@@ -26,7 +26,9 @@ class VerificationAdapter(
 ) {
 
     @PostMapping("/send")
-    suspend fun sendVerification(@RequestBody request : SendEmailRequestDto) : ResponseEntity<SuccessResponse> {
+    suspend fun sendVerification(
+        @RequestBody request : SendEmailRequestDto
+    ) : ResponseEntity<SuccessResponse> {
         val command = SendVerificationCodeCommand(request.email)
 
         sendVerificationCodeUseCase.sendVerificationCode(command)
@@ -39,7 +41,9 @@ class VerificationAdapter(
     }
 
     @PostMapping("/verification")
-    suspend fun verificationCode(@RequestBody request : VerificationCodeRequestDto) : ResponseEntity<SuccessResponse> {
+    suspend fun verificationCode(
+        @RequestBody request : VerificationCodeRequestDto
+    ) : ResponseEntity<SuccessResponse> {
         val command = VerificationCodeCommand(request.email, request.verificationCode)
 
         verificationCodeUseCase.verificationCode(command)

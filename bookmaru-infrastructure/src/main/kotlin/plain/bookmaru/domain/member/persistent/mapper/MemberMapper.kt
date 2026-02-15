@@ -4,10 +4,9 @@ import org.springframework.stereotype.Component
 import plain.bookmaru.common.vo.ObjectTime
 import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.affiliation.persistent.mapper.AffiliationMapper
-import plain.bookmaru.domain.auth.model.AccountInfo
+import plain.bookmaru.domain.auth.vo.AccountInfo
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.persistent.entity.MemberEntity
-import plain.bookmaru.domain.member.vo.Email
 import plain.bookmaru.domain.member.vo.Profile
 
 @Component

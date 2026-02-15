@@ -8,22 +8,24 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import plain.bookmaru.common.error.CustomHttpStatus
 import plain.bookmaru.common.success.SuccessResponse
-import plain.bookmaru.domain.member.port.`in`.MemberUseCase
+import plain.bookmaru.domain.member.port.`in`.SignupUseCase
 import plain.bookmaru.domain.member.presentation.dto.request.SignupRequestDto
 
 @RestController
 @RequestMapping("/api/member")
 class MemberAdapter(
-    private val memberUseCase: MemberUseCase
+    private val signupUseCase: SignupUseCase
 ) {
 
     @PostMapping("/signup-member")
-    suspend fun signupMember(@RequestBody request: SignupRequestDto) : ResponseEntity<SuccessResponse> {
+    suspend fun signupMember(
+        @RequestBody request: SignupRequestDto
+    ) : ResponseEntity<SuccessResponse> {
         val command = request.toCommand()
-        memberUseCase.signupMember(command)
+        val result = signupUseCase.signupMember(command)
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .header("Content-Type", "application/json")
-            .body(SuccessResponse.success(CustomHttpStatus.CREATED, "유저 회원가입이 성공적으로 완료됬습니다.", ""))
+            .body(SuccessResponse.success(CustomHttpStatus.CREATED, "유저 회원가입이 성공적으로 완료됬습니다.", result))
     }
 }

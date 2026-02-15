@@ -1,7 +1,6 @@
 package plain.bookmaru.global.error
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.boot.web.servlet.error.ErrorController
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -15,13 +14,13 @@ import plain.bookmaru.global.error.response.ErrorResponse
 private val log = KotlinLogging.logger {}
 
 @RestControllerAdvice
-class GlobalExceptionHandler : ErrorController {
+class GlobalExceptionHandler {
 
     @ExceptionHandler(BaseException::class)
     fun handlerBaseException(e: BaseException): ResponseEntity<ErrorResponse> {
         val errorCode : ErrorCode = e.errorCode
 
-        log.error {"Error Code: [${errorCode.message}], Error Message: [{${errorCode.message}}], Details: [${e.details}]"}
+        log.error {"Error Code: [${errorCode.code}], Error Message: [{${errorCode.message}}], Details: [${e.details}]"}
 
         return ResponseEntity
             .status(errorCode.status.value)
@@ -31,7 +30,7 @@ class GlobalExceptionHandler : ErrorController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handlerMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
-        log.error { "MethodArgumentNotValidException: ${e.message}" }
+        log.error { "MethodArgumentNotValidException: ${e.message}, Cause: ${e.cause}" }
 
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST.value())
@@ -41,7 +40,7 @@ class GlobalExceptionHandler : ErrorController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException::class)
     fun handlerIllegalArgumentException(e: IllegalArgumentException): ResponseEntity<ErrorResponse> {
-        log.error { "IllegalArgumentException: ${e.message}" }
+        log.error { "IllegalArgumentException: ${e.message}, Cause: ${e.cause}" }
 
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST.value())
@@ -51,7 +50,7 @@ class GlobalExceptionHandler : ErrorController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception::class)
     fun handlerException(e: Exception): ResponseEntity<ErrorResponse> {
-        log.error { "InternalServerException: ${e.message}" }
+        log.error { "InternalServerException: ${e.message}, Cause: ${e.cause}" }
 
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
