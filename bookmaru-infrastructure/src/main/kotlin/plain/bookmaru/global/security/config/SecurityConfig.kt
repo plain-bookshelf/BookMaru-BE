@@ -45,6 +45,11 @@ class SecurityConfig(
                     "/api/email/verification",
 
                     /*
+                    affiliation
+                     */
+                    "/affiliation/view",
+
+                    /*
                     member
                      */
                     "/api/member/signup-member",

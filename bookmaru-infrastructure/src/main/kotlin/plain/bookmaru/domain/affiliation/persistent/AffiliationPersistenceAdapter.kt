@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.exception.NotFoundAffiliationException
+import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.affiliation.persistent.mapper.AffiliationMapper
 import plain.bookmaru.domain.affiliation.persistent.repository.AffiliationRepository
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
@@ -21,4 +22,9 @@ class AffiliationPersistenceAdapter(
 
         return@withContext affiliationMapper.toDomain(entity)
     }
+
+    override suspend fun findAll(): List<Affiliation> = withContext(Dispatchers.IO) {
+        affiliationRepository.findAll().map { affiliationMapper.toDomain(it) }
+    }
+
 }
