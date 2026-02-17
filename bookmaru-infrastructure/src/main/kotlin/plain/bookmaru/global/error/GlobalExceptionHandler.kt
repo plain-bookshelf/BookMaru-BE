@@ -24,7 +24,7 @@ class GlobalExceptionHandler {
 
         return ResponseEntity
             .status(errorCode.status.value)
-            .body(ErrorResponse(errorCode.code, errorCode.message, errorCode.status.value))
+            .body(ErrorResponse(errorCode.code, errorCode.message, errorCode.status.value, "${e.javaClass.name}.${e.javaClass.methods}"))
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -34,7 +34,7 @@ class GlobalExceptionHandler {
 
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST.value())
-            .body(ErrorResponse("VALID_ERROR", "유효하지 않은 값이 들어왔습니다.", HttpStatus.BAD_REQUEST.value()))
+            .body(ErrorResponse("VALID_ERROR", "유효하지 않은 값이 들어왔습니다.", HttpStatus.BAD_REQUEST.value(), "${e.javaClass.name}.${e.javaClass.methods}"))
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -44,7 +44,7 @@ class GlobalExceptionHandler {
 
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST.value())
-            .body(ErrorResponse("ILLEGAL_ARGUMENT_ERROR", "유효하지 않은 값이 들어왔습니다.", HttpStatus.BAD_REQUEST.value()))
+            .body(ErrorResponse("ILLEGAL_ARGUMENT_ERROR", "유효하지 않은 값이 들어왔습니다.", HttpStatus.BAD_REQUEST.value(), "${e.javaClass.name}.${e.javaClass.methods}"))
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -54,6 +54,6 @@ class GlobalExceptionHandler {
 
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-            .body(ErrorResponse("INTERNAL_SERVER_ERROR", "서버 오류가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value()))
+            .body(ErrorResponse("INTERNAL_SERVER_ERROR", "서버 오류가 발생하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value(), "${e.javaClass.name}.${e.javaClass.methods}"))
     }
 }

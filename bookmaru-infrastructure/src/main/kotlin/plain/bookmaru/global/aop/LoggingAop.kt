@@ -2,7 +2,6 @@ package plain.bookmaru.global.aop
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.aspectj.lang.JoinPoint
-import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.annotation.Before
 import org.springframework.stereotype.Component
