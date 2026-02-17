@@ -2,6 +2,7 @@ package plain.bookmaru.global.security.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -11,23 +12,31 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import plain.bookmaru.global.security.jwt.JwtAuthenticationFilter
+import plain.bookmaru.global.security.jwt.JwtParser
 
 @EnableWebSecurity
 @Configuration
 class SecurityConfig(
-    private val jwtAuthenticationFilter: JwtAuthenticationFilter
+    private val jwtParser: JwtParser,
+    private val redisTemplate: StringRedisTemplate
 ) {
+
     @Bean
     fun passwordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder()
     }
 
+
     @Bean
     fun securityFilterChain(http: HttpSecurity) : SecurityFilterChain {
+        val jwtAuthenticationFilter = JwtAuthenticationFilter(jwtParser, redisTemplate)
+
         http
-            .csrf { csrfConfigurer -> csrfConfigurer.disable() }
+            .csrf { it.disable() }
 
             .cors { cors -> {} }
+
+            .logout { it.disable() }
 
             .sessionManagement {configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
 
@@ -35,9 +44,9 @@ class SecurityConfig(
 
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
-            .authorizeHttpRequests { auth ->
-                auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                auth.requestMatchers(
+            .authorizeHttpRequests {
+                it.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                it.requestMatchers(
                     /*
                     email
                      */
@@ -58,9 +67,14 @@ class SecurityConfig(
                     auth
                      */
                     "/api/auth/login-member",
-                    "/api/auth/reissue"
+                    "/api/auth/reissue",
+
+                    /*
+                    error
+                     */
+                    "/error"
                 ).permitAll()
-                auth.anyRequest().hasAnyRole("USER", "OVERDUE", "LIBRARIAN", "MANAGER", "TEACHER", "ADMIN")
+                it.anyRequest().authenticated()
             }
         return http.build()
     }

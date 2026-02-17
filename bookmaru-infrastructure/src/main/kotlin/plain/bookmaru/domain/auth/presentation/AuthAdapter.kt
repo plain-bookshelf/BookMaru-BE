@@ -13,7 +13,9 @@ import plain.bookmaru.common.annotation.LogExecution
 import plain.bookmaru.common.error.CustomHttpStatus
 import plain.bookmaru.common.success.SuccessResponse
 import plain.bookmaru.domain.auth.port.`in`.LoginUseCase
+import plain.bookmaru.domain.auth.port.`in`.LogoutUseCase
 import plain.bookmaru.domain.auth.port.`in`.ReissueUseCase
+import plain.bookmaru.domain.auth.port.`in`.command.LogoutCommand
 import plain.bookmaru.domain.auth.port.`in`.command.ReissueCommand
 import plain.bookmaru.domain.auth.presentation.dto.request.LoginMemberRequestDto
 
@@ -21,7 +23,8 @@ import plain.bookmaru.domain.auth.presentation.dto.request.LoginMemberRequestDto
 @RequestMapping("/api/auth")
 class AuthAdapter(
     private val loginUseCase: LoginUseCase,
-    private val reissueUseCase: ReissueUseCase
+    private val reissueUseCase: ReissueUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) {
 
     @PostMapping("/login-member")
@@ -52,7 +55,22 @@ class AuthAdapter(
         val result = reissueUseCase.reissue(command)
 
         return ResponseEntity.status(HttpStatus.CREATED)
-            .header("Content-Type", "application/json")
+            .header("X-Refresh-Token", "Bearer $token")
             .body(SuccessResponse(CustomHttpStatus.CREATED, "토큰 재발급에 성공하엿습니다.", result))
     }
+
+    @PostMapping("/logout")
+    @LogExecution
+    suspend fun logout(
+        @RequestHeader("Authorization") token: String,
+    ): ResponseEntity<SuccessResponse> {
+        val command = LogoutCommand.toCommand(token)
+
+        logoutUseCase.logout(command)
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .header("Authorization", token)
+            .body(SuccessResponse(CustomHttpStatus.OK, "로그아웃에 성공하였습니다.", ""))
+    }
+
 }

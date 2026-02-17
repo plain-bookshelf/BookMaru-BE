@@ -21,23 +21,23 @@ class GlobalErrorController : ErrorController {
         if (status == HttpStatus.UNAUTHORIZED.value()) {
             return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(ErrorResponse("UNAUTHORIZED", "유저 정보가 잘못 되었습니다", HttpStatus.FORBIDDEN.value()))
+                .body(ErrorResponse("UNAUTHORIZED", "유저 정보가 잘못 되었습니다", HttpStatus.UNAUTHORIZED.value(), request.requestURI))
         }
 
         if (status == HttpStatus.FORBIDDEN.value()) {
             return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
-                .body(ErrorResponse("FORBIDDEN", "이 리소스에 접근할 권한이 부족합니다", HttpStatus.FORBIDDEN.value()))
+                .body(ErrorResponse("FORBIDDEN", "이 리소스에 접근할 권한이 부족합니다", HttpStatus.FORBIDDEN.value(), request.requestURI, ))
         }
 
         if (status == HttpStatus.NOT_FOUND.value()) {
             return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponse("NOT_FOUND", "요청한 경로를 찾을 수 없음", HttpStatus.NOT_FOUND.value()))
+                .body(ErrorResponse("NOT_FOUND", "요청한 경로를 찾을 수 없음", HttpStatus.NOT_FOUND.value(), request.requestURI))
         }
 
         return ResponseEntity
             .status(status)
-            .body(ErrorResponse("SERVLET_ERROR", "서블릿 에러가 발생했습니다", status))
+            .body(ErrorResponse("SERVLET_ERROR", "서블릿 에러가 발생했습니다", status, request.requestURI))
     }
 }

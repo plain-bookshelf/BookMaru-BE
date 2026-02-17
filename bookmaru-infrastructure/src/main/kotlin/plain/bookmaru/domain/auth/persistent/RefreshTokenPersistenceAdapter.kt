@@ -22,4 +22,8 @@ class RefreshTokenPersistenceAdapter(
             refreshTokenMapper.toDomain(it)
         }
     }
+
+    override suspend fun deleteByUsername(username: String) = withContext(Dispatchers.IO) {
+        refreshTokenRepository.deleteByUsername(username)
+    }
 }

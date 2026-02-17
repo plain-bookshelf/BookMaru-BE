@@ -4,7 +4,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.exception.NotFoundAffiliationException
-import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.affiliation.persistent.mapper.AffiliationMapper
 import plain.bookmaru.domain.affiliation.persistent.repository.AffiliationRepository
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort

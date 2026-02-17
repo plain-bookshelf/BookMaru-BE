@@ -14,14 +14,12 @@ import java.time.Instant
 class EmailVerifiedPersistenceAdapter(
     private val redisTemplate: StringRedisTemplate
 ): EmailVerifiedPort {
-    override suspend fun save(emailVerified: EmailVerified) {
-        withContext(Dispatchers.IO) {
-            redisTemplate.opsForValue().set(
-                emailVerified.email.toString(),
-                "True",
-                Duration.between(Instant.now(), emailVerified.expiredAt)
-            )
-        }
+    override suspend fun save(emailVerified: EmailVerified) = withContext(Dispatchers.IO) {
+        redisTemplate.opsForValue().set(
+            emailVerified.email.toString(),
+            "True",
+            Duration.between(Instant.now(), emailVerified.expiredAt)
+        )
     }
 
     override suspend fun load(email: String) : EmailVerified? = withContext(Dispatchers.IO) {

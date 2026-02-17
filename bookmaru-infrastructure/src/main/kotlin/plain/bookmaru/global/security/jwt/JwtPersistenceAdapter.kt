@@ -103,7 +103,7 @@ class JwtPersistenceAdapter(
             .expiration(Date(now + exp))
             .claim(ClaimKey.MEMBER_ID.name, id)
             .claim(ClaimKey.TOKEN_TYPE.name, tokenType.name)
-            .claim(ClaimKey.AUTHORITY.name, authority)
+            .claim(ClaimKey.AUTHORITY.name, authority.name)
             .claim(ClaimKey.AFFILIATION.name, affiliation.id)
         .compact()
     }

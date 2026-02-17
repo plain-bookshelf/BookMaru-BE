@@ -3,6 +3,7 @@ package plain.bookmaru.global.security.jwt
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.UnsupportedJwtException
 import io.jsonwebtoken.security.Keys
 import jakarta.servlet.http.HttpServletRequest
@@ -34,15 +35,27 @@ class JwtParser(
         return UsernamePasswordAuthenticationToken(userDetails, "", userDetails.authorities)
     }
 
-    fun resolveToken(request: HttpServletRequest): String {
+    fun resolveToken(request: HttpServletRequest): String? {
         val token = request.getHeader(jwtProperties.header)
         if (token != null && token.startsWith(jwtProperties.prefix)) {
             return token.substringAfter(jwtProperties.prefix).trim()
         }
-        return ""
+        return null
     }
 
-    private fun getClaims(token: String): Claims {
+    fun validateToken(token: String): Boolean {
+        try {
+            getClaims(token)
+            return true
+        } catch (e: io.jsonwebtoken.security.SecurityException) {
+            throw UnsupportedJwtException("지원하지 않는 토큰 : $token - 사유: ${e.message}")
+        } catch (e: MalformedJwtException) {
+            throw UnsupportedJwtException("지원하지 않는 토큰 : $token - 사유: ${e.message}")
+        }
+        return false
+    }
+
+    fun getClaims(token: String): Claims {
         val secretKey = Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray(StandardCharsets.UTF_8))
         try {
             return Jwts.parser()
@@ -51,11 +64,7 @@ class JwtParser(
                 .parseSignedClaims(token)
                 .payload
         } catch (e: ExpiredJwtTokenException) {
-            log.error { "만료된 토큰 : $token" }
-            throw e
-        } catch (e: UnsupportedJwtException) {
-            log.error { "지원하지 않는 토큰 : $token" }
-            throw e
+            throw ExpiredJwtTokenException("만료된 토큰 : $token")
         } catch (e: Exception) {
             log.error { "회원정보를 받아오는 과정에서 예상치 못한 문제가 발생했습니다. ${e.message}" }
             throw e

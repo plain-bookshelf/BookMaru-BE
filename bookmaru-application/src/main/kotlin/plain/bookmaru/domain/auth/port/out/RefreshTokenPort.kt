@@ -5,4 +5,5 @@ import plain.bookmaru.domain.auth.vo.PlatformType
 
 interface RefreshTokenPort {
     suspend fun findByTokenAndPlatformType(token: String, platformType: PlatformType) : JwtRefreshToken?
+    suspend fun deleteByUsername(username: String)
 }
