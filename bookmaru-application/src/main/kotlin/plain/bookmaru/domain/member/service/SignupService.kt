@@ -2,7 +2,6 @@ package plain.bookmaru.domain.member.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import plain.bookmaru.common.annotation.Service
-import plain.bookmaru.common.vo.ObjectTime
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
 import plain.bookmaru.domain.auth.port.out.JwtPort
 import plain.bookmaru.domain.auth.port.out.SecurityPort
@@ -14,14 +13,14 @@ import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.port.`in`.SignupUseCase
 import plain.bookmaru.domain.member.port.`in`.command.SignupMemberCommand
 import plain.bookmaru.domain.member.port.out.MemberPort
+import plain.bookmaru.domain.officialkey.model.OfficialVerification
 import plain.bookmaru.domain.verification.exception.NotFoundEmailException
 import plain.bookmaru.domain.verification.port.out.EmailVerifiedPort
-import java.time.LocalDateTime
 
-val log = KotlinLogging.logger {}
+private val log = KotlinLogging.logger {}
 
 @Service
-class SignupMemberService(
+class SignupService(
     private val memberPort: MemberPort,
     private val affiliationPort: AffiliationPort,
     private val emailVerifiedPort: EmailVerifiedPort,
@@ -61,8 +60,7 @@ class SignupMemberService(
                 password = securityPort.passwordEncode(accountInfo.password)
             ),
             authority = authority,
-            email = email,
-            objectTime = ObjectTime(LocalDateTime.now(), LocalDateTime.now())
+            email = email
         )
 
         log.info { "회원가입 성공 : ${accountInfo.username}" }
@@ -77,5 +75,9 @@ class SignupMemberService(
             affiliation = savedMember.affiliation
         )
 
+    }
+
+    override suspend fun signupOfficial(command: OfficialVerification): TokenResult {
+        TODO("Not yet implemented")
     }
 }

@@ -1,7 +1,6 @@
 package plain.bookmaru.domain.member.persistent.mapper
 
 import org.springframework.stereotype.Component
-import plain.bookmaru.common.vo.ObjectTime
 import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.affiliation.persistent.mapper.AffiliationMapper
 import plain.bookmaru.domain.auth.vo.AccountInfo
@@ -21,8 +20,7 @@ class MemberMapper(
             accountInfo = AccountInfo(entity.username, entity.password),
             profile = Profile(entity.nickname, entity.profileImage, entity.oneMonthStatics, entity.overdueTerm, entity.bookReadTime),
             authority = entity.role,
-            email = entity.email,
-            objectTime = ObjectTime(entity.createdAt, entity.updatedAt),
+            email = entity.email
         )
     }
 

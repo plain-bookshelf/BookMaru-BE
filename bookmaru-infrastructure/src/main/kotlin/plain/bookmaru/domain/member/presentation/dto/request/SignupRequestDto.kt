@@ -11,17 +11,16 @@ data class  SignupRequestDto(
     val username: String,
     val password: String,
     val email: String? = null,
-    val affiliationName: String,
-    val platformType: PlatformType
+    val affiliationName: String
 ) {
-    fun toCommand(): SignupMemberCommand {
+    fun toCommand(platformType: String): SignupMemberCommand {
         return SignupMemberCommand(
             email = email?.ifBlank { null }?.let { Email(it) },
             accountInfo = AccountInfo(this.username, this.password),
             affiliationName = this.affiliationName,
             profile = Profile(nickname = this.username),
             authority = Authority.ROLE_USER,
-            platformType = PlatformType.valueOf(this.platformType.toString())
+            platformType = PlatformType.valueOf(platformType)
         )
     }
 }

@@ -1,7 +1,6 @@
 package plain.bookmaru.domain.member.model
 
 import plain.bookmaru.common.annotation.Aggregate
-import plain.bookmaru.common.vo.ObjectTime
 import plain.bookmaru.domain.affiliation.vo.Affiliation
 import plain.bookmaru.domain.auth.vo.AccountInfo
 import plain.bookmaru.domain.auth.vo.Authority
@@ -15,8 +14,7 @@ class Member(
     val profile: Profile?,
     val authority: Authority,
     val accountInfo: AccountInfo,
-    val email: Email?,
-    val objectTime: ObjectTime
+    val email: Email?
 ) {
     companion object {
         fun create(
@@ -25,8 +23,7 @@ class Member(
             profile: Profile?,
             authority: Authority,
             accountInfo: AccountInfo,
-            email: Email?,
-            objectTime : ObjectTime
+            email: Email?
         ): Member {
             return Member(
                 id = id,
@@ -34,8 +31,7 @@ class Member(
                 profile = profile,
                 authority = authority,
                 accountInfo = accountInfo,
-                email = email,
-                objectTime = objectTime
+                email = email
             )
         }
     }
