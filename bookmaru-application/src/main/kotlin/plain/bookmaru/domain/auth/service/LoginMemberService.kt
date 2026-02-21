@@ -48,7 +48,7 @@ class LoginMemberService(
         if (!securityPort.isPasswordMatch(command.accountInfo.password, member.accountInfo.password))
             throw PasswordNotMatchException("${command.accountInfo.password} 비밀번호가 일치하지 않습니다.")
 
-        val affiliation = affiliationPort.findById(member.affiliationId)
+        affiliationPort.findById(member.affiliationId)
             ?: throw NotFoundAffiliationException("소속 정보를 찾지 못 했습니다.")
 
         log.info { "로그인 성공" }

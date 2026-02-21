@@ -4,7 +4,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.model.Affiliation
-import plain.bookmaru.domain.affiliation.persistent.repository.AffiliationRepository
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.persistent.mapper.MemberMapper
 import plain.bookmaru.domain.member.persistent.repository.MemberRepository

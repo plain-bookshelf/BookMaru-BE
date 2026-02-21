@@ -4,7 +4,6 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.redis.core.RedisHash
 import org.springframework.data.redis.core.TimeToLive
 import org.springframework.data.redis.core.index.Indexed
-import plain.bookmaru.domain.affiliation.model.Affiliation
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.auth.vo.PlatformType
 
