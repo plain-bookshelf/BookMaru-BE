@@ -1,7 +1,7 @@
 package plain.bookmaru.domain.auth.model
 
 import plain.bookmaru.common.annotation.Aggregate
-import plain.bookmaru.domain.affiliation.vo.Affiliation
+import plain.bookmaru.domain.affiliation.model.Affiliation
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.auth.vo.PlatformType
 
@@ -12,7 +12,7 @@ data class JwtRefreshToken(
     val tokenExpire: Long,
     val authority: Authority,
     val platformType: PlatformType,
-    val affiliation: Affiliation
+    val affiliationId: Long
 ) {
 
     fun update(token: String, tokenExpire: Long) : JwtRefreshToken {

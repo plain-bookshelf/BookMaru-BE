@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.redis.core.RedisHash
 import org.springframework.data.redis.core.TimeToLive
 import org.springframework.data.redis.core.index.Indexed
-import plain.bookmaru.domain.affiliation.vo.Affiliation
+import plain.bookmaru.domain.affiliation.model.Affiliation
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.auth.vo.PlatformType
 
@@ -17,7 +17,7 @@ class RefreshTokenEntity(
     val authority: Authority,
     @Indexed
     val platformType: PlatformType,
-    val affiliation: Affiliation,
+    val affiliationId: Long,
     @TimeToLive
     val tokenExpire: Long
 ) {

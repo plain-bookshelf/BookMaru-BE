@@ -1,11 +1,13 @@
 package plain.bookmaru.global.interceptor
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.stereotype.Component
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.AsyncHandlerInterceptor
-import plain.bookmaru.domain.member.service.log
+
+private val log = KotlinLogging.logger {}
 
 @Component
 class LogInterceptor : AsyncHandlerInterceptor {

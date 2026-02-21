@@ -1,7 +1,6 @@
 package plain.bookmaru.domain.member.model
 
 import plain.bookmaru.common.annotation.Aggregate
-import plain.bookmaru.domain.affiliation.vo.Affiliation
 import plain.bookmaru.domain.auth.vo.AccountInfo
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.member.vo.Profile
@@ -10,7 +9,7 @@ import plain.bookmaru.domain.member.vo.Email
 @Aggregate
 class Member(
     val id: Long? = null,
-    val affiliation: Affiliation,
+    val affiliationId: Long,
     val profile: Profile?,
     val authority: Authority,
     val accountInfo: AccountInfo,
@@ -19,7 +18,7 @@ class Member(
     companion object {
         fun create(
             id : Long? = null,
-            affiliation: Affiliation,
+            affiliationId: Long,
             profile: Profile?,
             authority: Authority,
             accountInfo: AccountInfo,
@@ -27,7 +26,7 @@ class Member(
         ): Member {
             return Member(
                 id = id,
-                affiliation = affiliation,
+                affiliationId = affiliationId,
                 profile = profile,
                 authority = authority,
                 accountInfo = accountInfo,

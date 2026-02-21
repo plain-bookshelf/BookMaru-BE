@@ -1,7 +1,7 @@
 package plain.bookmaru.domain.member.persistent.mapper
 
 import org.springframework.stereotype.Component
-import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
+import plain.bookmaru.domain.affiliation.model.Affiliation
 import plain.bookmaru.domain.affiliation.persistent.mapper.AffiliationMapper
 import plain.bookmaru.domain.auth.vo.AccountInfo
 import plain.bookmaru.domain.member.model.Member
@@ -16,7 +16,7 @@ class MemberMapper(
     fun toDomain(entity: MemberEntity) : Member {
         return Member(
             id = entity.id,
-            affiliation = affiliationMapper.toDomain(entity.affiliation),
+            affiliationId = entity.affiliation.id!!,
             accountInfo = AccountInfo(entity.username, entity.password),
             profile = Profile(entity.nickname, entity.profileImage, entity.oneMonthStatics, entity.overdueTerm, entity.bookReadTime),
             authority = entity.role,
@@ -24,10 +24,10 @@ class MemberMapper(
         )
     }
 
-    fun toEntity(domain: Member, affiliationEntity: AffiliationEntity?) : MemberEntity {
+    fun toEntity(domain: Member, affiliation: Affiliation) : MemberEntity {
         return MemberEntity(
             id = domain.id,
-            affiliation = affiliationEntity!!,
+            affiliation = affiliationMapper.toEntity(affiliation),
             username = domain.accountInfo.username,
             nickname = domain.profile?.nickname ?: domain.accountInfo.username,
             password = domain.accountInfo.password,

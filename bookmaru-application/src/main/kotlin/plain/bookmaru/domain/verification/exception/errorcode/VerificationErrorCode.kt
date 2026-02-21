@@ -8,6 +8,7 @@ enum class VerificationErrorCode(
     override val code: String,
     override val message: String
 ): ErrorCode {
-    NOT_FOUND_EMAIL(CustomHttpStatus.NOT_FOUND, "EMAIL-001", "이메일을 찾지 못 했습니다."),
-    NOT_MATCH_VERIFICATION_CODE(CustomHttpStatus.BAD_REQUEST, "EMAIL-002", "인증코드가 틀렸습니다.")
+    NOT_FOUND_EMAIL(CustomHttpStatus.NOT_FOUND, "VERIFICATION-001", "이메일을 찾지 못 했습니다."),
+    NOT_MATCH_VERIFICATION_CODE(CustomHttpStatus.BAD_REQUEST, "VERIFICATION-002", "인증코드가 틀렸습니다."),
+    NOT_MATCH_OFFICIAL_CODE(CustomHttpStatus.BAD_REQUEST, "VERIFICATION-003", "관계자 인증코드가 매치되지 않았습니다.")
 }

@@ -9,6 +9,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
 import jakarta.persistence.SequenceGenerator
 import plain.bookmaru.domain.member.persistent.entity.MemberEntity
+import plain.bookmaru.domain.verification.persistent.entity.OfficialCodeEntity
 
 @Entity
 @SequenceGenerator(
@@ -22,7 +23,10 @@ class AffiliationEntity(
     val id : Long? = null,
 
     @OneToMany(mappedBy = "affiliation", fetch = FetchType.LAZY)
-    private val members : MutableList<MemberEntity> = mutableListOf(),
+    val members : MutableList<MemberEntity> = mutableListOf(),
+
+    @OneToMany(mappedBy = "affiliation", fetch = FetchType.LAZY)
+    val officialCodeEntities: MutableList<OfficialCodeEntity> = mutableListOf(),
 
     @Column(nullable = false, length = 45)
     val affiliationName : String

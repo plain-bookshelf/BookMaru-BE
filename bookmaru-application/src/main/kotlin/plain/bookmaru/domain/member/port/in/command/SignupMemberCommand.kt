@@ -8,7 +8,6 @@ import plain.bookmaru.domain.member.vo.Email
 
 data class SignupMemberCommand(
     val accountInfo: AccountInfo,
-    val authority: Authority,
     val affiliationName: String,
     val profile: Profile,
     val email: Email? = null,

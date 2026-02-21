@@ -3,6 +3,7 @@ package plain.bookmaru.domain.member.persistent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Component
+import plain.bookmaru.domain.affiliation.model.Affiliation
 import plain.bookmaru.domain.affiliation.persistent.repository.AffiliationRepository
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.persistent.mapper.MemberMapper
@@ -13,15 +14,10 @@ import plain.bookmaru.domain.member.vo.Email
 @Component
 class MemberPersistenceAdapter(
     private val memberRepository: MemberRepository,
-    private val memberMapper: MemberMapper,
-    private val affiliationRepository: AffiliationRepository
+    private val memberMapper: MemberMapper
 ) : MemberPort {
-    override suspend fun save(member: Member) : Member = withContext(Dispatchers.IO) {
-        val affiliationName = member.affiliation.affiliation
-
-        val affiliationEntity = affiliationRepository.findByAffiliationName(affiliationName)
-
-        val memberEntity = memberMapper.toEntity(member, affiliationEntity)
+    override suspend fun save(member: Member, affiliation: Affiliation) : Member = withContext(Dispatchers.IO) {
+        val memberEntity = memberMapper.toEntity(member, affiliation)
 
         val savedEntity = memberRepository.save(memberEntity)
         return@withContext memberMapper.toDomain(savedEntity)

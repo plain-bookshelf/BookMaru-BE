@@ -39,7 +39,6 @@ class AuthAdapter(
         val result = loginUseCase.loginMember(command)
 
         return ResponseEntity.status(HttpStatus.CREATED)
-            .header("Content-Type", "application/json")
             .body(SuccessResponse(CustomHttpStatus.CREATED, "로그인에 성공하였습니다.", result))
     }
 
@@ -55,7 +54,6 @@ class AuthAdapter(
         val result = reissueUseCase.reissue(command)
 
         return ResponseEntity.status(HttpStatus.CREATED)
-            .header("X-Refresh-Token", "Bearer $token")
             .body(SuccessResponse(CustomHttpStatus.CREATED, "토큰 재발급에 성공하엿습니다.", result))
     }
 
@@ -69,7 +67,6 @@ class AuthAdapter(
         logoutUseCase.logout(command)
 
         return ResponseEntity.status(HttpStatus.OK)
-            .header("Authorization", token)
             .body(SuccessResponse(CustomHttpStatus.OK, "로그아웃에 성공하였습니다.", ""))
     }
 

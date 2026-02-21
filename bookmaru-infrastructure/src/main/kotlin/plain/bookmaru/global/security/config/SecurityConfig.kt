@@ -48,10 +48,10 @@ class SecurityConfig(
                 it.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 it.requestMatchers(
                     /*
-                    email
+                    verification
                      */
-                    "/api/email/send",
-                    "/api/email/verification",
+                    "/api/verification/email/send",
+                    "/api/verification/email/verification",
 
                     /*
                     affiliation
@@ -62,6 +62,7 @@ class SecurityConfig(
                     member
                      */
                     "/api/member/signup-member",
+                    "/api/member/signup-official",
 
                     /*
                     auth
@@ -74,6 +75,14 @@ class SecurityConfig(
                      */
                     "/error"
                 ).permitAll()
+
+                it.requestMatchers(
+                    /*
+                    verification
+                     */
+                    "/api/verification/officialCode/save"
+                ).hasRole("ADMIN")
+
                 it.anyRequest().authenticated()
             }
         return http.build()

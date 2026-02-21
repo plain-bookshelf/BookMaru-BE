@@ -1,6 +1,5 @@
 package plain.bookmaru.domain.auth.port.out
 
-import plain.bookmaru.domain.affiliation.vo.Affiliation
 import plain.bookmaru.domain.auth.result.TokenResult
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.auth.vo.JwtType
@@ -14,7 +13,7 @@ interface JwtPort {
         exp: Long,
         platformType: PlatformType,
         authority: Authority,
-        affiliation: Affiliation
+        affiliationId: Long
     ): String
 
     suspend fun responseToken(
@@ -22,7 +21,7 @@ interface JwtPort {
         username: String,
         platformType: PlatformType,
         authority: Authority,
-        affiliation: Affiliation
+        affiliationId: Long
     ): TokenResult
 
 }

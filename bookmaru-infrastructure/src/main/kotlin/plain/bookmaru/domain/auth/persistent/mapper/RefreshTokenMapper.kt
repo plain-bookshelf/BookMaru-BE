@@ -13,7 +13,7 @@ class RefreshTokenMapper {
             username = entity.username,
             authority = entity.authority,
             platformType = entity.platformType,
-            affiliation = entity.affiliation,
+            affiliationId = entity.affiliationId,
             tokenExpire = entity.tokenExpire,
         )
     }
@@ -25,7 +25,7 @@ class RefreshTokenMapper {
             tokenExpire = domain.tokenExpire,
             authority = domain.authority,
             platformType = domain.platformType,
-            affiliation = domain.affiliation,
+            affiliationId = domain.affiliationId
         )
     }
 }

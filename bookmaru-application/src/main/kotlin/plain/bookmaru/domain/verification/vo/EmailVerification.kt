@@ -11,7 +11,7 @@ data class EmailVerification(
 ) {
     companion object {
         fun create(email: Email) : EmailVerification {
-            val randomCode = generateRandomAlphanumeric()
+            val randomCode = generateRandomCode()
             return EmailVerification(
                 email = email,
                 code = randomCode,
@@ -19,7 +19,7 @@ data class EmailVerification(
             )
         }
 
-        private fun generateRandomAlphanumeric() : String {
+        private fun generateRandomCode() : String {
             val charPool : List<Char> = ('A'..'Z') + ('0'..'9')
 
             return (1..6)

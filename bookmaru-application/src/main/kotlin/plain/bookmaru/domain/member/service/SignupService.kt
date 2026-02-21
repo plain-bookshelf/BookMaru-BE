@@ -2,20 +2,27 @@ package plain.bookmaru.domain.member.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import plain.bookmaru.common.annotation.Service
+import plain.bookmaru.domain.affiliation.exception.NotFoundAffiliationException
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
+import plain.bookmaru.domain.affiliation.model.Affiliation
 import plain.bookmaru.domain.auth.port.out.JwtPort
 import plain.bookmaru.domain.auth.port.out.SecurityPort
 import plain.bookmaru.domain.auth.result.TokenResult
 import plain.bookmaru.domain.auth.vo.AccountInfo
+import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.member.exception.AlreadyExistsMemberException
 import plain.bookmaru.domain.member.exception.AlreadyUsedEmailException
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.port.`in`.SignupUseCase
 import plain.bookmaru.domain.member.port.`in`.command.SignupMemberCommand
+import plain.bookmaru.domain.member.port.`in`.command.SignupOfficialCommand
 import plain.bookmaru.domain.member.port.out.MemberPort
-import plain.bookmaru.domain.officialkey.model.OfficialVerification
+import plain.bookmaru.domain.member.vo.Email
 import plain.bookmaru.domain.verification.exception.NotFoundEmailException
+import plain.bookmaru.domain.verification.exception.NotMatchOfficialCodeException
+import plain.bookmaru.domain.verification.model.OfficialCode
 import plain.bookmaru.domain.verification.port.out.EmailVerifiedPort
+import plain.bookmaru.domain.verification.port.out.OfficialCodePort
 
 private val log = KotlinLogging.logger {}
 
@@ -25,59 +32,105 @@ class SignupService(
     private val affiliationPort: AffiliationPort,
     private val emailVerifiedPort: EmailVerifiedPort,
     private val securityPort: SecurityPort,
-    private val jwtPort: JwtPort
+    private val jwtPort: JwtPort,
+    private val officialCodePort: OfficialCodePort
 ) : SignupUseCase {
 
     override suspend fun signupMember(command: SignupMemberCommand) : TokenResult {
-
         val affiliationName = command.affiliationName
         val profile = command.profile
         val accountInfo = command.accountInfo
-        val authority = command.authority
         val email = command.email
 
-        if (memberPort.findByUsername(accountInfo.username) != null) {
-            throw AlreadyExistsMemberException("Username already exists : ${accountInfo.username}")
-        }
-
-        if (!email?.email.isNullOrBlank()) {
-            val emailProxy = emailVerifiedPort.load(email.email)
-            if (emailProxy == null) {
-                throw NotFoundEmailException("잘못된 이메일 입니다 : $email")
-            }
-            if (memberPort.findByEmail(email) != null) {
-                throw AlreadyUsedEmailException("Already used email : ${email.email}")
-            }
-        }
-
-        val affiliation = affiliationPort.findByAffiliationName(affiliationName)
+        val affiliation = validationInfo(accountInfo.username, email, affiliationName)
 
         val newMember = Member.create(
-            affiliation = affiliation,
+            affiliationId = affiliation.id!!,
             profile = profile,
             accountInfo = AccountInfo(
                 username = accountInfo.username,
                 password = securityPort.passwordEncode(accountInfo.password)
             ),
-            authority = authority,
+            authority = Authority.ROLE_USER,
             email = email
         )
 
         log.info { "회원가입 성공 : ${accountInfo.username}" }
 
-        val savedMember = memberPort.save(newMember)
+        val savedMember = memberPort.save(newMember, affiliation)
 
         return jwtPort.responseToken(
             id = savedMember.id!!,
             username = savedMember.accountInfo.username,
             platformType = command.platformType,
             authority = savedMember.authority,
-            affiliation = savedMember.affiliation
+            affiliationId = affiliation.id
         )
-
     }
 
-    override suspend fun signupOfficial(command: OfficialVerification): TokenResult {
-        TODO("Not yet implemented")
+    override suspend fun signupOfficial(command: SignupOfficialCommand): TokenResult {
+        val affiliationName = command.affiliationName
+        val profile = command.profile
+        val accountInfo = command.accountInfo
+        val email = command.email
+        val verificationCode = command.verificationCode
+
+        val affiliation = validationInfo(accountInfo.username, email, affiliationName)
+
+        val officialCode = isMatch(affiliationName, verificationCode)
+
+        val newMember = Member.create(
+            affiliationId = affiliation.id!!,
+            profile = profile,
+            accountInfo = AccountInfo(
+                username = accountInfo.username,
+                password = accountInfo.password
+            ),
+            authority = officialCode.role,
+            email = email
+        )
+
+        val savedMember = memberPort.save(newMember, affiliation)
+
+        return jwtPort.responseToken(
+            id = savedMember.id!!,
+            username = savedMember.accountInfo.username,
+            platformType = command.platformType,
+            authority = savedMember.authority,
+            affiliationId = affiliation.id
+        )
+    }
+
+    private suspend fun isMatch(affiliationName: String, code: String) : OfficialCode {
+        val affiliation = affiliationPort.findByAffiliationName(affiliationName)
+            ?: throw NotFoundAffiliationException("$affiliationName 소속 정보를 찾지 못 했습니다.")
+
+        val officialCode = officialCodePort.load(code, affiliation)
+        if (officialCode == null) {
+            throw NotMatchOfficialCodeException("$code 가 일치하지 않습니다.")
+        }
+
+        return officialCode
+    }
+
+    private suspend fun validationInfo(username: String, email: Email?, affiliationName: String) : Affiliation {
+        if (memberPort.findByUsername(username) != null) {
+            throw AlreadyExistsMemberException("이미 존재하는 유저 아이디 입니다: $username")
+        }
+
+        if (!email?.email.isNullOrBlank()) {
+            val emailProxy = emailVerifiedPort.load(email.email)
+            if (emailProxy == null) {
+                throw NotFoundEmailException("잘못된 이메일 입니다: $email")
+            }
+            if (memberPort.findByEmail(email) != null) {
+                throw AlreadyUsedEmailException("이미 사용되는 이메일 입니다: ${email.email}")
+            }
+        }
+
+        val affiliation = affiliationPort.findByAffiliationName(affiliationName)
+            ?: throw NotFoundAffiliationException("존재하지 않는 도서관 정보 입니다:  $affiliationName")
+
+        return affiliation
     }
 }

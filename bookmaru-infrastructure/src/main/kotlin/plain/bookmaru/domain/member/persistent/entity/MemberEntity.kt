@@ -31,9 +31,9 @@ class MemberEntity(
     @Column(nullable = false, unique = true)
     val id: Long? = null,
 
-    @ManyToOne(optional = false, cascade = [CascadeType.REFRESH] ,fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "affiliation_id", nullable = false )
-    val affiliation: AffiliationEntity?,
+    val affiliation: AffiliationEntity,
 
     @Column(nullable = false, length = 20)
     val username: String,
@@ -55,13 +55,11 @@ class MemberEntity(
     @Column(nullable = false, length = 100)
     val profileImage: String,
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, precision = 1000)
     val oneMonthStatics: Int? = 0,
 
-    @Column(length = 45)
     val overdueTerm: LocalDateTime? = null,
 
-    @Column(length = 45)
     val bookReadTime: LocalDateTime? = null
 ) : BaseEntity() {
     override fun equals(other: Any?): Boolean {

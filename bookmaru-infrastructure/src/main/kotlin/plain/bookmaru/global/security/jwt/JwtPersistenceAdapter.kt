@@ -5,7 +5,8 @@ import io.jsonwebtoken.security.Keys
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Component
-import plain.bookmaru.domain.affiliation.vo.Affiliation
+import plain.bookmaru.domain.affiliation.exception.NotFoundAffiliationException
+import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
 import plain.bookmaru.domain.auth.persistent.entity.RefreshTokenEntity
 import plain.bookmaru.domain.auth.persistent.mapper.RefreshTokenMapper
 import plain.bookmaru.domain.auth.persistent.repository.RefreshTokenRepository
@@ -21,7 +22,8 @@ import java.util.Date
 class JwtPersistenceAdapter(
     private val jwtProperties: JwtProperties,
     private val refreshTokenMapper: RefreshTokenMapper,
-    private val refreshTokenRepository: RefreshTokenRepository
+    private val refreshTokenRepository: RefreshTokenRepository,
+    private val affiliationPort: AffiliationPort
 ) : JwtPort{
 
     suspend fun generateAccessToken(
@@ -29,7 +31,8 @@ class JwtPersistenceAdapter(
         username: String,
         authority: Authority,
         platformType: PlatformType,
-        affiliation: Affiliation): String
+        affiliationId: Long
+    ): String
     = generateToken(
         id,
         username,
@@ -37,14 +40,14 @@ class JwtPersistenceAdapter(
         jwtProperties.accessExp.toMillis(),
         platformType,
         authority,
-        affiliation)
+        affiliationId)
 
     suspend fun generateRefreshToken(
         id: Long,
         username: String,
         authority: Authority,
         platformType: PlatformType,
-        affiliation: Affiliation
+        affiliationId: Long
     ): String = withContext(Dispatchers.IO){
 
         val token = generateToken(
@@ -54,7 +57,8 @@ class JwtPersistenceAdapter(
             jwtProperties.refreshExp.toMillis(),
             platformType,
             authority,
-            affiliation)
+            affiliationId
+        )
 
         val existingRefreshToken = refreshTokenRepository.findByUsernameAndPlatformType(username, platformType)
 
@@ -73,7 +77,7 @@ class JwtPersistenceAdapter(
                     username = username,
                     authority = authority,
                     platformType = platformType,
-                    affiliation = affiliation,
+                    affiliationId = affiliationId,
                     tokenExpire = now + jwtProperties.refreshExp.toMillis(),
                 )
             )
@@ -88,7 +92,7 @@ class JwtPersistenceAdapter(
         exp: Long,
         platformType: PlatformType,
         authority: Authority,
-        affiliation: Affiliation
+        affiliationId: Long
     ): String {
 
         log.info { "토큰 발급 시도" }
@@ -104,7 +108,7 @@ class JwtPersistenceAdapter(
             .claim(ClaimKey.MEMBER_ID.name, id)
             .claim(ClaimKey.TOKEN_TYPE.name, tokenType.name)
             .claim(ClaimKey.AUTHORITY.name, authority.name)
-            .claim(ClaimKey.AFFILIATION.name, affiliation.id)
+            .claim(ClaimKey.AFFILIATION.name, affiliationId)
         .compact()
     }
 
@@ -113,13 +117,16 @@ class JwtPersistenceAdapter(
         username: String,
         platformType: PlatformType,
         authority: Authority,
-        affiliation: Affiliation
+        affiliationId: Long
     ): TokenResult {
 
-        val accessToken = generateAccessToken(id, username, authority, platformType, affiliation)
+        val accessToken = generateAccessToken(id, username, authority, platformType, affiliationId)
         log.info { "AccessToken 발급에 성공했습니다." }
-        val refreshToken = generateRefreshToken(id, username, authority, platformType, affiliation)
+        val refreshToken = generateRefreshToken(id, username, authority, platformType, affiliationId)
         log.info { "RefreshToken 발급에 성공했습니다." }
+
+        val affiliation = affiliationPort.findById(affiliationId)
+            ?: throw NotFoundAffiliationException("소속 정보를 찾지 못 했습니다.")
 
         val now = System.currentTimeMillis()
 
@@ -131,7 +138,7 @@ class JwtPersistenceAdapter(
             refreshTokenExpAt = now + jwtProperties.refreshExp.toMillis(),
             authority = authority,
             platformType = platformType,
-            affiliation = affiliation.affiliation.toString(),
+            affiliation = affiliation.affiliationName.toString(),
         )
     }
 }
