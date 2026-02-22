@@ -1,6 +1,5 @@
 package plain.bookmaru.domain.member.service
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import plain.bookmaru.common.annotation.Service
 import plain.bookmaru.domain.affiliation.exception.NotFoundAffiliationException
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
@@ -8,8 +7,6 @@ import plain.bookmaru.domain.auth.port.out.SecurityPort
 import plain.bookmaru.domain.member.exception.UsedPasswordException
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.port.out.MemberPort
-
-private val logger = KotlinLogging.logger {}
 
 @Service
 class PasswordUpdateProfessor(
