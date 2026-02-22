@@ -6,7 +6,7 @@ import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.member.vo.Email
 import plain.bookmaru.domain.verification.port.out.EmailVerifiedPort
-import plain.bookmaru.domain.verification.vo.EmailVerified
+import plain.bookmaru.domain.verification.model.EmailVerified
 import java.time.Duration
 import java.time.Instant
 

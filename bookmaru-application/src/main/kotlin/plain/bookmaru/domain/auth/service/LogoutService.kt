@@ -16,11 +16,10 @@ class LogoutService(
     private val authPort: AuthPort,
     private val refreshTokenPort: RefreshTokenPort
 ): LogoutUseCase {
-    override suspend fun logout(command: LogoutCommand) {
+    override suspend fun execute(command: LogoutCommand) {
+        val username = command.username
 
         val accessToken = resolveToken(command.accessToken)
-
-        val username = securityPort.getUsername(accessToken)
 
         val expiration = securityPort.getExpiration(accessToken)
         val now = System.currentTimeMillis()

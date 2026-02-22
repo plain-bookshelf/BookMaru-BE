@@ -2,6 +2,8 @@ package plain.bookmaru.domain.auth.presentation
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -18,6 +20,7 @@ import plain.bookmaru.domain.auth.port.`in`.ReissueUseCase
 import plain.bookmaru.domain.auth.port.`in`.command.LogoutCommand
 import plain.bookmaru.domain.auth.port.`in`.command.ReissueCommand
 import plain.bookmaru.domain.auth.presentation.dto.request.LoginMemberRequestDto
+import plain.bookmaru.domain.auth.vo.PlatformType
 
 @RestController
 @RequestMapping("/api/auth")
@@ -36,7 +39,7 @@ class AuthAdapter(
 
         val command = request.toCommand(platformType)
 
-        val result = loginUseCase.loginMember(command)
+        val result = loginUseCase.execute(command)
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(SuccessResponse(CustomHttpStatus.CREATED, "로그인에 성공하였습니다.", result))
@@ -49,9 +52,9 @@ class AuthAdapter(
         @RequestParam platformType: String
     ): ResponseEntity<SuccessResponse> {
 
-        val command = ReissueCommand.toCommand(token, platformType)
+        val command = ReissueCommand(token, PlatformType.valueOf(platformType))
 
-        val result = reissueUseCase.reissue(command)
+        val result = reissueUseCase.execute(command)
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(SuccessResponse(CustomHttpStatus.CREATED, "토큰 재발급에 성공하엿습니다.", result))
@@ -60,11 +63,12 @@ class AuthAdapter(
     @PostMapping("/logout")
     @LogExecution
     suspend fun logout(
+        @AuthenticationPrincipal user: UserDetails,
         @RequestHeader("Authorization") token: String,
     ): ResponseEntity<SuccessResponse> {
-        val command = LogoutCommand.toCommand(token)
+        val command = LogoutCommand(token, user.username)
 
-        logoutUseCase.logout(command)
+        logoutUseCase.execute(command)
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(SuccessResponse(CustomHttpStatus.OK, "로그아웃에 성공하였습니다.", ""))

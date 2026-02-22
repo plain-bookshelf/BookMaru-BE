@@ -11,7 +11,7 @@ import plain.bookmaru.domain.auth.persistent.entity.RefreshTokenEntity
 import plain.bookmaru.domain.auth.persistent.mapper.RefreshTokenMapper
 import plain.bookmaru.domain.auth.persistent.repository.RefreshTokenRepository
 import plain.bookmaru.domain.auth.port.out.JwtPort
-import plain.bookmaru.domain.auth.result.TokenResult
+import plain.bookmaru.domain.auth.port.out.result.TokenResult
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.auth.vo.JwtType
 import plain.bookmaru.domain.auth.vo.PlatformType

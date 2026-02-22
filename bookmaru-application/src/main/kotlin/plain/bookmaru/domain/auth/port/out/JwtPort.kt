@@ -1,6 +1,6 @@
 package plain.bookmaru.domain.auth.port.out
 
-import plain.bookmaru.domain.auth.result.TokenResult
+import plain.bookmaru.domain.auth.port.out.result.TokenResult
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.auth.vo.JwtType
 import plain.bookmaru.domain.auth.vo.PlatformType

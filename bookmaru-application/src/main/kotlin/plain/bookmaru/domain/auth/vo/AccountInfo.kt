@@ -1,7 +1,6 @@
 package plain.bookmaru.domain.auth.vo
 
-class AccountInfo(
+data class AccountInfo(
     val username: String,
     val password: String
-) {
-}
+)

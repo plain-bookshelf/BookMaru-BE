@@ -7,13 +7,14 @@ import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
 import plain.bookmaru.domain.affiliation.model.Affiliation
 import plain.bookmaru.domain.auth.port.out.JwtPort
 import plain.bookmaru.domain.auth.port.out.SecurityPort
-import plain.bookmaru.domain.auth.result.TokenResult
+import plain.bookmaru.domain.auth.port.out.result.TokenResult
 import plain.bookmaru.domain.auth.vo.AccountInfo
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.member.exception.AlreadyExistsMemberException
 import plain.bookmaru.domain.member.exception.AlreadyUsedEmailException
 import plain.bookmaru.domain.member.model.Member
-import plain.bookmaru.domain.member.port.`in`.SignupUseCase
+import plain.bookmaru.domain.member.port.`in`.SignupMemberUseCase
+import plain.bookmaru.domain.member.port.`in`.SignupOfficialUseCase
 import plain.bookmaru.domain.member.port.`in`.command.SignupMemberCommand
 import plain.bookmaru.domain.member.port.`in`.command.SignupOfficialCommand
 import plain.bookmaru.domain.member.port.out.MemberPort
@@ -27,16 +28,16 @@ import plain.bookmaru.domain.verification.port.out.OfficialCodePort
 private val log = KotlinLogging.logger {}
 
 @Service
-class SignupService(
+class SignupMemberService(
     private val memberPort: MemberPort,
     private val affiliationPort: AffiliationPort,
     private val emailVerifiedPort: EmailVerifiedPort,
     private val securityPort: SecurityPort,
     private val jwtPort: JwtPort,
     private val officialCodePort: OfficialCodePort
-) : SignupUseCase {
+) : SignupMemberUseCase , SignupOfficialUseCase {
 
-    override suspend fun signupMember(command: SignupMemberCommand) : TokenResult {
+    override suspend fun execute(command: SignupMemberCommand) : TokenResult {
         val affiliationName = command.affiliationName
         val profile = command.profile
         val accountInfo = command.accountInfo
@@ -68,7 +69,7 @@ class SignupService(
         )
     }
 
-    override suspend fun signupOfficial(command: SignupOfficialCommand): TokenResult {
+    override suspend fun execute(command: SignupOfficialCommand): TokenResult {
         val affiliationName = command.affiliationName
         val profile = command.profile
         val accountInfo = command.accountInfo

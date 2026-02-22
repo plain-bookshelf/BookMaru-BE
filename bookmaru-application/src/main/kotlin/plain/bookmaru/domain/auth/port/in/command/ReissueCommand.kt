@@ -6,12 +6,7 @@ data class ReissueCommand(
     val refreshToken: String,
     val platformType: PlatformType
 ) {
-    companion object {
-        fun toCommand(refreshToken: String, platformType: String) : ReissueCommand {
-            return ReissueCommand(
-                refreshToken = refreshToken,
-                platformType = PlatformType.valueOf(platformType)
-            )
-        }
+    init {
+        require(platformType.name.length < 20)
     }
 }

@@ -10,16 +10,22 @@ import plain.bookmaru.domain.member.vo.Email
 class Member(
     val id: Long? = null,
     val affiliationId: Long,
-    val profile: Profile?,
+    profile: Profile,
     val authority: Authority,
-    val accountInfo: AccountInfo,
+    accountInfo: AccountInfo,
     val email: Email?
 ) {
+    var accountInfo: AccountInfo = accountInfo
+        private set
+
+    var profile: Profile = profile
+        private set
+
     companion object {
         fun create(
             id : Long? = null,
             affiliationId: Long,
-            profile: Profile?,
+            profile: Profile,
             authority: Authority,
             accountInfo: AccountInfo,
             email: Email?
@@ -33,5 +39,12 @@ class Member(
                 email = email
             )
         }
+    }
+
+    fun retouchPassword(newPassword: String) {
+         this.accountInfo = AccountInfo(
+            username = this.accountInfo.username,
+            password = newPassword
+        )
     }
 }

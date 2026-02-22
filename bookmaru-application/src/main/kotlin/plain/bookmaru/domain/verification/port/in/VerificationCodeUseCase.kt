@@ -3,5 +3,5 @@ package plain.bookmaru.domain.verification.port.`in`
 import plain.bookmaru.domain.verification.port.`in`.command.VerificationCodeCommand
 
 interface VerificationCodeUseCase {
-    suspend fun verificationCode(command: VerificationCodeCommand)
+    suspend fun execute(command: VerificationCodeCommand)
 }

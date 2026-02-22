@@ -13,7 +13,7 @@ class AffiliationViewService(
     private val affiliationPort: AffiliationPort
 ) : AffiliationViewUseCase {
 
-    override suspend fun view(): AffiliationViewResult
+    override suspend fun execute(): AffiliationViewResult
     = AffiliationViewResult(
         affiliationPort.findAll()
     ).also {

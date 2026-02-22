@@ -9,7 +9,7 @@ import plain.bookmaru.domain.auth.port.`in`.ReissueUseCase
 import plain.bookmaru.domain.auth.port.`in`.command.ReissueCommand
 import plain.bookmaru.domain.auth.port.out.JwtPort
 import plain.bookmaru.domain.auth.port.out.RefreshTokenPort
-import plain.bookmaru.domain.auth.result.TokenResult
+import plain.bookmaru.domain.auth.port.out.result.TokenResult
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.port.out.MemberPort
 
@@ -23,7 +23,7 @@ class ReissueService(
     private val affiliationPort: AffiliationPort
 ) : ReissueUseCase {
 
-    override suspend fun reissue(reissueCommand: ReissueCommand): TokenResult {
+    override suspend fun execute(reissueCommand: ReissueCommand): TokenResult {
         val refreshToken = reissueCommand.refreshToken
         val platformType = reissueCommand.platformType
 

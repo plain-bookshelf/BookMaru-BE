@@ -14,7 +14,7 @@ class OfficialCodeCreateService(
     private val affiliationPort: AffiliationPort
 ) : OfficialCodeCreateUseCase {
 
-    override suspend fun create(command: OfficialCodeCommand) {
+    override suspend fun execute(command: OfficialCodeCommand) {
         val affiliationName = command.affiliationName
 
         val affiliation = affiliationPort.findByAffiliationName(affiliationName)

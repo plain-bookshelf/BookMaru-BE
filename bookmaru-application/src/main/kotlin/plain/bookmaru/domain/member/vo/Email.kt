@@ -8,7 +8,7 @@ data class Email(
     val email : String?
 ) {
     init {
-    if (!email.isNullOrBlank() && email != "null") {
+        if (!email.isNullOrBlank() && email != "null") {
             val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".toRegex()
             require(email.matches(emailRegex)) { "유효하지 않은 이메일 형식입니다: $email" }
         }

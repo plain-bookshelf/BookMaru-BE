@@ -2,22 +2,31 @@ package plain.bookmaru.domain.member.presentation
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import plain.bookmaru.common.annotation.LogExecution
 import plain.bookmaru.common.error.CustomHttpStatus
 import plain.bookmaru.common.success.SuccessResponse
-import plain.bookmaru.domain.member.port.`in`.SignupUseCase
+import plain.bookmaru.domain.member.port.`in`.ChangePasswordUseCase
+import plain.bookmaru.domain.member.port.`in`.SignupMemberUseCase
+import plain.bookmaru.domain.member.port.`in`.SignupOfficialUseCase
+import plain.bookmaru.domain.member.presentation.dto.request.ChangePasswordRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SignupMemberRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SignupOfficialRequestDto
 
 @RestController
 @RequestMapping("/api/member")
 class MemberAdapter(
-    private val signupUseCase: SignupUseCase
+    private val signupMemberUseCase: SignupMemberUseCase,
+    private val signupOfficialUseCase: SignupOfficialUseCase,
+    private val changePasswordUseCase: ChangePasswordUseCase
 ) {
 
     @PostMapping("/signup-member")
@@ -28,7 +37,7 @@ class MemberAdapter(
     ) : ResponseEntity<SuccessResponse> {
 
         val command = request.toCommand(platformType)
-        val result = signupUseCase.signupMember(command)
+        val result = signupMemberUseCase.execute(command)
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(SuccessResponse.success(CustomHttpStatus.CREATED, "유저 회원가입이 성공적으로 완료됐습니다.", result))
@@ -42,9 +51,24 @@ class MemberAdapter(
     ) : ResponseEntity<SuccessResponse> {
 
         val command = request.toCommand(platformType)
-        val result = signupUseCase.signupOfficial(command)
+        val result = signupOfficialUseCase.execute(command)
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(SuccessResponse.success(CustomHttpStatus.CREATED, "관계자 회원가입이 성공적으로 완료됐습니다.", result))
+    }
+
+    @PatchMapping("/password-change")
+    @LogExecution
+    suspend fun passwordChange(
+        @RequestBody request: ChangePasswordRequestDto,
+        @RequestHeader("Authorization") accessToken: String,
+        @AuthenticationPrincipal user: UserDetails,
+    ) : ResponseEntity<SuccessResponse> {
+        val command = request.toCommand(accessToken, user.username)
+
+        changePasswordUseCase.execute(command)
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(SuccessResponse.success(CustomHttpStatus.OK, "비밀번호 변경이 성공적으로 완료 되었습니다. 재로그인 해주세요.", ""))
     }
 }

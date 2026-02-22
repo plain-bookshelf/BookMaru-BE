@@ -1,6 +1,6 @@
 package plain.bookmaru.domain.verification.port.out
 
-import plain.bookmaru.domain.verification.vo.EmailVerified
+import plain.bookmaru.domain.verification.model.EmailVerified
 
 interface EmailVerifiedPort {
     suspend fun save(emailVerified: EmailVerified)

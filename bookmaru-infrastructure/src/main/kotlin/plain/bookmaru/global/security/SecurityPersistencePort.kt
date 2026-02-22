@@ -1,5 +1,7 @@
 package plain.bookmaru.global.security
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.auth.port.out.SecurityPort
@@ -15,9 +17,9 @@ class SecurityPersistencePort(
         return passwordEncoder.matches(rawPassword, newPassword)
     }
 
-    override fun passwordEncode(rawPassword: String): String = passwordEncoder.encode(rawPassword)
+    override suspend fun passwordEncode(rawPassword: String): String = withContext(Dispatchers.Default) {
+        passwordEncoder.encode(rawPassword)
+    }
 
     override fun getExpiration(accessToken: String): Date = jwtParser.getClaims(accessToken).expiration
-
-    override fun getUsername(accessToken: String): String = jwtParser.getAuthentication(accessToken).name
 }

@@ -1,8 +1,10 @@
-package plain.bookmaru.domain.verification.vo
+package plain.bookmaru.domain.verification.model
 
+import plain.bookmaru.common.annotation.Aggregate
 import plain.bookmaru.domain.member.vo.Email
 import java.time.Instant
 
+@Aggregate
 data class EmailVerified(
     val email: Email,
     val value: String,

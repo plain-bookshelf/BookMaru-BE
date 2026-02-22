@@ -9,7 +9,7 @@ import plain.bookmaru.domain.auth.port.`in`.LoginUseCase
 import plain.bookmaru.domain.auth.port.`in`.command.LoginMemberCommand
 import plain.bookmaru.domain.auth.port.out.JwtPort
 import plain.bookmaru.domain.auth.port.out.SecurityPort
-import plain.bookmaru.domain.auth.result.TokenResult
+import plain.bookmaru.domain.auth.port.out.result.TokenResult
 import plain.bookmaru.domain.auth.vo.PlatformType
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.model.Member
@@ -25,7 +25,7 @@ class LoginMemberService(
     private val jwtPort: JwtPort,
     private val affiliationPort: AffiliationPort
 ) : LoginUseCase{
-    override suspend fun loginMember(command: LoginMemberCommand) : TokenResult {
+    override suspend fun execute(command: LoginMemberCommand) : TokenResult {
         log.info { "${command.accountInfo.username} 이 로그인을 시도 했습니다." }
 
         if (command.accountInfo.username.contains("@")) {

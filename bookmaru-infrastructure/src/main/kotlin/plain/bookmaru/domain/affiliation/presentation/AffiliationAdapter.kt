@@ -20,7 +20,7 @@ class AffiliationAdapter(
     @LogExecution
     suspend fun getView(): ResponseEntity<SuccessResponse> {
 
-        val result = affiliationViewUseCase.view()
+        val result = affiliationViewUseCase.execute()
 
         return ResponseEntity.status(HttpStatus.OK)
             .header("Content-Type", "application/json")

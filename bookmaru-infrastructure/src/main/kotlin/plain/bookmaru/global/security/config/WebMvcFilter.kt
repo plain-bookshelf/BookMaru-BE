@@ -14,7 +14,7 @@ class WebMvcFilter(
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
             .allowedOrigins("http://localhost:8080", "http://localhost:9200", "http://localhost:5173")
-            .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH","OPTIONS")
+            .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
             .allowedHeaders("Authorization", "Cache-Control", "Content-Type", "X-Refresh-Token")
             .exposedHeaders("Authorization", "X-Refresh-Token")
             .allowCredentials(true)

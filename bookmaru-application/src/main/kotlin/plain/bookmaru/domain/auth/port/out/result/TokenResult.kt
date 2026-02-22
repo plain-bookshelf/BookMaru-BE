@@ -1,4 +1,4 @@
-package plain.bookmaru.domain.auth.result
+package plain.bookmaru.domain.auth.port.out.result
 
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.auth.vo.PlatformType
