@@ -1,8 +1,6 @@
 package plain.bookmaru.domain.auth.persistent
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.auth.port.out.AuthPort

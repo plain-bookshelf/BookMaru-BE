@@ -1,7 +1,5 @@
 package plain.bookmaru.domain.affiliation.persistent
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.persistent.mapper.AffiliationMapper

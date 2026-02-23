@@ -1,8 +1,6 @@
 package plain.bookmaru.domain.verification.persistent
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.member.vo.Email

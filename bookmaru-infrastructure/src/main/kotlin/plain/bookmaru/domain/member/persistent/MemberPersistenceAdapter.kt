@@ -1,7 +1,5 @@
 package plain.bookmaru.domain.member.persistent
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.model.Affiliation
 import plain.bookmaru.domain.member.model.Member
