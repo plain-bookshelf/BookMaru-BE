@@ -8,22 +8,24 @@ import plain.bookmaru.domain.auth.persistent.mapper.RefreshTokenMapper
 import plain.bookmaru.domain.auth.persistent.repository.RefreshTokenRepository
 import plain.bookmaru.domain.auth.port.out.RefreshTokenPort
 import plain.bookmaru.domain.auth.vo.PlatformType
+import plain.bookmaru.global.config.DbProtection
 
 @Component
 class RefreshTokenPersistenceAdapter(
     private val refreshTokenRepository: RefreshTokenRepository,
-    private val refreshTokenMapper: RefreshTokenMapper
+    private val refreshTokenMapper: RefreshTokenMapper,
+    private val dbProtection: DbProtection
 ) : RefreshTokenPort {
     override suspend fun findByTokenAndPlatformType(
         token: String,
         platformType: PlatformType
-    ) : JwtRefreshToken? = withContext(Dispatchers.IO) {
+    ) : JwtRefreshToken? = dbProtection.withReadOnly {
         refreshTokenRepository.findByTokenAndPlatformType(token, platformType)?.let {
             refreshTokenMapper.toDomain(it)
         }
     }
 
-    override suspend fun deleteByUsername(username: String) = withContext(Dispatchers.IO) {
+    override suspend fun deleteByUsername(username: String) = dbProtection.withTransaction {
         refreshTokenRepository.deleteByUsername(username)
     }
 }

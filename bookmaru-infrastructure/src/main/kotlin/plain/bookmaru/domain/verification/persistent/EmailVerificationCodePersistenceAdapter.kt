@@ -9,15 +9,17 @@ import plain.bookmaru.domain.member.vo.Email
 import plain.bookmaru.domain.verification.model.EmailVerification
 import plain.bookmaru.domain.verification.port.out. EmailVerificationCodePort
 import plain.bookmaru.domain.verification.vo.VerificationData
+import plain.bookmaru.global.config.DbProtection
 import java.time.Duration
 import java.time.Instant
 
 @Component
 class EmailVerificationCodePersistenceAdapter(
     private val redisTemplate: StringRedisTemplate,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val dbProtection: DbProtection
 ) : EmailVerificationCodePort {
-    override suspend fun save(emailVerification : EmailVerification) = withContext(Dispatchers.IO) {
+    override suspend fun save(emailVerification : EmailVerification) = dbProtection.withTransaction {
         val jsonData = objectMapper.writeValueAsString(emailVerification.codeData)
 
         redisTemplate.opsForValue().set(
@@ -27,10 +29,10 @@ class EmailVerificationCodePersistenceAdapter(
         )
     }
 
-    override suspend fun load(email: String) : EmailVerification? = withContext(Dispatchers.IO) {
-        val jsonData = redisTemplate.opsForValue().get(email) ?: return@withContext null
+    override suspend fun load(email: String) : EmailVerification? = dbProtection.withReadOnly {
+        val jsonData = redisTemplate.opsForValue().get(email) ?: return@withReadOnly null
         val codeData = objectMapper.readValue(jsonData, VerificationData::class.java)
 
-        return@withContext EmailVerification(Email(email), codeData, Instant.now())
+        return@withReadOnly EmailVerification(Email(email), codeData, Instant.now())
     }
 }

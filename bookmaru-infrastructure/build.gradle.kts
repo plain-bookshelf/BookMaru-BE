@@ -5,6 +5,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
+    implementation("org.postgresql:postgresql:42.7.3")
     runtimeOnly("org.postgresql:postgresql")
 
     // jpa

@@ -28,7 +28,7 @@ class OfficialCodeMapper(
         )
     }
 
-    fun toEntityList(domains: List<OfficialCode>, affiliation: Affiliation): List<OfficialCodeEntity> {
+    fun toEntityList(domains: List<OfficialCode>, affiliation: Affiliation) : List<OfficialCodeEntity> {
         val affiliationEntity = affiliationMapper.toEntity(affiliation)
 
         return domains.map {

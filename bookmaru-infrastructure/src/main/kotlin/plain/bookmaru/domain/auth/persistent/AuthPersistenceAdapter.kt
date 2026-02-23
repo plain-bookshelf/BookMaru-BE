@@ -6,16 +6,18 @@ import kotlinx.coroutines.withContext
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.auth.port.out.AuthPort
+import plain.bookmaru.global.config.DbProtection
 import java.util.concurrent.TimeUnit
 
 private val log = KotlinLogging.logger {}
 
 @Component
 class AuthPersistenceAdapter(
-    private val redisTemplate: StringRedisTemplate
+    private val redisTemplate: StringRedisTemplate,
+    private val dbProtection: DbProtection
 ) : AuthPort {
 
-    override suspend fun save(accessToken: String, remainingTime: Long) = withContext(Dispatchers.IO) {
+    override suspend fun save(accessToken: String, remainingTime: Long) = dbProtection.withTransaction {
         redisTemplate.opsForValue()
             .set(accessToken, "logout", remainingTime, TimeUnit.MILLISECONDS)
 

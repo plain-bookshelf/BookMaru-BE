@@ -70,7 +70,7 @@ class SecurityConfig(
                     /*
                     auth
                      */
-                    "/api/auth/login-member",
+                    "/api/auth/login",
                     "/api/auth/reissue",
 
                     /*

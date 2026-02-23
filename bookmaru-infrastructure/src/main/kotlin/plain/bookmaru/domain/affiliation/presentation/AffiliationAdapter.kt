@@ -9,6 +9,7 @@ import plain.bookmaru.common.annotation.LogExecution
 import plain.bookmaru.common.error.CustomHttpStatus
 import plain.bookmaru.common.success.SuccessResponse
 import plain.bookmaru.domain.affiliation.port.`in`.AffiliationViewUseCase
+import plain.bookmaru.domain.affiliation.presentation.dto.response.AffiliationViewResponseDto
 
 @RestController
 @RequestMapping( "/affiliation")
@@ -24,6 +25,6 @@ class AffiliationAdapter(
 
         return ResponseEntity.status(HttpStatus.OK)
             .header("Content-Type", "application/json")
-            .body(SuccessResponse(CustomHttpStatus.OK, "", result))
+            .body(SuccessResponse(CustomHttpStatus.OK, "", AffiliationViewResponseDto(result)))
     }
 }

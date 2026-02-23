@@ -4,7 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import plain.bookmaru.common.annotation.ReadOnlyService
 import plain.bookmaru.domain.affiliation.port.`in`.AffiliationViewUseCase
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
-import plain.bookmaru.domain.affiliation.result.AffiliationViewResult
+import plain.bookmaru.domain.affiliation.port.out.result.AffiliationViewResult
 
 private val log = KotlinLogging.logger {}
 

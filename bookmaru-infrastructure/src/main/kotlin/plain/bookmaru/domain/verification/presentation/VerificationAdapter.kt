@@ -22,6 +22,7 @@ import plain.bookmaru.domain.verification.port.`in`.command.OfficialCodeCommand
 import plain.bookmaru.domain.verification.presentation.dto.request.FindPasswordRequestDto
 import plain.bookmaru.domain.verification.presentation.dto.request.ResetPasswordRequestDto
 import plain.bookmaru.domain.verification.presentation.dto.request.VerificationCodeRequestDto
+import plain.bookmaru.domain.verification.presentation.dto.response.UsernameResponseDto
 
 @RestController
 @RequestMapping("/api/verification")
@@ -84,7 +85,7 @@ class VerificationAdapter(
         val result = findIdUseCase.execute(command)
 
         return ResponseEntity.status(HttpStatus.OK)
-            .body(SuccessResponse.success(CustomHttpStatus.OK, "아이디 찾기에 성공했습니다.", result))
+            .body(SuccessResponse.success(CustomHttpStatus.OK, "아이디 찾기에 성공했습니다.", UsernameResponseDto(result)))
     }
 
     @PostMapping("/find-password")

@@ -1,4 +1,4 @@
-package plain.bookmaru.domain.affiliation.result
+package plain.bookmaru.domain.affiliation.port.out.result
 
 import plain.bookmaru.domain.affiliation.model.Affiliation
 

@@ -20,6 +20,7 @@ import plain.bookmaru.domain.auth.port.`in`.ReissueUseCase
 import plain.bookmaru.domain.auth.port.`in`.command.LogoutCommand
 import plain.bookmaru.domain.auth.port.`in`.command.ReissueCommand
 import plain.bookmaru.domain.auth.presentation.dto.request.LoginMemberRequestDto
+import plain.bookmaru.domain.auth.presentation.dto.response.TokenResponseDto
 import plain.bookmaru.domain.auth.vo.PlatformType
 
 @RestController
@@ -30,7 +31,7 @@ class AuthAdapter(
     private val logoutUseCase: LogoutUseCase
 ) {
 
-    @PostMapping("/login-member")
+    @PostMapping("/login")
     @LogExecution
     suspend fun login(
         @RequestBody request: LoginMemberRequestDto,
@@ -42,7 +43,7 @@ class AuthAdapter(
         val result = loginUseCase.execute(command)
 
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(SuccessResponse(CustomHttpStatus.CREATED, "로그인에 성공하였습니다.", result))
+            .body(SuccessResponse(CustomHttpStatus.CREATED, "로그인에 성공하였습니다.", TokenResponseDto(result)))
     }
 
     @PutMapping("/reissue")
@@ -57,7 +58,7 @@ class AuthAdapter(
         val result = reissueUseCase.execute(command)
 
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(SuccessResponse(CustomHttpStatus.CREATED, "토큰 재발급에 성공하엿습니다.", result))
+            .body(SuccessResponse(CustomHttpStatus.CREATED, "토큰 재발급에 성공하엿습니다.", TokenResponseDto(result)))
     }
 
     @PostMapping("/logout")
