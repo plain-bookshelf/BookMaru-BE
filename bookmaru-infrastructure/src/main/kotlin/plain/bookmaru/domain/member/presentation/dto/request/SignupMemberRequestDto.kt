@@ -6,7 +6,7 @@ import plain.bookmaru.domain.member.vo.Profile
 import plain.bookmaru.domain.member.vo.Email
 import plain.bookmaru.domain.member.port.`in`.command.SignupMemberCommand
 
-data class  SignupMemberRequestDto(
+data class SignupMemberRequestDto(
     val username: String,
     val password: String,
     val email: String? = null,
