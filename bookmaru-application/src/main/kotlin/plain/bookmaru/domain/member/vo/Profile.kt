@@ -7,6 +7,6 @@ data class Profile(
     val profileImage: String? = null,
     val oneMonthStatics: Int? = 0,
     val overdueTerm: LocalDateTime? = null,
-    val bookReadTime: LocalDateTime? = null,
+    val oftenBookReadTime: LocalDateTime? = null,
 ) {
 }

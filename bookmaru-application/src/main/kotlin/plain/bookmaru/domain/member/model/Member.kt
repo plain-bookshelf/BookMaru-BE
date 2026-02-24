@@ -5,6 +5,7 @@ import plain.bookmaru.domain.auth.vo.AccountInfo
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.member.vo.Profile
 import plain.bookmaru.domain.member.vo.Email
+import java.time.LocalDateTime
 
 @Aggregate
 class Member(
@@ -41,10 +42,11 @@ class Member(
         }
     }
 
-    fun retouchPassword(newPassword: String) {
-         this.accountInfo = AccountInfo(
-            username = this.accountInfo.username,
-            password = newPassword
-        )
+    fun modifyPassword(newPassword: String) {
+        this.accountInfo = accountInfo.copy(password = newPassword)
+    }
+
+    fun modifyOftenBookReadTime(time: LocalDateTime) {
+        this.profile = profile.copy(oftenBookReadTime = time)
     }
 }

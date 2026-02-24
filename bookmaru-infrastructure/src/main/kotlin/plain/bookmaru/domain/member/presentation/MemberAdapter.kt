@@ -15,9 +15,11 @@ import plain.bookmaru.common.annotation.LogExecution
 import plain.bookmaru.common.error.CustomHttpStatus
 import plain.bookmaru.common.success.SuccessResponse
 import plain.bookmaru.domain.member.port.`in`.ChangePasswordUseCase
+import plain.bookmaru.domain.member.port.`in`.OftenReadBookTimeSetUseCase
 import plain.bookmaru.domain.member.port.`in`.SignupMemberUseCase
 import plain.bookmaru.domain.member.port.`in`.SignupOfficialUseCase
 import plain.bookmaru.domain.member.presentation.dto.request.ChangePasswordRequestDto
+import plain.bookmaru.domain.member.presentation.dto.request.OftenReadBookTimeRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SignupMemberRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SignupOfficialRequestDto
 
@@ -26,7 +28,8 @@ import plain.bookmaru.domain.member.presentation.dto.request.SignupOfficialReque
 class MemberAdapter(
     private val signupMemberUseCase: SignupMemberUseCase,
     private val signupOfficialUseCase: SignupOfficialUseCase,
-    private val changePasswordUseCase: ChangePasswordUseCase
+    private val changePasswordUseCase: ChangePasswordUseCase,
+    private val oftenReadBookTimeSetUseCase: OftenReadBookTimeSetUseCase
 ) {
 
     @PostMapping("/signup-member")
@@ -70,5 +73,19 @@ class MemberAdapter(
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(SuccessResponse.success(CustomHttpStatus.OK, "비밀번호 변경이 성공적으로 완료 되었습니다. 재로그인 해주세요.", ""))
+    }
+
+    @PatchMapping("/often-read-book-time")
+    @LogExecution
+    suspend fun oftenReadBookTime(
+        @RequestBody request: OftenReadBookTimeRequestDto,
+        @AuthenticationPrincipal user: UserDetails
+    ) : ResponseEntity<SuccessResponse> {
+        val command = request.toCommand(user.username)
+
+        oftenReadBookTimeSetUseCase.execute(command)
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(SuccessResponse.success(CustomHttpStatus.OK, "자주 책 보는 시간을 등록했습니다.", ""))
     }
 }

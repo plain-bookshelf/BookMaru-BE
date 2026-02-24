@@ -17,16 +17,13 @@ class PasswordUpdateProfessor(
     suspend fun updatePassword(member: Member, newPassword: String) {
         val newPassword = newPassword
 
-        val affiliation = affiliationPort.findById(member.affiliationId)
-            ?: throw NotFoundAffiliationException("소속 정보를 찾지 못 했습니다.")
-
         val newEncodePassword = securityPort.passwordEncode(newPassword)
 
         if (securityPort.isPasswordMatch(newPassword, member.accountInfo.password))
             throw UsedPasswordException("이미 기존에 사용하던 비밀번호 값을 다시 사용했습니다.")
 
-        member.retouchPassword(newEncodePassword)
+        member.modifyPassword(newEncodePassword)
 
-        memberPort.save(member, affiliation)
+        memberPort.save(member)
     }
 }

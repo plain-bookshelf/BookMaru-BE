@@ -58,7 +58,7 @@ class SignupMemberService(
 
         log.info { "회원가입 성공 : ${accountInfo.username}" }
 
-        val savedMember = memberPort.save(newMember, affiliation)
+        val savedMember = memberPort.save(newMember)
 
         return jwtPort.responseToken(
             id = savedMember.id!!,
@@ -91,7 +91,7 @@ class SignupMemberService(
             email = email
         )
 
-        val savedMember = memberPort.save(newMember, affiliation)
+        val savedMember = memberPort.save(newMember)
 
         return jwtPort.responseToken(
             id = savedMember.id!!,

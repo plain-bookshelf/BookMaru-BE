@@ -1,17 +1,14 @@
 package plain.bookmaru.domain.member.persistent.mapper
 
 import org.springframework.stereotype.Component
-import plain.bookmaru.domain.affiliation.model.Affiliation
-import plain.bookmaru.domain.affiliation.persistent.mapper.AffiliationMapper
+import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.auth.vo.AccountInfo
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.persistent.entity.MemberEntity
 import plain.bookmaru.domain.member.vo.Profile
 
 @Component
-class MemberMapper(
-    private val affiliationMapper: AffiliationMapper
-) {
+class MemberMapper{
 
     fun toDomain(entity: MemberEntity) : Member {
         return Member(
@@ -24,10 +21,10 @@ class MemberMapper(
         )
     }
 
-    fun toEntity(domain: Member, affiliation: Affiliation) : MemberEntity {
+    fun toEntity(domain: Member, affiliationProxy: AffiliationEntity) : MemberEntity {
         return MemberEntity(
             id = domain.id,
-            affiliation = affiliationMapper.toEntity(affiliation),
+            affiliation = affiliationProxy,
             username = domain.accountInfo.username,
             nickname = domain.profile?.nickname ?: domain.accountInfo.username,
             password = domain.accountInfo.password,
@@ -36,7 +33,7 @@ class MemberMapper(
             profileImage = domain.profile?.profileImage ?: "",
             oneMonthStatics = domain.profile?.oneMonthStatics,
             overdueTerm = domain.profile?.overdueTerm,
-            bookReadTime = domain.profile?.bookReadTime,
+            bookReadTime = domain.profile?.oftenBookReadTime,
         )
     }
 }
