@@ -1,7 +1,6 @@
 package plain.bookmaru.domain.member.service
 
 import plain.bookmaru.common.annotation.Service
-import plain.bookmaru.domain.affiliation.exception.NotFoundAffiliationException
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
 import plain.bookmaru.domain.auth.port.out.SecurityPort
 import plain.bookmaru.domain.member.exception.UsedPasswordException
@@ -11,8 +10,7 @@ import plain.bookmaru.domain.member.port.out.MemberPort
 @Service
 class PasswordUpdateProfessor(
     private val memberPort: MemberPort,
-    private val securityPort: SecurityPort,
-    private val affiliationPort: AffiliationPort
+    private val securityPort: SecurityPort
 ) {
     suspend fun updatePassword(member: Member, newPassword: String) {
         val newPassword = newPassword

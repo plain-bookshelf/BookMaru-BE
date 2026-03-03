@@ -1,8 +1,6 @@
 package plain.bookmaru.domain.member.persistent
 
 import org.springframework.stereotype.Component
-import plain.bookmaru.domain.affiliation.exception.NotFoundAffiliationException
-import plain.bookmaru.domain.affiliation.model.Affiliation
 import plain.bookmaru.domain.affiliation.persistent.repository.AffiliationRepository
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.persistent.mapper.MemberMapper

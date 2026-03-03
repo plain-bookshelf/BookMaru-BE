@@ -26,14 +26,14 @@ class MemberMapper{
             id = domain.id,
             affiliation = affiliationProxy,
             username = domain.accountInfo!!.username,
-            nickname = domain.profile?.nickname ?: domain.accountInfo!!.username,
+            nickname = domain.profile.nickname,
             password = domain.accountInfo!!.password,
             email = domain.email,
             role = domain.authority,
-            profileImage = domain.profile?.profileImage ?: "",
-            oneMonthStatics = domain.profile?.oneMonthStatics,
-            overdueTerm = domain.profile?.overdueTerm,
-            bookReadTime = domain.profile?.oftenBookReadTime,
+            profileImage = domain.profile.profileImage ?: "",
+            oneMonthStatics = domain.profile.oneMonthStatics,
+            overdueTerm = domain.profile.overdueTerm,
+            bookReadTime = domain.profile.oftenBookReadTime,
         )
     }
 }

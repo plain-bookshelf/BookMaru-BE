@@ -43,8 +43,6 @@ data class OAuthAttributes(
         }
 
         private fun ofNaver(attributes: Map<String, Any>) : OAuthAttributes {
-            val response = attributes["response"] as Map<*, *>
-
             return OAuthAttributes(
                 oAuthInfo = OAuthInfo(OAuthProvider.NAVER, attributes["id"].toString()),
                 email = attributes["email"] as Email,
