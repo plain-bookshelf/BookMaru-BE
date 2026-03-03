@@ -13,12 +13,16 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import plain.bookmaru.global.security.jwt.JwtAuthenticationFilter
 import plain.bookmaru.global.security.jwt.JwtParser
+import plain.bookmaru.global.security.oauth2.CustomOAuth2UserService
+import plain.bookmaru.global.security.oauth2.OAuth2SuccessHandler
 
 @EnableWebSecurity
 @Configuration
 class SecurityConfig(
     private val jwtParser: JwtParser,
-    private val redisTemplate: StringRedisTemplate
+    private val redisTemplate: StringRedisTemplate,
+    private val customOAuth2UserService: CustomOAuth2UserService,
+    private val oAuth2SuccessHandler: OAuth2SuccessHandler
 ) {
 
     @Bean
@@ -41,6 +45,12 @@ class SecurityConfig(
             .sessionManagement {configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
 
             .headers { headers -> headers.frameOptions { it.sameOrigin() } }
+
+            .oauth2Login {
+                it.loginProcessingUrl("/login/oauth2/code/*")
+                it.userInfoEndpoint { it.userService(customOAuth2UserService)  }
+                it.successHandler(oAuth2SuccessHandler)
+            }
 
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
@@ -66,6 +76,7 @@ class SecurityConfig(
                      */
                     "/api/member/signup-member",
                     "/api/member/signup-official",
+                    "/api/member/signup-official",
 
                     /*
                     auth
@@ -76,7 +87,8 @@ class SecurityConfig(
                     /*
                     error
                      */
-                    "/error"
+                    "/error",
+                    "/favicon.ico"
                 ).permitAll()
 
                 it.requestMatchers(

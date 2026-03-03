@@ -40,10 +40,10 @@ class ReissueService(
 
         return jwtPort.responseToken(
             id = member.id!!,
-            username = member.accountInfo.username,
+            username = member.accountInfo!!.username,
             platformType = platformType,
             authority = member.authority,
-            affiliationId = member.affiliationId
+            affiliationId = member.affiliationId!!
         )
     }
 }

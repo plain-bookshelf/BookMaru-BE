@@ -45,7 +45,7 @@ class SignupMemberService(
 
         val affiliation = validationInfo(accountInfo.username, email, affiliationName)
 
-        val newMember = Member.create(
+        val newMember = Member.createMember(
             affiliationId = affiliation.id!!,
             profile = profile,
             accountInfo = AccountInfo(
@@ -62,7 +62,7 @@ class SignupMemberService(
 
         return jwtPort.responseToken(
             id = savedMember.id!!,
-            username = savedMember.accountInfo.username,
+            username = savedMember.accountInfo!!.username,
             platformType = command.platformType,
             authority = savedMember.authority,
             affiliationId = affiliation.id
@@ -80,7 +80,7 @@ class SignupMemberService(
 
         val officialCode = isMatch(affiliationName, verificationCode)
 
-        val newMember = Member.create(
+        val newMember = Member.createMember(
             affiliationId = affiliation.id!!,
             profile = profile,
             accountInfo = AccountInfo(
@@ -95,7 +95,7 @@ class SignupMemberService(
 
         return jwtPort.responseToken(
             id = savedMember.id!!,
-            username = savedMember.accountInfo.username,
+            username = savedMember.accountInfo!!.username,
             platformType = command.platformType,
             authority = savedMember.authority,
             affiliationId = affiliation.id

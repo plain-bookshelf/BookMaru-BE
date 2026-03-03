@@ -11,5 +11,5 @@ data class TokenResult(
     val refreshTokenExpAt: Long,
     val authority: Authority,
     val platformType: PlatformType,
-    val affiliation: String
+    val affiliationName: String
 )

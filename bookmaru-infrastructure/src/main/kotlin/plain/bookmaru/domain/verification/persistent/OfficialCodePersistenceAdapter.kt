@@ -17,7 +17,8 @@ class OfficialCodePersistenceAdapter(
     private val dbProtection: DbProtection
 ) : OfficialCodePort {
     override suspend fun save(officialCodes: List<OfficialCode>, affiliation: Affiliation) : List<OfficialCode> = dbProtection.withTransaction{
-        officialCodeRepository.saveAll(officialCodeMapper.toEntityList(officialCodes, affiliation)).map { officialCodeMapper.toDomain(it) }
+        officialCodeRepository.saveAll(officialCodeMapper.toEntityList(officialCodes, affiliation))
+            .map { officialCodeMapper.toDomain(it) }
     }
 
     override suspend fun load(

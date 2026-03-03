@@ -25,6 +25,7 @@ class LoginMemberService(
     private val jwtPort: JwtPort,
     private val affiliationPort: AffiliationPort
 ) : LoginUseCase{
+
     override suspend fun execute(command: LoginMemberCommand) : TokenResult {
         log.info { "${command.accountInfo.username} 이 로그인을 시도 했습니다." }
 
@@ -45,17 +46,18 @@ class LoginMemberService(
 
         log.info { "${command.accountInfo.username} 를 찾는데 성공했습니다." }
 
-        if (!securityPort.isPasswordMatch(command.accountInfo.password, member.accountInfo.password))
+        if (!securityPort.isPasswordMatch(command.accountInfo.password, member.accountInfo?.password ?:
+        throw NotFoundMemberException("$member 의 비밀번호 정보를 찾지 못했습니다.")))
             throw PasswordNotMatchException("${command.accountInfo.password} 비밀번호가 일치하지 않습니다.")
 
-        affiliationPort.findById(member.affiliationId)
+        affiliationPort.findById(member.affiliationId!!)
             ?: throw NotFoundAffiliationException("소속 정보를 찾지 못 했습니다.")
 
         log.info { "로그인 성공" }
 
         return jwtPort.responseToken(
             id = member.id!!,
-            username = member.accountInfo.username,
+            username = member.accountInfo!!.username,
             platformType = platformType,
             authority = member.authority,
             affiliationId = member.affiliationId

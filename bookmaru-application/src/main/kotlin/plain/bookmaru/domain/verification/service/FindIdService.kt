@@ -37,6 +37,6 @@ class FindIdService(
         val member = memberPort.findByEmail(Email(email))
             ?: throw NotFoundMemberException("$email 이메일을 사용하는 유저 정보가 없습니다.")
 
-        return UsernameResult(member.accountInfo.username)
+        return UsernameResult(member.accountInfo!!.username)
     }
 }

@@ -1,6 +1,7 @@
 package plain.bookmaru.domain.affiliation.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.transaction.annotation.Transactional
 import plain.bookmaru.common.annotation.ReadOnlyService
 import plain.bookmaru.domain.affiliation.port.`in`.AffiliationViewUseCase
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
@@ -13,6 +14,7 @@ class AffiliationViewService(
     private val affiliationPort: AffiliationPort
 ) : AffiliationViewUseCase {
 
+    @Transactional
     override suspend fun execute(): AffiliationViewResult
     = AffiliationViewResult(
         affiliationPort.findAll()

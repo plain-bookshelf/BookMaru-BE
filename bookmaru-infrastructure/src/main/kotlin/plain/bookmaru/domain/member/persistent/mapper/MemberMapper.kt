@@ -25,9 +25,9 @@ class MemberMapper{
         return MemberEntity(
             id = domain.id,
             affiliation = affiliationProxy,
-            username = domain.accountInfo.username,
-            nickname = domain.profile?.nickname ?: domain.accountInfo.username,
-            password = domain.accountInfo.password,
+            username = domain.accountInfo!!.username,
+            nickname = domain.profile?.nickname ?: domain.accountInfo!!.username,
+            password = domain.accountInfo!!.password,
             email = domain.email,
             role = domain.authority,
             profileImage = domain.profile?.profileImage ?: "",

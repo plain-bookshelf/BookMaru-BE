@@ -138,7 +138,7 @@ class JwtPersistenceAdapter(
             refreshTokenExpAt = now + jwtProperties.refreshExp.toMillis(),
             authority = authority,
             platformType = platformType,
-            affiliation = affiliation.affiliationName.toString(),
+            affiliationName = affiliation.affiliationName.toString(),
         )
     }
 }

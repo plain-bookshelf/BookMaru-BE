@@ -26,7 +26,7 @@ class ChangePasswordService(
         val member = memberPort.findByUsername(username)
             ?: throw NotFoundMemberException("$username 아이디를 가진 유저 정보가 없습니다.")
 
-        if (member.accountInfo.password != existingPassword) throw NotMatchExistingPasswordException("")
+        if (member.accountInfo!!.password != existingPassword) throw NotMatchExistingPasswordException("")
 
         passwordUpdateProfessor.updatePassword(member, newPassword)
 

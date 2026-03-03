@@ -11,7 +11,7 @@ data class LoginMemberRequestDto(
     fun toCommand(platformType: String): LoginMemberCommand {
         return LoginMemberCommand(
             accountInfo = AccountInfo(username = username, password = password),
-            platformType = PlatformType.valueOf(platformType)
+            platformType = runCatching { PlatformType.valueOf(platformType) }.getOrDefault(PlatformType.WEB)
         )
     }
 }

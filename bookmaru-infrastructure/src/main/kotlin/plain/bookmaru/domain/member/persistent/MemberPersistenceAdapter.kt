@@ -19,7 +19,7 @@ class MemberPersistenceAdapter(
     private val dbProtection: DbProtection
 ) : MemberPort {
     override suspend fun save(member: Member) : Member = dbProtection.withTransaction {
-        val affiliationProxy = affiliationRepository.getReferenceById(member.affiliationId)
+        val affiliationProxy = affiliationRepository.getReferenceById(member.affiliationId!!)
 
         val memberEntity = memberMapper.toEntity(member, affiliationProxy)
 

@@ -1,5 +1,6 @@
 package plain.bookmaru.domain.auth.presentation
 
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -22,13 +23,17 @@ import plain.bookmaru.domain.auth.port.`in`.command.ReissueCommand
 import plain.bookmaru.domain.auth.presentation.dto.request.LoginMemberRequestDto
 import plain.bookmaru.domain.auth.presentation.dto.response.TokenResponseDto
 import plain.bookmaru.domain.auth.vo.PlatformType
+import plain.bookmaru.domain.member.persistent.util.RefreshCookieUtil
+import plain.bookmaru.global.security.jwt.JwtProperties
 
 @RestController
 @RequestMapping("/api/auth")
 class AuthAdapter(
     private val loginUseCase: LoginUseCase,
     private val reissueUseCase: ReissueUseCase,
-    private val logoutUseCase: LogoutUseCase
+    private val logoutUseCase: LogoutUseCase,
+
+    private val jwtProperties: JwtProperties
 ) {
 
     @PostMapping("/login")
@@ -42,8 +47,12 @@ class AuthAdapter(
 
         val result = loginUseCase.execute(command)
 
+        val now = System.currentTimeMillis()
+        val cookie = RefreshCookieUtil.createRefreshCookie(result.refreshToken, now + jwtProperties.refreshExp.toMillis())
+
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(SuccessResponse(CustomHttpStatus.CREATED, "로그인에 성공하였습니다.", TokenResponseDto(result)))
+            .header(HttpHeaders.SET_COOKIE, cookie.toString())
+            .body(SuccessResponse(CustomHttpStatus.CREATED, "로그인에 성공하였습니다.", TokenResponseDto.toResponse(result)))
     }
 
     @PutMapping("/reissue")
@@ -57,8 +66,12 @@ class AuthAdapter(
 
         val result = reissueUseCase.execute(command)
 
+        val now = System.currentTimeMillis()
+        val cookie = RefreshCookieUtil.createRefreshCookie(result.refreshToken, now + jwtProperties.refreshExp.toMillis())
+
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(SuccessResponse(CustomHttpStatus.CREATED, "토큰 재발급에 성공하엿습니다.", TokenResponseDto(result)))
+            .header(HttpHeaders.SET_COOKIE, cookie.toString())
+            .body(SuccessResponse(CustomHttpStatus.CREATED, "토큰 재발급에 성공하엿습니다.", TokenResponseDto.toResponse(result)))
     }
 
     @PostMapping("/logout")
