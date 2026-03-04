@@ -15,6 +15,7 @@ import plain.bookmaru.global.security.jwt.JwtAuthenticationFilter
 import plain.bookmaru.global.security.jwt.JwtParser
 import plain.bookmaru.global.security.oauth2.CustomOAuth2UserService
 import plain.bookmaru.global.security.oauth2.OAuth2SuccessHandler
+import plain.bookmaru.global.security.oauth2.RedisAuthorizationRequestRepository
 
 @EnableWebSecurity
 @Configuration
@@ -22,7 +23,8 @@ class SecurityConfig(
     private val jwtParser: JwtParser,
     private val redisTemplate: StringRedisTemplate,
     private val customOAuth2UserService: CustomOAuth2UserService,
-    private val oAuth2SuccessHandler: OAuth2SuccessHandler
+    private val oAuth2SuccessHandler: OAuth2SuccessHandler,
+    private val redisAuthorizationRequestRepository: RedisAuthorizationRequestRepository
 ) {
 
     @Bean
@@ -42,13 +44,16 @@ class SecurityConfig(
 
             .logout { it.disable() }
 
-            .sessionManagement {configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
 
             .headers { headers -> headers.frameOptions { it.sameOrigin() } }
 
             .oauth2Login {
                 it.loginProcessingUrl("/login/oauth2/code/*")
-                it.userInfoEndpoint { it.userService(customOAuth2UserService)  }
+
+                it.authorizationEndpoint { it.authorizationRequestRepository(redisAuthorizationRequestRepository) }
+
+                it.userInfoEndpoint { it.userService(customOAuth2UserService) }
                 it.successHandler(oAuth2SuccessHandler)
             }
 
@@ -74,9 +79,9 @@ class SecurityConfig(
                     /*
                     member
                      */
-                    "/api/member/signup-member",
+                    "/api/member/signup-member  ",
                     "/api/member/signup-official",
-                    "/api/member/signup-official",
+                    "/api/member/signup-social",
 
                     /*
                     auth

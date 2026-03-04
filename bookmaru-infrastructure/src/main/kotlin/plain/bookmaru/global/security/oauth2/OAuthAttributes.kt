@@ -27,27 +27,29 @@ data class OAuthAttributes(
 
             return OAuthAttributes(
                 oAuthInfo = OAuthInfo(OAuthProvider.KAKAO, attributes["id"].toString()),
-                email = kakaoAccount["email"] as Email,
-                nickname = profile["nickname"] as String,
-                profileImageUrl = profile["profile_image_url"] as String
+                email = Email(kakaoAccount["email"] as? String ?: ""),
+                nickname = profile["nickname"] as? String ?: "익명",
+                profileImageUrl = profile["profile_image_url"] as? String ?: ""
             )
         }
 
         private fun ofGoogle(attributes: Map<String, Any>) : OAuthAttributes {
             return OAuthAttributes(
                 oAuthInfo = OAuthInfo(OAuthProvider.GOOGLE, attributes["sub"].toString()),
-                email = attributes["email"] as Email,
+                email = Email(attributes["email"] as String),
                 nickname = attributes["name"] as String,
                 profileImageUrl = attributes["picture"] as String
             )
         }
 
         private fun ofNaver(attributes: Map<String, Any>) : OAuthAttributes {
+            val response = attributes["response"] as Map<*, *>
+
             return OAuthAttributes(
-                oAuthInfo = OAuthInfo(OAuthProvider.NAVER, attributes["id"].toString()),
-                email = attributes["email"] as Email,
-                nickname = attributes["name"] as String,
-                profileImageUrl = attributes["profile_image"] as String
+                oAuthInfo = OAuthInfo(OAuthProvider.NAVER, response["id"].toString()),
+                email = Email(response["email"] as? String ?: ""),
+                nickname = response["name"] as? String ?: "익명",
+                profileImageUrl = response["profile_image"] as? String ?: ""
             )
         }
     }

@@ -51,7 +51,7 @@ class CustomOAuth2Service(
                 affiliationId = member.affiliationId!!
             )
 
-            log.info { "${member.accountInfo!!.username} 아이디로 회원가입 완료" }
+            log.info { "${member.accountInfo!!.username} 아이디로 로그인 완료" }
             return LoginResult.Success(tokens)
         } else {
             val registerToken = UUID.randomUUID().toString()
@@ -82,6 +82,13 @@ class CustomOAuth2Service(
         if (pendingUser.platformType != PlatformType.valueOf(command.platformType))
             throw NotMatchPlatformInfoException("${command.platformType} 정보가 registerToken 내에 있는 platform 정보와 일치하지 않습니다.")
 
+        log.info { "provider : ${pendingUser.oAuthInfo.provider}" }
+        log.info { "providerId : ${pendingUser.oAuthInfo.providerId}" }
+        log.info { "email : ${pendingUser.email}" }
+        log.info { "nickname : ${pendingUser.nickname}" }
+        log.info { "profileImage Url : ${pendingUser.profileImageUrl}" }
+        log.info { "affiliation_name : ${affiliation.affiliationName}" }
+
         val newMember = Member.createOAuthMember(
             oAuthInfo = pendingUser.oAuthInfo,
             email = pendingUser.email,
@@ -93,6 +100,7 @@ class CustomOAuth2Service(
         log.info { "$registerToken 를 통해서 유저 생성에 성공했습니다." }
 
         val savedMember = memberPort.save(newMember)
+
         oAuth2RegisterSessionPort.removePendingUser(registerToken)
 
         return jwtPort.responseToken(

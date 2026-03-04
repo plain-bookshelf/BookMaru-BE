@@ -78,6 +78,7 @@ class MemberAdapter(
     }
 
     @PostMapping("/signup-social")
+    @LogExecution
     suspend fun socialSignup(
         @RequestBody request : SocialSignupRequestDto,
         @RequestParam platformType: String

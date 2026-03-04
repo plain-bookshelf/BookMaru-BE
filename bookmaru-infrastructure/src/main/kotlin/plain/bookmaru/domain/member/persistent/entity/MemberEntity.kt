@@ -35,10 +35,10 @@ class MemberEntity(
     @JoinColumn(name = "affiliation_id", nullable = false )
     val affiliation: AffiliationEntity,
 
-    @Column(nullable = true, length = 20)
+    @Column(nullable = true, length = 45)
     val username: String,
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 45)
     val nickname: String,
 
     @Column(nullable = true, length = 100)
