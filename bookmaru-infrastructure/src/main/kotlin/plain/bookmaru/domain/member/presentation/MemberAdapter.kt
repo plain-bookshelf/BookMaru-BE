@@ -82,6 +82,7 @@ class MemberAdapter(
         @RequestBody request : SocialSignupRequestDto,
         @RequestParam platformType: String
     ) : ResponseEntity<SuccessResponse> {
+
         val command = request.toCommand(platformType)
         val result = socialSignupUseCase.execute(command)
 
@@ -100,6 +101,7 @@ class MemberAdapter(
         @RequestHeader("Authorization") accessToken: String,
         @AuthenticationPrincipal user: UserDetails,
     ) : ResponseEntity<SuccessResponse> {
+
         val command = request.toCommand(accessToken, user.username)
 
         changePasswordUseCase.execute(command)
@@ -114,6 +116,7 @@ class MemberAdapter(
         @RequestBody request: OftenReadBookTimeRequestDto,
         @AuthenticationPrincipal user: UserDetails
     ) : ResponseEntity<SuccessResponse> {
+
         val command = request.toCommand(user.username)
 
         oftenReadBookTimeSetUseCase.execute(command)
