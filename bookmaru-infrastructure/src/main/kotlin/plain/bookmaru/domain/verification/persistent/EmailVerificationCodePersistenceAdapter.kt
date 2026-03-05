@@ -33,4 +33,8 @@ class EmailVerificationCodePersistenceAdapter(
 
         return@withReadOnly EmailVerification(Email(email), codeData, Instant.now())
     }
+
+    override suspend fun delete(email: String) {
+        dbProtection.withTransaction { redisTemplate.delete(email) }
+    }
 }

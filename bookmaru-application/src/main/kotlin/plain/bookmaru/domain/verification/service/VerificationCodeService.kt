@@ -20,16 +20,20 @@ class VerificationCodeService(
 ) : VerificationCodeUseCase {
 
     override suspend fun execute(command: VerificationCodeCommand) {
-        val emailVerification = emailVerificationCodePort.load(command.email)
+        val email = command.email
+
+        val emailVerification = emailVerificationCodePort.load(email)
 
         if (emailVerification?.email == null)
-            throw NotFoundEmailException("${command.email} 를 찾지 못 했습니다.")
+            throw NotFoundEmailException("$email 를 찾지 못 했습니다.")
 
         if (emailVerification.codeData.code != command.verificationCode &&
             emailVerification.codeData.codeType == VerificationCodeType.VERIFICATION_EMAIL)
             throw NotMatchVerificationCodeException("${command.verificationCode} 인증코드가 틀렸거나 다른 타입의 인증코드를 입력하였습니다.")
 
-        log.info { "${command.email} 인증 완료" }
+        emailVerificationCodePort.delete(email)
+
+        log.info { "$email 인증 완료" }
 
         emailVerifiedPort.save(EmailVerified.create(emailVerification.email))
     }

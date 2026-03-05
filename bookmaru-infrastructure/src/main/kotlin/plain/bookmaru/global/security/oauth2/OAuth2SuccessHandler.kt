@@ -42,7 +42,7 @@ class OAuth2SuccessHandler(
 
         when (result) {
             is LoginResult.Success -> {
-                val cookie = ResponseCookie.from("refresh_token", result.tokens.refreshToken)
+                val cookie = ResponseCookie.from("refreshToken", result.tokens.refreshToken)
                     .httpOnly(true).secure(false).path("/").maxAge(jwtProperties.refreshExp).build() // 배포 시 .secure(true)로 사용해야 됨
                 response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString())
 
