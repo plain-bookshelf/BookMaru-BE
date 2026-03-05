@@ -10,7 +10,6 @@ import plain.bookmaru.domain.verification.port.`in`.command.SendVerificationCode
 import plain.bookmaru.common.port.EmailSendPort
 import plain.bookmaru.domain.member.vo.Email
 import plain.bookmaru.domain.verification.port.out.EmailVerificationCodePort
-import plain.bookmaru.domain.verification.vo.VerificationCodeType
 
 private val log = KotlinLogging.logger {}
 
