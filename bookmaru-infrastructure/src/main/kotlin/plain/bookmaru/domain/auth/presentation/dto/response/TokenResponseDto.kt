@@ -2,6 +2,7 @@ package plain.bookmaru.domain.auth.presentation.dto.response
 
 import plain.bookmaru.domain.auth.port.out.result.TokenResult
 import plain.bookmaru.domain.auth.vo.Authority
+import plain.bookmaru.domain.auth.vo.OAuthProvider
 import plain.bookmaru.domain.auth.vo.PlatformType
 
 data class TokenResponseDto(
@@ -9,7 +10,9 @@ data class TokenResponseDto(
     val accessToken: String,
     val authority: Authority,
     val platformType: PlatformType,
-    val affiliationName: String
+    val affiliationName: String,
+    val oAuthProvider: OAuthProvider,
+    val profileImage: String
 ) {
     companion object {
         fun toResponse(tokenResult: TokenResult) = TokenResponseDto(
@@ -17,7 +20,9 @@ data class TokenResponseDto(
             tokenResult.accessToken,
             tokenResult.authority,
             tokenResult.platformType,
-            tokenResult.affiliationName
+            tokenResult.affiliationName,
+            tokenResult.oAuthProvider,
+            tokenResult.profileImage
         )
     }
 }

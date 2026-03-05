@@ -19,6 +19,7 @@ import plain.bookmaru.domain.member.persistent.converter.EmailConverter
 import plain.bookmaru.domain.member.vo.Email
 import plain.bookmaru.global.entity.BaseEntity
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 @Entity
 @SequenceGenerator(
@@ -60,7 +61,7 @@ class MemberEntity(
 
     val overdueTerm: LocalDateTime? = null,
 
-    val bookReadTime: LocalDateTime? = null
+    val bookReadTime: LocalTime? = null
 ) : BaseEntity() {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

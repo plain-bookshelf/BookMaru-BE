@@ -48,7 +48,9 @@ class CustomOAuth2Service(
                 username = member.accountInfo!!.username,
                 platformType = command.platformType,
                 authority = member.authority,
-                affiliationId = member.affiliationId!!
+                affiliationId = member.affiliationId!!,
+                oAuthProvider = provider,
+                profileImage = member.profile.profileImage.toString()
             )
 
             log.info { "${member.accountInfo!!.username} 아이디로 로그인 완료" }
@@ -108,7 +110,9 @@ class CustomOAuth2Service(
             username = savedMember.accountInfo!!.username,
             platformType = pendingUser.platformType,
             authority = savedMember.authority,
-            affiliationId = savedMember.affiliationId!!
+            affiliationId = savedMember.affiliationId!!,
+            oAuthProvider = pendingUser.oAuthInfo.provider,
+            profileImage = savedMember.profile.profileImage.toString()
         )
     }
 }

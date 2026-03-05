@@ -23,7 +23,7 @@ class SendVerificationCodeService(
     override suspend fun execute(command: SendVerificationCodeCommand) {
 
         val email = Email.from(command.email)
-        val emailVerification = EmailVerification.create(email, VerificationCodeType.VERIFICATION_EMAIL)
+        val emailVerification = EmailVerification.create(email, command.codeType)
         emailVerificationCodePort.save(emailVerification)
 
         mailScope.launch {

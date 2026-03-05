@@ -1,9 +1,11 @@
     package plain.bookmaru.domain.auth.port.out
 
+    import plain.bookmaru.domain.auth.vo.OAuthProvider
     import java.util.Date
 
     interface SecurityPort {
-        fun isPasswordMatch(rawPassword: String, newPassword: String): Boolean
+        suspend fun isPasswordMatch(rawPassword: String, newPassword: String): Boolean
         suspend fun passwordEncode(rawPassword: String): String
-        fun getExpiration(accessToken: String): Date
+        fun getExpiration(token: String): Date
+        fun getOAuthProvider(token: String): OAuthProvider
     }

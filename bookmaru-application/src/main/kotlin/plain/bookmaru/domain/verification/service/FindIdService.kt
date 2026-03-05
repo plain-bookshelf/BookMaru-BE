@@ -26,11 +26,12 @@ class FindIdService(
 
         val emailVerification = emailVerificationCodePort.load(command.email)
 
-        if (emailVerification?.email == null) throw NotFoundEmailException("$email 이메일을 찾지 못 했습니다.")
+        if (emailVerification?.email == null)
+            throw NotFoundEmailException("$email 이메일을 찾지 못 했습니다.")
 
-        if (emailVerification.codeData.code != verificationCode &&
-            emailVerification.codeData.codeType == VerificationCodeType.FIND_ID)
-            throw NotMatchVerificationCodeException("$verificationCode 인증 코드 정보가 일치하지 않습니다.")
+        if (emailVerification.codeData.code != verificationCode ||
+            emailVerification.codeData.codeType != VerificationCodeType.FIND_ID)
+            throw NotMatchVerificationCodeException("$verificationCode 인증 코드 정보가 일치하지 않거나 다른 타입의 인증코드 입니다.")
 
         log.info { "$email 인증 완료" }
 

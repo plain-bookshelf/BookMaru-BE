@@ -20,6 +20,6 @@ data class SignupMemberCommand(
         require(accountInfo.password.length < 20) { "비밀번호 자릿수는 20자리 미만이어야 합니다." }
         require(platformType.name.length < 20) { "플랫폼 자릿수는 20자리 미만이어야 합니다." }
         require(accountInfo.password.first() in 'a'..'z' || accountInfo.password.first() in 'A'..'Z') { "비밀번호 첫째 자리는 영문자이어야 합니다." }
-        require(accountInfo.password.last() in 'a'..'z' || accountInfo.password.last() in 'A'..'Z' || accountInfo.password.last() in '0'..'9' || accountInfo.password.last() == '!') { "비밀번호 마지막 자리는 영문자이어야 합니다." }
+        require(accountInfo.password.last() in 'a'..'z' || accountInfo.password.last() in 'A'..'Z' || accountInfo.password.last() in '0'..'9' || accountInfo.password.last() == '!' || accountInfo.password.last() == '~' || accountInfo.password.last() == '#') { "비밀번호 마지막 자리는 영문자, 숫자, !,~,# 중 하나 이어야 합니다." }
     }
 }

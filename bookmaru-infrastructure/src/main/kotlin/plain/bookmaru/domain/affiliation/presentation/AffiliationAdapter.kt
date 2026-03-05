@@ -25,6 +25,6 @@ class AffiliationAdapter(
 
         return ResponseEntity.status(HttpStatus.OK)
             .header("Content-Type", "application/json")
-            .body(SuccessResponse(CustomHttpStatus.OK, "", AffiliationViewResponseDto(result)))
+            .body(SuccessResponse(CustomHttpStatus.OK, "소속 조회에 성공했습니다.", AffiliationViewResponseDto(result)))
     }
 }

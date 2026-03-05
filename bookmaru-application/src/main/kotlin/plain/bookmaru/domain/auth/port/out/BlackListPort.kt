@@ -1,5 +1,5 @@
 package plain.bookmaru.domain.auth.port.out
 
-interface AuthPort {
+interface BlackListPort {
     suspend fun save(accessToken: String, remainingTime: Long)
 }

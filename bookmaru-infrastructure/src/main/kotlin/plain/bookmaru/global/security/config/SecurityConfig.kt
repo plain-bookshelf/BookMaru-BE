@@ -79,7 +79,7 @@ class SecurityConfig(
                     /*
                     member
                      */
-                    "/api/member/signup-member  ",
+                    "/api/member/signup-member",
                     "/api/member/signup-official",
                     "/api/member/signup-social",
 

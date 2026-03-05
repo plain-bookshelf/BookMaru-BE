@@ -25,19 +25,20 @@ class JwtAuthenticationFilter(
     ) {
         val token = jwtParser.resolveToken(request)
 
-        if (token != null && jwtParser.validateToken(token)) {
-
+        if (token != null) {
             try {
-                val isLogout = redisTemplate.opsForValue().get(token)
+                if (jwtParser.validateToken(token)) {
+                    val isLogout = redisTemplate.opsForValue().get(token)
 
-                if (isLogout != null && request.dispatcherType != DispatcherType.ASYNC) {
-                    response.sendError(HttpStatus.SC_UNAUTHORIZED, "로그아웃 된 토큰입니다.")
-                    log.info { "로그아웃된 토큰: $token" }
-                    return
+                    if (isLogout != null && request.dispatcherType != DispatcherType.ASYNC) {
+                        response.sendError(HttpStatus.SC_UNAUTHORIZED, "로그아웃 된 토큰입니다.")
+                        log.info { "로그아웃된 토큰: $token" }
+                        return
+                    }
+
+                    val authentication = jwtParser.getAuthentication(token)
+                    SecurityContextHolder.getContext().authentication = authentication
                 }
-
-                val authentication = jwtParser.getAuthentication(token)
-                SecurityContextHolder.getContext().authentication = authentication
             } catch (e: Exception) {
                 log.error { "JWT 인증 실패: ${e.message}" }
 

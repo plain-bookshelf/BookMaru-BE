@@ -1,5 +1,6 @@
 package plain.bookmaru.domain.verification.service
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import plain.bookmaru.common.annotation.ReadOnlyService
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.port.out.MemberPort
@@ -10,6 +11,8 @@ import plain.bookmaru.domain.verification.port.`in`.FindPasswordUseCase
 import plain.bookmaru.domain.verification.port.`in`.command.FindPasswordCommand
 import plain.bookmaru.domain.verification.port.out.EmailVerificationCodePort
 import plain.bookmaru.domain.verification.vo.VerificationCodeType
+
+private val log = KotlinLogging.logger {}
 
 @ReadOnlyService
 class FindPasswordService(
@@ -29,6 +32,9 @@ class FindPasswordService(
 
         val emailVerification = emailVerificationCodePort.load(email)
             ?: throw NotFoundEmailException("$email 이메일 정보로 인증 코드가 전송되지 않았습니다.")
+
+        log.info { "$verificationCode 비교 시작" }
+        log.info { "${emailVerification.codeData.codeType} 타입 확인" }
 
         if (emailVerification.codeData.code != verificationCode
             || emailVerification.codeData.codeType != VerificationCodeType.FIND_PASSWORD)

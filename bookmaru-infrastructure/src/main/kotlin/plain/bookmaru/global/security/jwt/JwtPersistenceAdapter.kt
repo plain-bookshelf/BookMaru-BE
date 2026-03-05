@@ -14,6 +14,7 @@ import plain.bookmaru.domain.auth.port.out.JwtPort
 import plain.bookmaru.domain.auth.port.out.result.TokenResult
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.auth.vo.JwtType
+import plain.bookmaru.domain.auth.vo.OAuthProvider
 import plain.bookmaru.domain.auth.vo.PlatformType
 import java.nio.charset.StandardCharsets
 import java.util.Date
@@ -31,7 +32,8 @@ class JwtPersistenceAdapter(
         username: String,
         authority: Authority,
         platformType: PlatformType,
-        affiliationId: Long
+        affiliationId: Long,
+        oAuthProvider: OAuthProvider
     ): String
     = generateToken(
         id,
@@ -40,14 +42,17 @@ class JwtPersistenceAdapter(
         jwtProperties.accessExp.toMillis(),
         platformType,
         authority,
-        affiliationId)
+        affiliationId,
+        oAuthProvider
+    )
 
     suspend fun generateRefreshToken(
         id: Long,
         username: String,
         authority: Authority,
         platformType: PlatformType,
-        affiliationId: Long
+        affiliationId: Long,
+        oAuthProvider: OAuthProvider
     ): String = withContext(Dispatchers.IO){
 
         val token = generateToken(
@@ -57,7 +62,8 @@ class JwtPersistenceAdapter(
             jwtProperties.refreshExp.toMillis(),
             platformType,
             authority,
-            affiliationId
+            affiliationId,
+            oAuthProvider
         )
 
         val existingRefreshToken = refreshTokenRepository.findByUsernameAndPlatformType(username, platformType)
@@ -92,7 +98,8 @@ class JwtPersistenceAdapter(
         exp: Long,
         platformType: PlatformType,
         authority: Authority,
-        affiliationId: Long
+        affiliationId: Long,
+        oAuthProvider: OAuthProvider
     ): String {
 
         log.info { "토큰 발급 시도" }
@@ -109,6 +116,7 @@ class JwtPersistenceAdapter(
             .claim(ClaimKey.TOKEN_TYPE.name, tokenType.name)
             .claim(ClaimKey.AUTHORITY.name, authority.name)
             .claim(ClaimKey.AFFILIATION.name, affiliationId)
+            .claim(ClaimKey.OAUTH_PROVIDER.name, oAuthProvider.name)
         .compact()
     }
 
@@ -117,12 +125,14 @@ class JwtPersistenceAdapter(
         username: String,
         platformType: PlatformType,
         authority: Authority,
-        affiliationId: Long
+        affiliationId: Long,
+        oAuthProvider: OAuthProvider,
+        profileImage: String
     ): TokenResult {
 
-        val accessToken = generateAccessToken(id, username, authority, platformType, affiliationId)
+        val accessToken = generateAccessToken(id, username, authority, platformType, affiliationId, oAuthProvider)
         log.info { "AccessToken 발급에 성공했습니다." }
-        val refreshToken = generateRefreshToken(id, username, authority, platformType, affiliationId)
+        val refreshToken = generateRefreshToken(id, username, authority, platformType, affiliationId, oAuthProvider)
         log.info { "RefreshToken 발급에 성공했습니다." }
 
         val affiliation = affiliationPort.findById(affiliationId)
@@ -139,6 +149,8 @@ class JwtPersistenceAdapter(
             authority = authority,
             platformType = platformType,
             affiliationName = affiliation.affiliationName.toString(),
+            oAuthProvider = oAuthProvider,
+            profileImage = profileImage
         )
     }
 }

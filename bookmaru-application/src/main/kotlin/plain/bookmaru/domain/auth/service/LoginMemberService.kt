@@ -10,6 +10,7 @@ import plain.bookmaru.domain.auth.port.`in`.command.LoginMemberCommand
 import plain.bookmaru.domain.auth.port.out.JwtPort
 import plain.bookmaru.domain.auth.port.out.SecurityPort
 import plain.bookmaru.domain.auth.port.out.result.TokenResult
+import plain.bookmaru.domain.auth.vo.OAuthProvider
 import plain.bookmaru.domain.auth.vo.PlatformType
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.model.Member
@@ -60,7 +61,9 @@ class LoginMemberService(
             username = member.accountInfo!!.username,
             platformType = platformType,
             authority = member.authority,
-            affiliationId = member.affiliationId
+            affiliationId = member.affiliationId,
+            oAuthProvider = OAuthProvider.DEFAULT,
+            profileImage = member.profile.profileImage.toString()
         )
     }
 }

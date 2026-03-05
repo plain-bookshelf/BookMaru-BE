@@ -7,7 +7,7 @@ import plain.bookmaru.domain.auth.vo.OAuthInfo
 import plain.bookmaru.domain.auth.vo.OAuthProvider
 import plain.bookmaru.domain.member.vo.Profile
 import plain.bookmaru.domain.member.vo.Email
-import java.time.LocalDateTime
+import java.time.LocalTime
 
 @Aggregate
 class Member(
@@ -75,7 +75,7 @@ class Member(
         this.accountInfo = accountInfo?.copy(password = newPassword)
     }
 
-    fun modifyOftenBookReadTime(time: LocalDateTime) {
+    fun modifyOftenBookReadTime(time: LocalTime) {
         this.profile = profile.copy(oftenBookReadTime = time)
     }
 }

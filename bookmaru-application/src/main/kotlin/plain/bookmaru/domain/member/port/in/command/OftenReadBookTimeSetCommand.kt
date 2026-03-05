@@ -1,8 +1,8 @@
 package plain.bookmaru.domain.member.port.`in`.command
 
-import java.time.LocalDateTime
+import java.time.LocalTime
 
 data class OftenReadBookTimeSetCommand(
-    val time: LocalDateTime,
+    val time: LocalTime,
     val username: String
 )

@@ -84,8 +84,8 @@ class AuthAdapter(
 
         logoutUseCase.execute(command)
 
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(SuccessResponse(CustomHttpStatus.OK, "로그아웃에 성공하였습니다.", ""))
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            .body(SuccessResponse(CustomHttpStatus.NO_CONTENT, "로그아웃에 성공하였습니다.", ""))
     }
 
 }

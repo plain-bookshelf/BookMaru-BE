@@ -10,6 +10,7 @@ import plain.bookmaru.domain.auth.port.out.SecurityPort
 import plain.bookmaru.domain.auth.port.out.result.TokenResult
 import plain.bookmaru.domain.auth.vo.AccountInfo
 import plain.bookmaru.domain.auth.vo.Authority
+import plain.bookmaru.domain.auth.vo.OAuthProvider
 import plain.bookmaru.domain.member.exception.AlreadyExistsMemberException
 import plain.bookmaru.domain.member.exception.AlreadyUsedEmailException
 import plain.bookmaru.domain.member.model.Member
@@ -65,7 +66,9 @@ class SignupMemberService(
             username = savedMember.accountInfo!!.username,
             platformType = command.platformType,
             authority = savedMember.authority,
-            affiliationId = affiliation.id
+            affiliationId = affiliation.id,
+            oAuthProvider = OAuthProvider.DEFAULT,
+            profileImage = savedMember.profile.profileImage.toString()
         )
     }
 
@@ -98,7 +101,9 @@ class SignupMemberService(
             username = savedMember.accountInfo!!.username,
             platformType = command.platformType,
             authority = savedMember.authority,
-            affiliationId = affiliation.id
+            affiliationId = affiliation.id,
+            oAuthProvider = OAuthProvider.DEFAULT,
+            profileImage = savedMember.profile.profileImage.toString()
         )
     }
 
@@ -122,7 +127,7 @@ class SignupMemberService(
         if (!email?.email.isNullOrBlank()) {
             val emailProxy = emailVerifiedPort.load(email.email)
             if (emailProxy == null) {
-                throw NotFoundEmailException("잘못된 이메일 입니다: $email")
+                throw NotFoundEmailException("이메일 정보를 찾지 못 했습니다: $email")
             }
             if (memberPort.findByEmail(email) != null) {
                 throw AlreadyUsedEmailException("이미 사용되는 이메일 입니다: ${email.email}")
