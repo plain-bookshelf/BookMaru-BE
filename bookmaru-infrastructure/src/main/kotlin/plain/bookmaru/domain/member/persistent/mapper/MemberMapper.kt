@@ -1,6 +1,5 @@
 package plain.bookmaru.domain.member.persistent.mapper
 
-import org.hibernate.validator.constraints.UUID
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.auth.vo.AccountInfo
@@ -26,7 +25,7 @@ class MemberMapper{
         return MemberEntity(
             id = domain.id,
             affiliation = affiliationProxy,
-            username = domain.accountInfo?.username ?: java.util.UUID.randomUUID().toString(),
+            username = domain.accountInfo?.username ?: domain.email!!.email.toString(),
             nickname = domain.profile.nickname,
             password = domain.accountInfo?.password.toString(),
             email = domain.email,

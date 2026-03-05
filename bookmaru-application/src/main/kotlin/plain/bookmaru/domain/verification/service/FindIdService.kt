@@ -33,6 +33,8 @@ class FindIdService(
             emailVerification.codeData.codeType != VerificationCodeType.FIND_ID)
             throw NotMatchVerificationCodeException("$verificationCode 인증 코드 정보가 일치하지 않거나 다른 타입의 인증코드 입니다.")
 
+        emailVerificationCodePort.delete(email)
+
         log.info { "$email 인증 완료" }
 
         val member = memberPort.findByEmail(Email(email))

@@ -10,14 +10,17 @@ import plain.bookmaru.domain.verification.exception.NotMatchVerificationCodeExce
 import plain.bookmaru.domain.verification.port.`in`.FindPasswordUseCase
 import plain.bookmaru.domain.verification.port.`in`.command.FindPasswordCommand
 import plain.bookmaru.domain.verification.port.out.EmailVerificationCodePort
+import plain.bookmaru.domain.verification.port.out.FindPasswordPort
 import plain.bookmaru.domain.verification.vo.VerificationCodeType
+import java.util.UUID
 
 private val log = KotlinLogging.logger {}
 
 @ReadOnlyService
 class FindPasswordService(
     private val emailVerificationCodePort: EmailVerificationCodePort,
-    private val memberPort: MemberPort
+    private val memberPort: MemberPort,
+    private val findPasswordPort: FindPasswordPort
 ) : FindPasswordUseCase {
     override suspend fun execute(command: FindPasswordCommand): Boolean {
         val email = command.email
@@ -39,6 +42,11 @@ class FindPasswordService(
         if (emailVerification.codeData.code != verificationCode
             || emailVerification.codeData.codeType != VerificationCodeType.FIND_PASSWORD)
             throw NotMatchVerificationCodeException("$verificationCode 인증코드가 틀렸거나 다른 타입의 인증코드를 입력하였습니다.")
+
+        emailVerificationCodePort.delete(email)
+
+        val uuid = UUID.randomUUID().toString()
+        findPasswordPort.save(uuid, username)
 
         return true
     }
