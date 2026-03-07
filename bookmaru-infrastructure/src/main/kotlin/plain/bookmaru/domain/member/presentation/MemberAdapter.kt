@@ -17,12 +17,14 @@ import plain.bookmaru.common.error.CustomHttpStatus
 import plain.bookmaru.common.success.SuccessResponse
 import plain.bookmaru.domain.auth.port.`in`.SocialSignupUseCase
 import plain.bookmaru.domain.auth.presentation.WebOrAppResponseUtil
+import plain.bookmaru.domain.member.port.`in`.AffiliationInfoChangeUseCase
 import plain.bookmaru.domain.member.port.`in`.ChangePasswordUseCase
 import plain.bookmaru.domain.member.port.`in`.DeleteMemberUseCase
 import plain.bookmaru.domain.member.port.`in`.OftenReadBookTimeSetUseCase
 import plain.bookmaru.domain.member.port.`in`.SignupMemberUseCase
 import plain.bookmaru.domain.member.port.`in`.SignupOfficialUseCase
 import plain.bookmaru.domain.member.port.`in`.command.DeleteMemberCommand
+import plain.bookmaru.domain.member.presentation.dto.request.AffiliationInfoChangeRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SocialSignupRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.ChangePasswordRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.OftenReadBookTimeRequestDto
@@ -38,6 +40,7 @@ class MemberAdapter(
     private val oftenReadBookTimeSetUseCase: OftenReadBookTimeSetUseCase,
     private val socialSignupUseCase: SocialSignupUseCase,
     private val deleteMemberUseCase: DeleteMemberUseCase,
+    private val affiliationInfoChangeUseCase: AffiliationInfoChangeUseCase,
 
     private val webOrAppResponseUtil: WebOrAppResponseUtil
 ) {
@@ -125,5 +128,20 @@ class MemberAdapter(
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(SuccessResponse.success(CustomHttpStatus.OK, "유저 정보를 삭제하는데 성공했습니다.", ""))
+    }
+
+    @PatchMapping("/change-affiliation")
+    @LogExecution
+    suspend fun changeAffiliation(
+        @AuthenticationPrincipal principal: UserDetails,
+        @RequestParam platformType: String,
+        @RequestBody request: AffiliationInfoChangeRequestDto
+    ) : ResponseEntity<SuccessResponse> {
+
+        val command = request.toCommand(platformType, principal.username)
+
+        val result = affiliationInfoChangeUseCase.execute(command)
+
+        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, "소속 정보 변경이 완료되었습니다.")
     }
 }

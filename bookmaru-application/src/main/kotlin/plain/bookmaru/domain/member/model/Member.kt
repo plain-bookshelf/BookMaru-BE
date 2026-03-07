@@ -12,7 +12,7 @@ import java.time.LocalTime
 @Aggregate
 class Member(
     val id: Long? = null,
-    val affiliationId: Long? = null,
+    affiliationId: Long? = null,
     profile: Profile,
     val authority: Authority,
     accountInfo: AccountInfo? = null,
@@ -26,6 +26,9 @@ class Member(
         private set
 
     var oAuthInfo: OAuthInfo? = oAuthInfo
+        private set
+
+    var affiliationId: Long? = affiliationId
         private set
 
     fun linkOAuthAccount(provider: OAuthProvider, providerId: String) {
@@ -77,5 +80,9 @@ class Member(
 
     fun modifyOftenBookReadTime(time: LocalTime) {
         this.profile = profile.copy(oftenBookReadTime = time)
+    }
+
+    fun modifyAffiliation(affiliationId: Long) {
+        this.affiliationId = affiliationId
     }
 }
