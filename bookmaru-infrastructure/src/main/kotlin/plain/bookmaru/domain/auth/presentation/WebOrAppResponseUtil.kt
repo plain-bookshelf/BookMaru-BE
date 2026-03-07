@@ -16,7 +16,7 @@ import plain.bookmaru.global.security.jwt.JwtProperties
 class WebOrAppResponseUtil(
     private val jwtProperties: JwtProperties
 ) {
-    fun toWebOrAppTokenResponse(platformType: String, result: TokenResult, message: String) : ResponseEntity<SuccessResponse> {
+    fun toWebOrAppTokenResponse(platformType: String, result: TokenResult, customHttpStatus: CustomHttpStatus,message: String) : ResponseEntity<SuccessResponse> {
         val parsedPlatformType = runCatching { PlatformType.valueOf(platformType) }.getOrDefault(PlatformType.WEB)
 
         return when (parsedPlatformType) {
@@ -27,11 +27,11 @@ class WebOrAppResponseUtil(
                     now + jwtProperties.refreshExp.toMillis()
                 )
 
-                ResponseEntity.status(HttpStatus.CREATED)
+                ResponseEntity.status(HttpStatus.valueOf(customHttpStatus.toString()))
                     .header(HttpHeaders.SET_COOKIE, cookie.toString())
                     .body(
                         SuccessResponse.success(
-                            CustomHttpStatus.CREATED,
+                            customHttpStatus,
                             message,
                             TokenResponseDto.toWebResponse(result)
                         )
@@ -39,10 +39,10 @@ class WebOrAppResponseUtil(
             }
 
             else -> {
-                ResponseEntity.status(HttpStatus.CREATED)
+                ResponseEntity.status(HttpStatus.valueOf(customHttpStatus.toString()))
                     .body(
                         SuccessResponse.success(
-                            CustomHttpStatus.CREATED,
+                            customHttpStatus,
                             message,
                             TokenResponseDto.toAppResponse(result)
                         )
