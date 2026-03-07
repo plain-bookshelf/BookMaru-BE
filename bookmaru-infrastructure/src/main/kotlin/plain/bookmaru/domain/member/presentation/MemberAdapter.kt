@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -19,9 +20,11 @@ import plain.bookmaru.domain.auth.port.`in`.SocialSignupUseCase
 import plain.bookmaru.domain.auth.presentation.dto.response.TokenResponseDto
 import plain.bookmaru.domain.member.persistent.util.RefreshCookieUtil
 import plain.bookmaru.domain.member.port.`in`.ChangePasswordUseCase
+import plain.bookmaru.domain.member.port.`in`.DeleteMemberUseCase
 import plain.bookmaru.domain.member.port.`in`.OftenReadBookTimeSetUseCase
 import plain.bookmaru.domain.member.port.`in`.SignupMemberUseCase
 import plain.bookmaru.domain.member.port.`in`.SignupOfficialUseCase
+import plain.bookmaru.domain.member.port.`in`.command.DeleteMemberCommand
 import plain.bookmaru.domain.member.presentation.dto.request.SocialSignupRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.ChangePasswordRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.OftenReadBookTimeRequestDto
@@ -37,6 +40,7 @@ class MemberAdapter(
     private val changePasswordUseCase: ChangePasswordUseCase,
     private val oftenReadBookTimeSetUseCase: OftenReadBookTimeSetUseCase,
     private val socialSignupUseCase: SocialSignupUseCase,
+    private val deleteMemberUseCase: DeleteMemberUseCase,
 
     private val jwtProperties: JwtProperties
 ) {
@@ -124,5 +128,20 @@ class MemberAdapter(
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(SuccessResponse.success(CustomHttpStatus.OK, "자주 책 보는 시간을 등록했습니다.", ""))
+    }
+
+    @DeleteMapping("/delete")
+    @LogExecution
+    suspend fun deleteMember(
+        @AuthenticationPrincipal principal: UserDetails,
+        @RequestHeader("Authorization") accessToken: String
+    ) : ResponseEntity<SuccessResponse> {
+
+        val command = DeleteMemberCommand(principal.username, accessToken)
+
+        deleteMemberUseCase.deleteMember(command)
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(SuccessResponse.success(CustomHttpStatus.OK, "유저 정보를 삭제하는데 성공했습니다.", ""))
     }
 }
