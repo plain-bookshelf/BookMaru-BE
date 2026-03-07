@@ -42,7 +42,7 @@ class AuthAdapter(
         val command = request.toCommand(platformType)
         val result = loginUseCase.execute(command)
 
-        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, "로그인에 성공하였습니다.")
+        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result,  CustomHttpStatus.OK, "로그인에 성공하였습니다.")
     }
 
     @PutMapping("/reissue")
@@ -55,7 +55,7 @@ class AuthAdapter(
         val command = ReissueCommand(token, PlatformType.valueOf(platformType))
         val result = reissueUseCase.execute(command)
 
-        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, "토큰 재발급에 성공하엿습니다.")
+        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, CustomHttpStatus.OK, "토큰 재발급에 성공하엿습니다.")
     }
 
     @PostMapping("/logout")

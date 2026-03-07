@@ -85,4 +85,8 @@ class Member(
     fun modifyAffiliation(affiliationId: Long) {
         this.affiliationId = affiliationId
     }
+
+    fun modifyNickname(newNickname: String) {
+        this.profile = profile.copy(nickname = newNickname)
+    }
 }

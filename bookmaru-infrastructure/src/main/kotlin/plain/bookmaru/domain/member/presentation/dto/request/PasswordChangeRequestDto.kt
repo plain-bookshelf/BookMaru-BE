@@ -2,7 +2,7 @@ package plain.bookmaru.domain.member.presentation.dto.request
 
 import plain.bookmaru.domain.member.port.`in`.command.ChangePasswordCommand
 
-data class ChangePasswordRequestDto(
+data class PasswordChangeRequestDto(
     val newPassword: String,
     val existingPassword: String
 ) {

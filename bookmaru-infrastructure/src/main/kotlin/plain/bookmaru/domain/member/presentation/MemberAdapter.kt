@@ -20,13 +20,15 @@ import plain.bookmaru.domain.auth.presentation.WebOrAppResponseUtil
 import plain.bookmaru.domain.member.port.`in`.AffiliationInfoChangeUseCase
 import plain.bookmaru.domain.member.port.`in`.ChangePasswordUseCase
 import plain.bookmaru.domain.member.port.`in`.DeleteMemberUseCase
+import plain.bookmaru.domain.member.port.`in`.NicknameChangeUseCase
 import plain.bookmaru.domain.member.port.`in`.OftenReadBookTimeSetUseCase
 import plain.bookmaru.domain.member.port.`in`.SignupMemberUseCase
 import plain.bookmaru.domain.member.port.`in`.SignupOfficialUseCase
 import plain.bookmaru.domain.member.port.`in`.command.DeleteMemberCommand
 import plain.bookmaru.domain.member.presentation.dto.request.AffiliationInfoChangeRequestDto
+import plain.bookmaru.domain.member.presentation.dto.request.NicknameChangeRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SocialSignupRequestDto
-import plain.bookmaru.domain.member.presentation.dto.request.ChangePasswordRequestDto
+import plain.bookmaru.domain.member.presentation.dto.request.PasswordChangeRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.OftenReadBookTimeRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SignupMemberRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SignupOfficialRequestDto
@@ -41,6 +43,7 @@ class MemberAdapter(
     private val socialSignupUseCase: SocialSignupUseCase,
     private val deleteMemberUseCase: DeleteMemberUseCase,
     private val affiliationInfoChangeUseCase: AffiliationInfoChangeUseCase,
+    private val nicknameChangeUseCase: NicknameChangeUseCase,
 
     private val webOrAppResponseUtil: WebOrAppResponseUtil
 ) {
@@ -55,7 +58,7 @@ class MemberAdapter(
         val command = request.toCommand(platformType)
         val result = signupMemberUseCase.execute(command)
 
-        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, "유저 회원가입이 성공적으로 완료됐습니다.")
+        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, CustomHttpStatus.CREATED,"유저 회원가입이 성공적으로 완료됐습니다.")
     }
 
     @PostMapping("/signup-official")
@@ -68,7 +71,7 @@ class MemberAdapter(
         val command = request.toCommand(platformType)
         val result = signupOfficialUseCase.execute(command)
 
-        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, "관계자 회원가입이 성공적으로 완료됐습니다.")
+        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, CustomHttpStatus.CREATED,"관계자 회원가입이 성공적으로 완료됐습니다.")
     }
 
     @PostMapping("/signup-social")
@@ -81,13 +84,13 @@ class MemberAdapter(
         val command = request.toCommand(platformType)
         val result = socialSignupUseCase.execute(command)
 
-        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, "소셜 회원가입이 성공적으로 완료됐습니다.")
+        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, CustomHttpStatus.CREATED, "소셜 회원가입이 성공적으로 완료됐습니다.")
     }
 
     @PatchMapping("/password-change")
     @LogExecution
     suspend fun passwordChange(
-        @RequestBody request: ChangePasswordRequestDto,
+        @RequestBody request: PasswordChangeRequestDto,
         @RequestHeader("Authorization") accessToken: String,
         @AuthenticationPrincipal user: UserDetails,
     ) : ResponseEntity<SuccessResponse> {
@@ -130,7 +133,7 @@ class MemberAdapter(
             .body(SuccessResponse.success(CustomHttpStatus.OK, "유저 정보를 삭제하는데 성공했습니다.", ""))
     }
 
-    @PatchMapping("/change-affiliation")
+    @PatchMapping("/affiliation-change")
     @LogExecution
     suspend fun changeAffiliation(
         @AuthenticationPrincipal principal: UserDetails,
@@ -142,6 +145,21 @@ class MemberAdapter(
 
         val result = affiliationInfoChangeUseCase.execute(command)
 
-        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, "소속 정보 변경이 완료되었습니다.")
+        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, CustomHttpStatus.OK, "소속 정보 변경이 완료되었습니다.")
+    }
+
+    @PatchMapping("nickname-change")
+    @LogExecution
+    suspend fun changeNickname(
+        @AuthenticationPrincipal principal: UserDetails,
+        @RequestBody request: NicknameChangeRequestDto
+    ) : ResponseEntity<SuccessResponse> {
+
+        val command = request.toCommand(principal.username)
+
+        nicknameChangeUseCase.execute(command)
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(SuccessResponse.success(CustomHttpStatus.OK, "유저 닉네임을 변경하는데 성공하였습니다.", ""))
     }
 }
