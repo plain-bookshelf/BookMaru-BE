@@ -31,6 +31,12 @@ class MemberPersistenceAdapter(
         }
     }
 
+    override suspend fun delete(member: Member) = dbProtection.withTransaction{
+        val affiliationProxy = affiliationRepository.getReferenceById(member.affiliationId!!)
+
+        memberRepository.delete(memberMapper.toEntity(member, affiliationProxy))
+    }
+
     override suspend fun findByUsername(username: String): Member? = dbProtection.withReadOnly {
         memberRepository.findByUsername(username)?.let {
             memberMapper.toDomain(it)
