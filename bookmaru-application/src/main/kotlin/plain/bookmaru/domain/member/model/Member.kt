@@ -89,4 +89,8 @@ class Member(
     fun modifyNickname(newNickname: String) {
         this.profile = profile.copy(nickname = newNickname)
     }
+
+    fun modifyProfileImage(newProfileImageUrl: String) {
+        this.profile = profile.copy(profileImage = newProfileImageUrl)
+    }
 }

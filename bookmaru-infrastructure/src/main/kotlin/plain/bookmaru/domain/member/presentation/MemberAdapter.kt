@@ -22,6 +22,7 @@ import plain.bookmaru.domain.member.port.`in`.ChangePasswordUseCase
 import plain.bookmaru.domain.member.port.`in`.DeleteMemberUseCase
 import plain.bookmaru.domain.member.port.`in`.NicknameChangeUseCase
 import plain.bookmaru.domain.member.port.`in`.OftenReadBookTimeSetUseCase
+import plain.bookmaru.domain.member.port.`in`.ProfileImageChangeUseCase
 import plain.bookmaru.domain.member.port.`in`.SignupMemberUseCase
 import plain.bookmaru.domain.member.port.`in`.SignupOfficialUseCase
 import plain.bookmaru.domain.member.port.`in`.command.DeleteMemberCommand
@@ -30,6 +31,7 @@ import plain.bookmaru.domain.member.presentation.dto.request.NicknameChangeReque
 import plain.bookmaru.domain.member.presentation.dto.request.SocialSignupRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.PasswordChangeRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.OftenReadBookTimeRequestDto
+import plain.bookmaru.domain.member.presentation.dto.request.ProfileImageChangeRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SignupMemberRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SignupOfficialRequestDto
 
@@ -44,6 +46,7 @@ class MemberAdapter(
     private val deleteMemberUseCase: DeleteMemberUseCase,
     private val affiliationInfoChangeUseCase: AffiliationInfoChangeUseCase,
     private val nicknameChangeUseCase: NicknameChangeUseCase,
+    private val profileImageChangeUseCase: ProfileImageChangeUseCase,
 
     private val webOrAppResponseUtil: WebOrAppResponseUtil
 ) {
@@ -161,5 +164,20 @@ class MemberAdapter(
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(SuccessResponse.success(CustomHttpStatus.OK, "유저 닉네임을 변경하는데 성공하였습니다.", ""))
+    }
+
+    @PatchMapping("/profileImage-change")
+    @LogExecution
+    suspend fun profileImageChange(
+        @AuthenticationPrincipal principal: UserDetails,
+        @RequestBody request: ProfileImageChangeRequestDto
+    ) : ResponseEntity<SuccessResponse> {
+
+        val command = request.toCommand(principal.username)
+
+        profileImageChangeUseCase.execute(command)
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(SuccessResponse.success(CustomHttpStatus.OK, "프로필 정보를 수정하는데 성공하였습니다.", ""))
     }
 }
