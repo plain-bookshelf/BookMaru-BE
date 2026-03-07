@@ -46,10 +46,10 @@ class OAuth2SuccessHandler(
                     .httpOnly(true).secure(false).path("/").maxAge(jwtProperties.refreshExp).build() // 배포 시 .secure(true)로 사용해야 됨
                 response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString())
 
-                response.sendRedirect("http://localhost:3000/oauth2/redirect?access_token=${result.tokens.accessToken}")
+                response.sendRedirect("http://localhost:5173/oauth2/redirect?access_token=${result.tokens.accessToken}")
             }
             is LoginResult.NeedMoreInfo -> {
-                response.sendRedirect("http://localhost:3000/signup/affiliation-name?register_token=${result.registerToken}")
+                response.sendRedirect("http://localhost:5173/signup/affiliation-name?register_token=${result.registerToken}")
             }
         }
     }
