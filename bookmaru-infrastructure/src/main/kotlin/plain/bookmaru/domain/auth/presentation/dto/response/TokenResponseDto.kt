@@ -12,10 +12,11 @@ data class TokenResponseDto(
     val platformType: PlatformType,
     val affiliationName: String,
     val oAuthProvider: OAuthProvider,
-    val profileImage: String
+    val profileImage: String,
+    val refreshToken: String? = null
 ) {
     companion object {
-        fun toResponse(tokenResult: TokenResult) = TokenResponseDto(
+        fun toWebResponse(tokenResult: TokenResult) = TokenResponseDto(
             tokenResult.username,
             tokenResult.accessToken,
             tokenResult.authority,
@@ -23,6 +24,17 @@ data class TokenResponseDto(
             tokenResult.affiliationName,
             tokenResult.oAuthProvider,
             tokenResult.profileImage
+        )
+
+        fun toAppResponse(tokenResult: TokenResult) = TokenResponseDto(
+            tokenResult.username,
+            tokenResult.accessToken,
+            tokenResult.authority,
+            tokenResult.platformType,
+            tokenResult.affiliationName,
+            tokenResult.oAuthProvider,
+            tokenResult.profileImage,
+            tokenResult.refreshToken
         )
     }
 }

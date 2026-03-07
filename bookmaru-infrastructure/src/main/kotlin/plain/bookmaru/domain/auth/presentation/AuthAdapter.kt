@@ -1,6 +1,5 @@
 package plain.bookmaru.domain.auth.presentation
 
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -21,10 +20,7 @@ import plain.bookmaru.domain.auth.port.`in`.ReissueUseCase
 import plain.bookmaru.domain.auth.port.`in`.command.LogoutCommand
 import plain.bookmaru.domain.auth.port.`in`.command.ReissueCommand
 import plain.bookmaru.domain.auth.presentation.dto.request.LoginMemberRequestDto
-import plain.bookmaru.domain.auth.presentation.dto.response.TokenResponseDto
 import plain.bookmaru.domain.auth.vo.PlatformType
-import plain.bookmaru.domain.member.persistent.util.RefreshCookieUtil
-import plain.bookmaru.global.security.jwt.JwtProperties
 
 @RestController
 @RequestMapping("/api/auth")
@@ -33,7 +29,7 @@ class AuthAdapter(
     private val reissueUseCase: ReissueUseCase,
     private val logoutUseCase: LogoutUseCase,
 
-    private val jwtProperties: JwtProperties
+    private val webOrAppResponseUtil: WebOrAppResponseUtil
 ) {
 
     @PostMapping("/login")
@@ -44,15 +40,9 @@ class AuthAdapter(
     ): ResponseEntity<SuccessResponse> {
 
         val command = request.toCommand(platformType)
-
         val result = loginUseCase.execute(command)
 
-        val now = System.currentTimeMillis()
-        val cookie = RefreshCookieUtil.createRefreshCookie(result.refreshToken, now + jwtProperties.refreshExp.toMillis())
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .header(HttpHeaders.SET_COOKIE, cookie.toString())
-            .body(SuccessResponse(CustomHttpStatus.CREATED, "로그인에 성공하였습니다.", TokenResponseDto.toResponse(result)))
+        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, "로그인에 성공하였습니다.")
     }
 
     @PutMapping("/reissue")
@@ -63,15 +53,9 @@ class AuthAdapter(
     ): ResponseEntity<SuccessResponse> {
 
         val command = ReissueCommand(token, PlatformType.valueOf(platformType))
-
         val result = reissueUseCase.execute(command)
 
-        val now = System.currentTimeMillis()
-        val cookie = RefreshCookieUtil.createRefreshCookie(result.refreshToken, now + jwtProperties.refreshExp.toMillis())
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .header(HttpHeaders.SET_COOKIE, cookie.toString())
-            .body(SuccessResponse(CustomHttpStatus.CREATED, "토큰 재발급에 성공하엿습니다.", TokenResponseDto.toResponse(result)))
+        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, "토큰 재발급에 성공하엿습니다.")
     }
 
     @PostMapping("/logout")
@@ -87,5 +71,4 @@ class AuthAdapter(
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .body(SuccessResponse(CustomHttpStatus.NO_CONTENT, "로그아웃에 성공하였습니다.", ""))
     }
-
 }

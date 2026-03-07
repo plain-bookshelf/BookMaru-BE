@@ -40,16 +40,36 @@ class OAuth2SuccessHandler(
 
         val result = runBlocking { customOAuth2UseCase.execute(command) }
 
+        when (platformType) {
+            PlatformType.WEB -> handleWebSuccess(response, result)
+            PlatformType.IOS, PlatformType.ANDROID -> handleAppSuccess(response, result)
+        }
+    }
+
+    private fun handleWebSuccess(response: HttpServletResponse, result: LoginResult) {
         when (result) {
             is LoginResult.Success -> {
                 val cookie = ResponseCookie.from("refreshToken", result.tokens.refreshToken)
-                    .httpOnly(true).secure(false).path("/").maxAge(jwtProperties.refreshExp).build() // 배포 시 .secure(true)로 사용해야 됨
+                    .httpOnly(true).secure(false).path("/").maxAge(jwtProperties.refreshExp).build()
                 response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString())
 
                 response.sendRedirect("http://localhost:5173/oauth2/redirect?access_token=${result.tokens.accessToken}")
             }
             is LoginResult.NeedMoreInfo -> {
                 response.sendRedirect("http://localhost:5173/signup/affiliation-name?register_token=${result.registerToken}")
+            }
+        }
+    }
+
+    private fun handleAppSuccess(response: HttpServletResponse, result: LoginResult) {
+        val scheme = "bookmaru://"
+
+        when (result) {
+            is LoginResult.Success -> {
+                response.sendRedirect("${scheme}oauth2/redirect?access_token=${result.tokens.accessToken}&refresh_token=${result.tokens.refreshToken}&profile_image=${result.tokens.profileImage}&affiliation_name=${result.tokens.affiliationName}")
+            }
+            is LoginResult.NeedMoreInfo -> {
+                response.sendRedirect("${scheme}signup/affiliation-name?register_token=${result.registerToken}")
             }
         }
     }
