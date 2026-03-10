@@ -4,11 +4,11 @@ import plain.bookmaru.domain.auth.vo.PlatformType
 import plain.bookmaru.domain.member.port.`in`.command.AffiliationInfoChangeCommand
 
 data class AffiliationInfoChangeRequestDto(
-    val affiliationName: String
+    val newAffiliationName: String
 ) {
     fun toCommand(platformType: String, username: String) : AffiliationInfoChangeCommand = AffiliationInfoChangeCommand(
         username,
-        affiliationName,
+        newAffiliationName,
         PlatformType.valueOf(platformType)
     )
 }

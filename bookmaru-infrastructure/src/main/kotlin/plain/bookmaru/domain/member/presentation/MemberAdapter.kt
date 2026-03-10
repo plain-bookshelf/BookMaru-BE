@@ -132,8 +132,8 @@ class MemberAdapter(
 
         deleteMemberUseCase.deleteMember(command)
 
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(SuccessResponse.success(CustomHttpStatus.OK, "유저 정보를 삭제하는데 성공했습니다.", ""))
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            .body(SuccessResponse.success(CustomHttpStatus.NO_CONTENT, "유저 정보를 삭제하는데 성공했습니다.", ""))
     }
 
     @PatchMapping("/affiliation-change")

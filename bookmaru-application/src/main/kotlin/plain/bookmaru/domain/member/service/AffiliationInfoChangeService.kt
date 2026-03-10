@@ -2,6 +2,7 @@ package plain.bookmaru.domain.member.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import plain.bookmaru.common.annotation.Service
+import plain.bookmaru.domain.affiliation.exception.MatchAffiliationException
 import plain.bookmaru.domain.affiliation.exception.NotFoundAffiliationException
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
 import plain.bookmaru.domain.auth.port.out.JwtPort
@@ -21,13 +22,15 @@ class AffiliationInfoChangeService(
 ) : AffiliationInfoChangeUseCase {
     override suspend fun execute(command: AffiliationInfoChangeCommand): TokenResult {
         val username = command.username
-        val affiliationName = command.affiliationName
+        val affiliationName = command.newAffiliationName
 
         val member = memberPort.findByUsername(username)
             ?: throw NotFoundMemberException("$username 아이디를 사용하는 유저를 찾지 못 했습니다.")
 
         val affiliation = affiliationPort.findByAffiliationName(affiliationName)
             ?: throw NotFoundAffiliationException("$affiliationName 소속 정보가 존재하지 않습니다.")
+
+        if (member.affiliationId == affiliation.id) throw MatchAffiliationException("$affiliationName 기존에 사용하던 소속 정보와 같습니다.")
 
         member.modifyAffiliation(affiliation.id!!)
         val savedMember = memberPort.save(member)

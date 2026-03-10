@@ -4,6 +4,6 @@ import plain.bookmaru.domain.auth.vo.PlatformType
 
 data class AffiliationInfoChangeCommand(
     val username: String,
-    val affiliationName: String,
+    val newAffiliationName: String,
     val platformType: PlatformType
 )
