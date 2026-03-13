@@ -21,7 +21,6 @@ import plain.bookmaru.domain.verification.port.`in`.command.OfficialCodeCommand
 import plain.bookmaru.domain.verification.presentation.dto.request.FindPasswordRequestDto
 import plain.bookmaru.domain.verification.presentation.dto.request.ResetPasswordRequestDto
 import plain.bookmaru.domain.verification.presentation.dto.request.VerificationCodeRequestDto
-import plain.bookmaru.domain.verification.presentation.dto.response.UsernameResponseDto
 
 @RestController
 @RequestMapping("/api/verification")

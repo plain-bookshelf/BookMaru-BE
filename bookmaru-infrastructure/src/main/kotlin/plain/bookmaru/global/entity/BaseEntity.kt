@@ -7,7 +7,6 @@ import org.hibernate.proxy.HibernateProxy
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import plain.bookmaru.domain.member.persistent.entity.MemberEntity
 import java.time.LocalDateTime
 
 @MappedSuperclass
@@ -28,7 +27,11 @@ abstract class BaseEntity {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is MemberEntity) return false
+        if (other == null) return false
+
+        if (getRealClass(this) != getRealClass(other)) return false
+
+        other as BaseEntity
 
         return id != null && id == other.id
     }

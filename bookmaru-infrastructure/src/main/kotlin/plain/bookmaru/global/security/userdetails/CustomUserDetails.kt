@@ -21,7 +21,7 @@ data class CustomUserDetails(
         username = memberEntity.username,
         password = memberEntity.password ?: "",
         role = memberEntity.role,
-        affiliationId = memberEntity.affiliation!!.id!!,
+        affiliationId = memberEntity.affiliation.id!!,
         isEnabled = memberEntity.affiliation.affiliationName.isNotBlank()
     )
 

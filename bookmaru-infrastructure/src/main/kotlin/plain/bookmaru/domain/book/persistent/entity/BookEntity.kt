@@ -33,11 +33,7 @@ class BookEntity(
 
     val publisher: String,
 
-    var rentalCount: Int = 0,
-
-    var reservationCount: Int = 0,
-
-    var likeCount: Int = 0,
+    val introduction: String,
 
     val similarityToken: String
 ) : BaseEntity() {
@@ -51,4 +47,10 @@ class BookEntity(
 
     @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     val bookCommentEntities : MutableList<BookCommentEntity> = mutableListOf()
+
+    var rentalCount: Int = 0
+
+    var reservationCount: Int = 0
+
+    var likeCount: Int = 0
 }

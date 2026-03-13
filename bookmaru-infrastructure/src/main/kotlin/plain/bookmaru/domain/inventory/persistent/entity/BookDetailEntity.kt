@@ -11,9 +11,10 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.SequenceGenerator
 import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.book.persistent.entity.BookEntity
+import plain.bookmaru.domain.inventory.vo.RentalStatus
 import plain.bookmaru.domain.member.persistent.entity.MemberEntity
 import plain.bookmaru.global.entity.BaseEntity
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Entity
 @SequenceGenerator(
@@ -24,7 +25,7 @@ import java.time.LocalDateTime
 class BookDetailEntity(
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
-    val member: MemberEntity,
+    val memberEntity: MemberEntity,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", nullable = false)
@@ -35,15 +36,6 @@ class BookDetailEntity(
     val affiliationEntity: AffiliationEntity,
 
     @Column(nullable = false)
-    val rentalRequestStatus : Boolean = false,
-
-    @Column(nullable = false)
-    val rentalStatus : Boolean = false,
-
-    @Column(nullable = true)
-    val returnDate : LocalDateTime? = null,
-
-    @Column(nullable = false)
     val registrationNumber : String,
 
     @Column(nullable = false)
@@ -52,4 +44,13 @@ class BookDetailEntity(
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bookDetail_seq_generator")
     @Column(nullable = false, unique = true)
     override val id: Long? = null
+
+    @Column(nullable = false)
+    var rentalRequestStatus : Boolean = false
+
+    @Column(nullable = false)
+    var rentalStatus : RentalStatus = RentalStatus.RETURN
+
+    @Column(nullable = true)
+    var returnDate : LocalDate? = null
 }

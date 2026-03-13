@@ -9,6 +9,6 @@ class Book(
     val bookInfo: BookInfo,
     val rentalCount: Int,
     val reservationCount: Int,
-    val likesCount: Int,
+    val likeCount: Int,
     val similarityToken: String
 )

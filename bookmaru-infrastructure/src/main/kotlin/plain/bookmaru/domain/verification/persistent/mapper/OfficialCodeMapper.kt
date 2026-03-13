@@ -21,7 +21,6 @@ class OfficialCodeMapper(
 
     fun toEntity(domain: OfficialCode, affiliation: Affiliation) : OfficialCodeEntity {
         return OfficialCodeEntity(
-            id = domain.id,
             affiliation = affiliationMapper.toEntity(affiliation),
             role = domain.role,
             code = domain.code
@@ -33,7 +32,6 @@ class OfficialCodeMapper(
 
         return domains.map {
             OfficialCodeEntity(
-                id = it.id,
                 affiliation = affiliationEntity,
                 role = it.role,
                 code = it.code

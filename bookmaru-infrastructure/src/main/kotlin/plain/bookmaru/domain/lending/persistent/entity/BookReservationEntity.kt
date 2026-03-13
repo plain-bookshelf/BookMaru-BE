@@ -10,5 +10,5 @@ class BookReservationEntity(
     @EmbeddedId
     override val id: BookReservationEmbeddedId? = null,
 
-    var waitingRank: Int,
+    var waitingRank: Int
 ) : BaseEntity()

@@ -6,5 +6,4 @@ import jakarta.persistence.Embeddable
 data class BookRentalRecordEmbeddedId(
     val memberId: Long,
     val bookDetailId: Long
-) {
-}
+)

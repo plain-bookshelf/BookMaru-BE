@@ -28,7 +28,6 @@ class EventMapper {
 
     fun toEntity(domain: Event, member: MemberEntity) : Pair<EventEntity, EventDetailEntity?> {
         val eventEntity = EventEntity(
-            id = domain.id,
             title = domain.eventInfo.title,
             memberEntity = member,
             status = domain.eventInfo.status,

@@ -1,7 +1,6 @@
 package plain.bookmaru.domain.member.service
 
 import plain.bookmaru.common.annotation.Service
-import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
 import plain.bookmaru.domain.auth.port.out.SecurityPort
 import plain.bookmaru.domain.member.exception.UsedPasswordException
 import plain.bookmaru.domain.member.model.Member

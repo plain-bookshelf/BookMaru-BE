@@ -20,23 +20,25 @@ import plain.bookmaru.global.entity.BaseEntity
     allocationSize = 50
 )
 class BookCommentEntity(
-    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bookComment_seq_generator")
-    override val id: Long? = null,
-
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     val memberEntity: MemberEntity,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", nullable = false)
-    val bookEntity: BookEntity,
+    val bookEntity: BookEntity
+) : BaseEntity() {
+
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bookComment_seq_generator")
+    @Column(nullable = false, unique = true)
+    override val id: Long? = null
 
     @Column(nullable = false)
-    var comment: String,
+    var comment: String = "undefined"
 
     @Column(nullable = false)
-    var likeCount: Int = 0,
+    var likeCount: Int = 0
 
     @Column(nullable = false)
     var starCount: Int = 0
-) : BaseEntity()
+}
