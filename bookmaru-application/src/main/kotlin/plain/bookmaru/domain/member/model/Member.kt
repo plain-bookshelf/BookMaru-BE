@@ -16,7 +16,7 @@ class Member(
     profile: Profile,
     val authority: Authority,
     accountInfo: AccountInfo? = null,
-    val email: Email?,
+    val email: Email,
     oAuthInfo: OAuthInfo? = null
 ) {
     var accountInfo: AccountInfo? = accountInfo
@@ -42,7 +42,7 @@ class Member(
             profile: Profile,
             authority: Authority,
             accountInfo: AccountInfo,
-            email: Email?
+            email: Email
         ): Member {
             return Member(
                 id = id,
@@ -58,7 +58,7 @@ class Member(
             id : Long? = null,
             affiliationId: Long? = null,
             profile: Profile,
-            email: Email?,
+            email: Email,
             authority: Authority,
             oAuthInfo: OAuthInfo? = null
         ) : Member {

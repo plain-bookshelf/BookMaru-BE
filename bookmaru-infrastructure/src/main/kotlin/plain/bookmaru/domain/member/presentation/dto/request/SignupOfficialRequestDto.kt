@@ -9,7 +9,7 @@ import plain.bookmaru.domain.member.vo.Profile
 data class SignupOfficialRequestDto(
     val username: String,
     val password: String,
-    val email: String? = null,
+    val email: String,
     val affiliationName: String,
     val verificationCode: String
 ) {
@@ -18,7 +18,7 @@ data class SignupOfficialRequestDto(
             accountInfo = AccountInfo(this.username, this.password),
             affiliationName = this.affiliationName,
             profile = Profile(nickname = this.username),
-            email = this.email?.ifBlank { null }.let { Email(it) },
+            email = Email(email),
             platformType = PlatformType.valueOf(platformType),
             verificationCode = this.verificationCode
         )

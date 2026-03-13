@@ -1,6 +1,7 @@
 package plain.bookmaru.domain.verification.port.`in`.command
 
 data class ResetPasswordCommand(
-    val username: String,
-    val newPassword: String
+    val email: String,
+    val newPassword: String,
+    val registerToken: String
 )

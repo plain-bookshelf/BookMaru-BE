@@ -16,7 +16,7 @@ class EmailVerifiedPersistenceAdapter(
 ): EmailVerifiedPort {
     override suspend fun save(emailVerified: EmailVerified) = dbProtection.withTransaction {
         redisTemplate.opsForValue().set(
-            emailVerified.email.toString(),
+            emailVerified.email.email.toString(),
             "True",
             Duration.between(Instant.now(), emailVerified.expiredAt)
         )

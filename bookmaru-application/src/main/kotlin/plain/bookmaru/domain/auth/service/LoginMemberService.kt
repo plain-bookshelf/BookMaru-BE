@@ -47,7 +47,7 @@ class LoginMemberService(
 
         log.info { "${command.accountInfo.username} 를 찾는데 성공했습니다." }
 
-        if (!securityPort.isPasswordMatch(command.accountInfo.password, member.accountInfo?.password ?:
+        if (!securityPort.isPasswordMatch(command.accountInfo.password!!, member.accountInfo?.password ?:
         throw NotFoundMemberException("$member 의 비밀번호 정보를 찾지 못했습니다.")))
             throw PasswordNotMatchException("${command.accountInfo.password} 비밀번호가 일치하지 않습니다.")
 
@@ -61,7 +61,7 @@ class LoginMemberService(
             username = member.accountInfo!!.username,
             platformType = platformType,
             authority = member.authority,
-            affiliationId = member.affiliationId,
+            affiliationId = member.affiliationId!!,
             oAuthProvider = OAuthProvider.DEFAULT,
             profileImage = member.profile.profileImage.toString()
         )

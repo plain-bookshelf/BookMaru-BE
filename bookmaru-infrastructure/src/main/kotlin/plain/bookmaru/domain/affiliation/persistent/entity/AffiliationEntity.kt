@@ -2,14 +2,10 @@ package plain.bookmaru.domain.affiliation.persistent.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import jakarta.persistence.OneToMany
 import jakarta.persistence.SequenceGenerator
-import plain.bookmaru.domain.member.persistent.entity.MemberEntity
-import plain.bookmaru.domain.verification.persistent.entity.OfficialCodeEntity
 
 @Entity
 @SequenceGenerator(
@@ -21,12 +17,6 @@ class AffiliationEntity(
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "affiliation_seq_generator")
     @Column(nullable = false, unique = true)
     val id : Long? = null,
-
-    @OneToMany(mappedBy = "affiliation", fetch = FetchType.LAZY)
-    val members : MutableList<MemberEntity> = mutableListOf(),
-
-    @OneToMany(mappedBy = "affiliation", fetch = FetchType.LAZY)
-    val officialCodeEntities: MutableList<OfficialCodeEntity> = mutableListOf(),
 
     @Column(nullable = false, length = 45)
     val affiliationName : String

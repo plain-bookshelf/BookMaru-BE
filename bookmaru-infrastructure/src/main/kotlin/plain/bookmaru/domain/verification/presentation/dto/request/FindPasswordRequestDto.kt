@@ -4,8 +4,7 @@ import plain.bookmaru.domain.verification.port.`in`.command.FindPasswordCommand
 
 data class FindPasswordRequestDto(
     val email: String,
-    val verificationCode: String,
-    val username: String
+    val verificationCode: String
 ) {
-    fun toCommand() : FindPasswordCommand = FindPasswordCommand(email, verificationCode, username)
+    fun toCommand() : FindPasswordCommand = FindPasswordCommand(email, verificationCode)
 }

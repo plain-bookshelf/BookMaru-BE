@@ -24,7 +24,7 @@ import plain.bookmaru.global.entity.BaseEntity
 )
 class OfficialCodeEntity(
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "affiliation_seq_generator")
-    var id: Long? = null,
+    override val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE], optional = false)
     @JoinColumn(name = "affiliation_id", nullable = false)

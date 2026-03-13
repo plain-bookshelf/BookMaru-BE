@@ -2,6 +2,7 @@ package plain.bookmaru.domain.member.persistent
 
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.persistent.repository.AffiliationRepository
+import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.persistent.mapper.MemberMapper
 import plain.bookmaru.domain.member.persistent.repository.MemberRepository
@@ -19,10 +20,19 @@ class MemberPersistenceAdapter(
     override suspend fun save(member: Member) : Member = dbProtection.withTransaction {
         val affiliationProxy = affiliationRepository.getReferenceById(member.affiliationId!!)
 
-        val memberEntity = memberMapper.toEntity(member, affiliationProxy)
 
-        val savedEntity = memberRepository.save(memberEntity)
-        return@withTransaction memberMapper.toDomain(savedEntity)
+        if (member.id == null) {
+            val memberEntity = memberMapper.toEntity(member, affiliationProxy)
+            val saved = memberRepository.save(memberEntity)
+            return@withTransaction memberMapper.toDomain(saved)
+        } else {
+            val existingEntity = memberRepository.findById(member.id!!)
+                .orElseThrow { throw NotFoundMemberException("존재하지 않는 유저입니다.") }
+
+            memberMapper.updateEntity(member, existingEntity, affiliationProxy)
+
+            return@withTransaction memberMapper.toDomain(existingEntity)
+        }
     }
 
     override suspend fun findByEmail(email: Email): Member? = dbProtection.withReadOnly {

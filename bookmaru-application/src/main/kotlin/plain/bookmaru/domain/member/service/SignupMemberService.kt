@@ -51,7 +51,7 @@ class SignupMemberService(
             profile = profile,
             accountInfo = AccountInfo(
                 username = accountInfo.username,
-                password = securityPort.passwordEncode(accountInfo.password)
+                password = securityPort.passwordEncode(accountInfo.password ?: "")
             ),
             authority = Authority.ROLE_USER,
             email = email
@@ -119,19 +119,17 @@ class SignupMemberService(
         return officialCode
     }
 
-    private suspend fun validationInfo(username: String, email: Email?, affiliationName: String) : Affiliation {
+    private suspend fun validationInfo(username: String, email: Email, affiliationName: String) : Affiliation {
         if (memberPort.findByUsername(username) != null) {
             throw AlreadyExistsMemberException("이미 존재하는 유저 아이디 입니다: $username")
         }
 
-        if (!email?.email.isNullOrBlank()) {
-            val emailProxy = emailVerifiedPort.load(email.email)
-            if (emailProxy == null) {
-                throw NotFoundEmailException("이메일 정보를 찾지 못 했습니다: $email")
-            }
-            if (memberPort.findByEmail(email) != null) {
-                throw AlreadyUsedEmailException("이미 사용되는 이메일 입니다: ${email.email}")
-            }
+        val emailProxy = emailVerifiedPort.load(email.email)
+        if (emailProxy == null) {
+            throw NotFoundEmailException("이메일 정보를 찾지 못 했습니다: $email")
+        }
+        if (memberPort.findByEmail(email) != null) {
+            throw AlreadyUsedEmailException("이미 사용되는 이메일 입니다: ${email.email}")
         }
 
         val affiliation = affiliationPort.findByAffiliationName(affiliationName)

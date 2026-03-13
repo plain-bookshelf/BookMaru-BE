@@ -12,11 +12,13 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToMany
 import jakarta.persistence.SequenceGenerator
 import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.member.persistent.converter.EmailConverter
 import plain.bookmaru.domain.member.vo.Email
+import plain.bookmaru.domain.notification.persistent.entity.NotificationEntity
 import plain.bookmaru.global.entity.BaseEntity
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -28,49 +30,42 @@ import java.time.LocalTime
     allocationSize = 50
 )
 class MemberEntity(
-    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq_generator")
-    @Column(nullable = false, unique = true)
-    val id: Long? = null,
-
     @ManyToOne(optional = false, cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "affiliation_id", nullable = false )
-    val affiliation: AffiliationEntity,
+    var affiliation: AffiliationEntity,
 
     @Column(nullable = true, length = 45)
     val username: String,
 
     @Column(nullable = false, length = 45)
-    val nickname: String,
-
-    @Column(nullable = true, length = 100)
-    val password: String,
+    var nickname: String,
 
     @Column(unique = true,length = 45)
     @Convert(converter = EmailConverter::class)
-    val email: Email?,
+    val email: Email,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     val role: Authority,
+) : BaseEntity() {
 
-    @Column(nullable = false, length = 100)
-    val profileImage: String,
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq_generator")
+    @Column(nullable = false, unique = true)
+    override val id: Long? = null
+
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val notificationEntities: MutableList<NotificationEntity> = mutableListOf()
+
+    @Column(nullable = true, length = 100)
+    var password: String? = null
+
+    @Column(nullable = true, length = 100)
+    var profileImage: String? = null
 
     @Column(nullable = false, precision = 1000)
-    val oneMonthStatics: Int? = 0,
+    var oneMonthStatics: Int? = 0
 
-    val overdueTerm: LocalDateTime? = null,
+    var overdueTerm: LocalDateTime? = null
 
-    val bookReadTime: LocalTime? = null
-) : BaseEntity() {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is MemberEntity) return false
-
-        return id != null && id == other.id
-    }
-
-    override fun hashCode(): Int {
-        return javaClass.hashCode()
-    }
+    var oftenBookReadTime: LocalTime? = null
 }

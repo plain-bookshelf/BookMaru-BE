@@ -4,7 +4,7 @@ import plain.bookmaru.domain.verification.port.`in`.command.ResetPasswordCommand
 
 data class ResetPasswordRequestDto(
     val newPassword: String,
-    val username: String
+    val email: String
 ) {
-    fun toCommand() : ResetPasswordCommand = ResetPasswordCommand(username, newPassword)
+    fun toCommand(registerToken: String) : ResetPasswordCommand = ResetPasswordCommand(email, newPassword, registerToken)
 }

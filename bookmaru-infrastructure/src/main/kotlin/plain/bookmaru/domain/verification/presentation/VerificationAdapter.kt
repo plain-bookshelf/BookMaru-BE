@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController
 import plain.bookmaru.common.annotation.LogExecution
 import plain.bookmaru.common.error.CustomHttpStatus
 import plain.bookmaru.common.success.SuccessResponse
-import plain.bookmaru.domain.verification.port.`in`.FindIdUseCase
 import plain.bookmaru.domain.verification.port.`in`.FindPasswordUseCase
 import plain.bookmaru.domain.verification.port.`in`.OfficialCodeCreateUseCase
 import plain.bookmaru.domain.verification.port.`in`.ResetPasswordUseCase
@@ -30,7 +29,6 @@ class VerificationAdapter(
     private val sendVerificationCodeUseCase: SendVerificationCodeUseCase,
     private val verificationCodeUseCase: VerificationCodeUseCase,
     private val officialCodeCreateUseCase: OfficialCodeCreateUseCase,
-    private val findIdUseCase: FindIdUseCase,
     private val findPasswordUseCase: FindPasswordUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase
 ) {
@@ -75,19 +73,6 @@ class VerificationAdapter(
             .body(SuccessResponse.success(CustomHttpStatus.CREATED, "관계자 회원가입 인증 코드 생성이 성공적으로 완료되었습니다.", ""))
     }
 
-    @PostMapping("/find-id")
-    @LogExecution
-    suspend fun findId(
-        @RequestBody request: VerificationCodeRequestDto
-    ): ResponseEntity<SuccessResponse> {
-        val command = request.toCommand()
-
-        val result = findIdUseCase.execute(command)
-
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(SuccessResponse.success(CustomHttpStatus.OK, "아이디 찾기에 성공했습니다.", UsernameResponseDto(result)))
-    }
-
     @PostMapping("/find-password")
     @LogExecution
     suspend fun findPassword(
@@ -104,9 +89,10 @@ class VerificationAdapter(
     @PatchMapping("/password-reset")
     @LogExecution
     suspend fun passwordReset(
-        @RequestBody request: ResetPasswordRequestDto
+        @RequestBody request: ResetPasswordRequestDto,
+        @RequestParam registerToken: String
     ) : ResponseEntity<SuccessResponse> {
-        val command = request.toCommand()
+        val command = request.toCommand(registerToken)
 
         resetPasswordUseCase.execute(command)
 

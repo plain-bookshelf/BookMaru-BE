@@ -17,7 +17,7 @@ class PasswordUpdateProfessor(
 
         val newEncodePassword = securityPort.passwordEncode(newPassword)
 
-        if (securityPort.isPasswordMatch(newPassword, member.accountInfo!!.password))
+        if (securityPort.isPasswordMatch(newPassword, member.accountInfo!!.password ?: ""))
             throw UsedPasswordException("이미 기존에 사용하던 비밀번호 값을 다시 사용했습니다.")
 
         member.modifyPassword(newEncodePassword)
