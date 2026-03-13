@@ -9,12 +9,12 @@ import plain.bookmaru.domain.member.port.`in`.command.SignupMemberCommand
 data class SignupMemberRequestDto(
     val username: String,
     val password: String,
-    val email: String? = null,
+    val email: String,
     val affiliationName: String
 ) {
     fun toCommand(platformType: String): SignupMemberCommand {
         return SignupMemberCommand(
-            email = this.email?.ifBlank { null }.let { Email(it) },
+            email = Email(email),
             accountInfo = AccountInfo(this.username, this.password),
             affiliationName = this.affiliationName,
             profile = Profile(nickname = this.username),

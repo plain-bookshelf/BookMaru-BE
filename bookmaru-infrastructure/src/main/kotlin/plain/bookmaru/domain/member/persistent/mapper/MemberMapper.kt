@@ -15,7 +15,7 @@ class MemberMapper{
             id = entity.id,
             affiliationId = entity.affiliation.id!!,
             accountInfo = AccountInfo(entity.username, entity.password),
-            profile = Profile(entity.nickname, entity.profileImage, entity.oneMonthStatics, entity.overdueTerm, entity.bookReadTime),
+            profile = Profile(entity.nickname, entity.profileImage, entity.oneMonthStatics, entity.overdueTerm, entity.oftenBookReadTime),
             authority = entity.role,
             email = entity.email
         )
@@ -23,17 +23,26 @@ class MemberMapper{
 
     fun toEntity(domain: Member, affiliationProxy: AffiliationEntity) : MemberEntity {
         return MemberEntity(
-            id = domain.id,
             affiliation = affiliationProxy,
-            username = domain.accountInfo?.username ?: domain.email!!.email.toString(),
+            username = domain.accountInfo?.username ?: domain.email.email.toString(),
             nickname = domain.profile.nickname,
-            password = domain.accountInfo?.password.toString(),
             email = domain.email,
             role = domain.authority,
-            profileImage = domain.profile.profileImage ?: "",
-            oneMonthStatics = domain.profile.oneMonthStatics,
-            overdueTerm = domain.profile.overdueTerm,
-            bookReadTime = domain.profile.oftenBookReadTime,
-        )
+        ).apply {
+            this.password = domain.accountInfo?.password ?: ""
+            this.profileImage = domain.profile.profileImage ?: ""
+            this.oftenBookReadTime = domain.profile.oftenBookReadTime
+            this.overdueTerm = domain.profile.overdueTerm
+            this.oneMonthStatics = domain.profile.oneMonthStatics ?: 0
+        }
+    }
+
+    fun updateEntity(domain: Member, entity: MemberEntity, affiliationProxy: AffiliationEntity) {
+        entity.affiliation = affiliationProxy
+        entity.nickname = domain.profile.nickname
+        entity.profileImage = domain.profile.profileImage ?: ""
+        entity.oneMonthStatics = domain.profile.oneMonthStatics ?: 0
+        entity.overdueTerm = domain.profile.overdueTerm
+        entity.oftenBookReadTime = domain.profile.oftenBookReadTime
     }
 }

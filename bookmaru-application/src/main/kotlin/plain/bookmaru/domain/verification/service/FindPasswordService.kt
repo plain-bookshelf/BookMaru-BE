@@ -4,8 +4,8 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import plain.bookmaru.common.annotation.ReadOnlyService
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.port.out.MemberPort
+import plain.bookmaru.domain.member.vo.Email
 import plain.bookmaru.domain.verification.exception.NotFoundEmailException
-import plain.bookmaru.domain.verification.exception.NotMatchEmailMemberException
 import plain.bookmaru.domain.verification.exception.NotMatchVerificationCodeException
 import plain.bookmaru.domain.verification.port.`in`.FindPasswordUseCase
 import plain.bookmaru.domain.verification.port.`in`.command.FindPasswordCommand
@@ -25,13 +25,9 @@ class FindPasswordService(
     override suspend fun execute(command: FindPasswordCommand): Boolean {
         val email = command.email
         val verificationCode = command.verificationCode
-        val username = command.username
 
-        val member = memberPort.findByUsername(username)
-            ?: throw NotFoundMemberException("$username 아이디를 가진 유저 정보를 찾을 수 없습니다.")
-
-        if (member.email?.email == null || member.email.email != email)
-            throw NotMatchEmailMemberException("$email 을 사용하지 않는 유저입니다.")
+        memberPort.findByEmail(Email(email))
+            ?: throw NotFoundMemberException("$email 를 사용하는 유저 정보를 찾을 수 없습니다.")
 
         val emailVerification = emailVerificationCodePort.load(email)
             ?: throw NotFoundEmailException("$email 이메일 정보로 인증 코드가 전송되지 않았습니다.")
@@ -46,7 +42,7 @@ class FindPasswordService(
         emailVerificationCodePort.delete(email)
 
         val uuid = UUID.randomUUID().toString()
-        findPasswordPort.save(uuid, username)
+        findPasswordPort.save(uuid, email)
 
         return true
     }

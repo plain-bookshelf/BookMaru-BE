@@ -2,7 +2,6 @@ package plain.bookmaru.domain.verification.port.`in`.command
 
 data class FindPasswordCommand(
     val email: String,
-    val verificationCode: String,
-    val username: String
+    val verificationCode: String
 ) {
 }

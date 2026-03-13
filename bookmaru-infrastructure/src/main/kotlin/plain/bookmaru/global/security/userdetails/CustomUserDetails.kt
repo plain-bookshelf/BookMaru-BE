@@ -19,9 +19,9 @@ data class CustomUserDetails(
     constructor(memberEntity: MemberEntity) : this(
         id = memberEntity.id!!,
         username = memberEntity.username,
-        password = memberEntity.password,
+        password = memberEntity.password ?: "",
         role = memberEntity.role,
-        affiliationId = memberEntity.affiliation!!.id!!,
+        affiliationId = memberEntity.affiliation.id!!,
         isEnabled = memberEntity.affiliation.affiliationName.isNotBlank()
     )
 

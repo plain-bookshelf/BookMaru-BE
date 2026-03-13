@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import plain.bookmaru.common.error.BaseException
 import plain.bookmaru.common.error.ErrorCode
 import plain.bookmaru.global.error.response.ErrorResponse
@@ -45,6 +46,16 @@ class GlobalExceptionHandler {
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST.value())
             .body(ErrorResponse("ILLEGAL_ARGUMENT_ERROR", "유효하지 않은 값이 들어왔습니다.", HttpStatus.BAD_REQUEST.value(), "${e.javaClass.name}.${e.javaClass.methods}"))
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalStateException::class)
+    fun handlerIllegalStateException(e: IllegalStateException): ResponseEntity<ErrorResponse> {
+        log.error { "IllegalStateException: ${e.message}, Cause: ${e.cause}" }
+
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST.value())
+            .body(ErrorResponse("ILLEGAL_STATE_ERROR", "객체 상태가 정상적이지 않습니다.", HttpStatus.BAD_REQUEST.value(), "${e.javaClass.name}.${e.javaClass.methods}"))
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

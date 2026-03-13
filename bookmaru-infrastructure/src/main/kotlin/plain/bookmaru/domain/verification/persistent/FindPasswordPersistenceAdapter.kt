@@ -19,11 +19,11 @@ class FindPasswordPersistenceAdapter(
         )
     }
 
-    override suspend fun load(username: String): String? = dbProtection.withReadOnly {
-        redisTemplate.opsForValue().get(username)
+    override suspend fun load(email: String): String? = dbProtection.withReadOnly {
+        redisTemplate.opsForValue().get(email)
     }
 
-    override suspend fun delete(username: String) {
-        dbProtection.withTransaction { redisTemplate.delete(username) }
+    override suspend fun delete(email: String) {
+        dbProtection.withTransaction { redisTemplate.delete(email) }
     }
 }

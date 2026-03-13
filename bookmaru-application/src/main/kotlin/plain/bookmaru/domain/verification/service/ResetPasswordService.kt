@@ -19,18 +19,21 @@ class ResetPasswordService(
 ) : ResetPasswordUseCase {
     override suspend fun execute(command: ResetPasswordCommand) {
         val newPassword = command.newPassword
-        val username = command.username
+        val email = command.email
+        val registerToken = command.registerToken
 
-        val member = memberPort.findByUsername(username)
-            ?: throw NotFoundMemberException("$username 아이디를 가진 유저 정보가 없습니다.")
+        val member = memberPort.findByUsername(email)
+            ?: throw NotFoundMemberException("$email 이메일 정보를 가진 유저 정보가 없습니다.")
 
-        if (findPasswordPort.load(username) == null) {
+        val loadRegisterToken = findPasswordPort.load(email)
+
+        if (loadRegisterToken == null || loadRegisterToken != registerToken) {
             throw NotMatchVerificationCodeException("비정상적인 접근 입니다.")
         }
-        findPasswordPort.delete(username)
+        findPasswordPort.delete(email)
 
         passwordUpdateProfessor.updatePassword(member, newPassword)
 
-        refreshTokenPort.deleteByUsername(username)
+        refreshTokenPort.deleteByUsername(email)
     }
 }

@@ -23,9 +23,6 @@ import plain.bookmaru.global.entity.BaseEntity
     allocationSize = 50
 )
 class OfficialCodeEntity(
-    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "affiliation_seq_generator")
-    var id: Long? = null,
-
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE], optional = false)
     @JoinColumn(name = "affiliation_id", nullable = false)
     val affiliation: AffiliationEntity,
@@ -37,15 +34,7 @@ class OfficialCodeEntity(
     @Column(nullable = false, length = 10)
     val code: String
 ) : BaseEntity() {
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is OfficialCodeEntity) return false
-
-        return id != null && id == other.id
-    }
-
-    override fun hashCode(): Int {
-        return javaClass.hashCode()
-    }
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "affiliation_seq_generator")
+    @Column(nullable = false, unique = true)
+    override val id: Long? = null
 }
