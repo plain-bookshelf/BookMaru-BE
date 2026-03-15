@@ -12,6 +12,7 @@ import jakarta.persistence.SequenceGenerator
 import plain.bookmaru.domain.community.persistent.entity.BookCommentEntity
 import plain.bookmaru.domain.inventory.persistent.entity.BookDetailEntity
 import plain.bookmaru.global.entity.BaseEntity
+import java.time.LocalDate
 
 @Entity
 @SequenceGenerator(
@@ -34,6 +35,8 @@ class BookEntity(
     val publisher: String,
 
     val introduction: String,
+
+    val registrationDate: LocalDate,
 
     val similarityToken: String
 ) : BaseEntity() {

@@ -18,6 +18,7 @@ class BookMapper {
                 introduction = entity.introduction,
                 bookImage = entity.bookImage,
                 publisher = entity.publisher,
+                registrationDate = entity.registrationDate,
             ),
             rentalCount = entity.rentalCount,
             reservationCount = entity.reservationCount,
@@ -35,6 +36,7 @@ class BookMapper {
             publisher = domain.bookInfo.publisher,
             introduction = domain.bookInfo.introduction,
             similarityToken = domain.similarityToken,
+            registrationDate = domain.bookInfo.registrationDate
         )
     }
 
