@@ -9,6 +9,5 @@ class Event(
     val id: Long? = null,
     val memberId: Long,
     val eventInfo: EventInfo,
-    val eventContent: EventContent
-) {
-}
+    val eventContent: EventContent? = null
+)

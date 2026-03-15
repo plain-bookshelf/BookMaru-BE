@@ -11,7 +11,7 @@ import plain.bookmaru.domain.member.persistent.entity.MemberEntity
 @Component
 class EventMapper {
 
-    fun toDomain(eventEntity: EventEntity, eventDetailEntity: EventDetailEntity) : Event {
+    fun toDomain(eventEntity: EventEntity, eventDetailEntity: EventDetailEntity? = null) : Event {
         return Event(
             id = eventEntity.id,
             memberId = eventEntity.memberEntity.id!!,
@@ -22,7 +22,7 @@ class EventMapper {
                 startAt = eventEntity.startAt,
                 endAt = eventEntity.endAt,
             ),
-            eventContent = EventContent(eventDetailEntity.content),
+            eventContent = EventContent(eventDetailEntity?.content ?: ""),
         )
     }
 
@@ -38,10 +38,14 @@ class EventMapper {
 
         val eventDetailEntity = EventDetailEntity(
             id = domain.id,
-            content = domain.eventContent.content,
+            content = domain.eventContent?.content ?: "",
             event = eventEntity,
         )
 
         return Pair(eventEntity, eventDetailEntity)
+    }
+
+    fun toDomainList(entities: List<EventEntity>) : List<Event> {
+        return entities.map { toDomain(it) }
     }
 }

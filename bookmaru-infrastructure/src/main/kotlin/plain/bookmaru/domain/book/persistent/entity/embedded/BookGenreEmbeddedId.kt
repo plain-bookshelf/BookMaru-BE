@@ -6,5 +6,4 @@ import jakarta.persistence.Embeddable
 class BookGenreEmbeddedId(
     val bookId: Long,
     val genreId: Long
-) {
-}
+)
