@@ -12,6 +12,8 @@ import java.time.Instant
 
 private val log = KotlinLogging.logger {}
 
+private const val OAUTH_TOKEN_KEY = "auth:oauth_token:"
+
 @Component
 class OAuth2RegisterSessionPersistenceAdapter(
     private val redisTemplate: StringRedisTemplate,
@@ -25,7 +27,7 @@ class OAuth2RegisterSessionPersistenceAdapter(
         val jsonData = objectMapper.writeValueAsString(command)
 
         redisTemplate.opsForValue().set(
-            token,
+            OAUTH_TOKEN_KEY + token,
             jsonData,
             Duration.between(Instant.now(), Instant.now().plusSeconds(60 * 30))
         )
@@ -34,7 +36,7 @@ class OAuth2RegisterSessionPersistenceAdapter(
     }
 
     override suspend fun getPendingUser(token: String): CustomOAuth2Command? = dbProtection.withReadOnly{
-        val jsonData = redisTemplate.opsForValue().get(token) ?: return@withReadOnly null
+        val jsonData = redisTemplate.opsForValue().get(OAUTH_TOKEN_KEY + token) ?: return@withReadOnly null
         val codeData = objectMapper.readValue(jsonData, CustomOAuth2Command::class.java)
 
         return@withReadOnly CustomOAuth2Command(
@@ -47,7 +49,7 @@ class OAuth2RegisterSessionPersistenceAdapter(
     }
 
     override suspend fun removePendingUser(token: String) {
-        val isDeleted = redisTemplate.delete(token)
+        val isDeleted = redisTemplate.delete(OAUTH_TOKEN_KEY + token)
 
         if (!isDeleted) log.warn { "$token 값을 지우지 못 했습니다." }
     }

@@ -37,4 +37,10 @@ class BookMapper {
             similarityToken = domain.similarityToken,
         )
     }
+
+    fun toEntityList(domains: List<Book>): List<BookEntity>
+        = domains.map { toEntity(it) }
+
+    fun toDomainList(entities: List<BookEntity>) : List<Book>
+        = entities.map { toDomain(it) }
 }

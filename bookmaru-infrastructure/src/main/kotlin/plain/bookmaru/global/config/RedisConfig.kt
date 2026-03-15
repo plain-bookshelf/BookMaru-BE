@@ -10,13 +10,11 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
+import plain.bookmaru.global.properties.RedisProperties
 
 @Configuration
 class RedisConfig(
-    @Value("\${spring.data.redis.host}") private val host: String,
-    @Value("\${spring.data.redis.port}") private val port: Int,
-    @Value("\${spring.data.redis.db-index.auth}") private val authIndex: Int,
-    @Value("\${spring.data.redis.db-index.cache}") private val cacheIndex: Int
+    private val redisProperties: RedisProperties
 ) {
     /*
     0 인증용(Auth)
@@ -24,8 +22,8 @@ class RedisConfig(
     @Bean
     @Primary
     fun authRedisConnectionFactory(): RedisConnectionFactory? {
-        val config = RedisStandaloneConfiguration(host, port)
-        config.database = authIndex
+        val config = RedisStandaloneConfiguration(redisProperties.host, redisProperties.port)
+        config.database = redisProperties.dbIndex.auth
 
         return LettuceConnectionFactory(config)
     }
@@ -47,8 +45,8 @@ class RedisConfig(
      */
     @Bean(name = ["cacheRedisConnectionFactory"])
     fun cacheRedisConnectionFactory(): RedisConnectionFactory {
-        val config = RedisStandaloneConfiguration(host, port)
-        config.database = cacheIndex
+        val config = RedisStandaloneConfiguration(redisProperties.host, redisProperties.port)
+        config.database = redisProperties.dbIndex.cache
 
         return LettuceConnectionFactory(config)
     }

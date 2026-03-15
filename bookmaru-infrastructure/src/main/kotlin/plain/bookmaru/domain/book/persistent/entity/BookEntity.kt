@@ -42,7 +42,7 @@ class BookEntity(
     @Column(unique = true, nullable = false)
     override val id: Long? = null
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bookDetail", cascade = [CascadeType.ALL])
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bookEntity", cascade = [CascadeType.ALL])
     val bookDetailEntities : MutableList<BookDetailEntity> = mutableListOf()
 
     @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
