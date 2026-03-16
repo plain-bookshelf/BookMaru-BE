@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.SequenceGenerator
+import jakarta.persistence.Table
 
 @Entity
 @SequenceGenerator(
@@ -13,6 +14,7 @@ import jakarta.persistence.SequenceGenerator
     sequenceName = "affiliation_seq",
     allocationSize = 50
 )
+@Table(name = "affiliation")
 class AffiliationEntity(
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "affiliation_seq_generator")
     @Column(nullable = false, unique = true)

@@ -11,6 +11,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.SequenceGenerator
+import jakarta.persistence.Table
 import plain.bookmaru.domain.event.vo.EventType
 import plain.bookmaru.domain.member.persistent.entity.MemberEntity
 import plain.bookmaru.global.entity.BaseEntity
@@ -22,6 +23,7 @@ import java.time.LocalDateTime
     sequenceName = "event_seq",
     allocationSize = 5
 )
+@Table(name = "event")
 class EventEntity(
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
