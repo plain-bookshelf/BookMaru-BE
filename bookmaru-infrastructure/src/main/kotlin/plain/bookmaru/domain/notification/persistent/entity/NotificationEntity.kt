@@ -8,9 +8,11 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.Index
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.SequenceGenerator
+import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
 import plain.bookmaru.domain.member.persistent.entity.MemberEntity
@@ -25,12 +27,16 @@ import plain.bookmaru.global.entity.BaseEntity
     sequenceName = "notification_seq",
     allocationSize = 50
 )
+@Table(
+    name = "notification",
+    indexes = [Index(name = "idx_target_id", columnList = "target_id")]
+)
 class NotificationEntity(
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id", nullable = false)
     val memberEntity: MemberEntity,
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "target_id")
     val targetId: Long,
 
     @Column(nullable = false)

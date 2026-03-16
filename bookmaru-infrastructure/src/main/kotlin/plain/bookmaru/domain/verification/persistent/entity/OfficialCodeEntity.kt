@@ -12,6 +12,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.SequenceGenerator
+import jakarta.persistence.Table
 import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.global.entity.BaseEntity
@@ -22,6 +23,7 @@ import plain.bookmaru.global.entity.BaseEntity
     sequenceName = "affiliation_seq",
     allocationSize = 50
 )
+@Table(name = "official_code")
 class OfficialCodeEntity(
     @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE], optional = false)
     @JoinColumn(name = "affiliation_id", nullable = false)

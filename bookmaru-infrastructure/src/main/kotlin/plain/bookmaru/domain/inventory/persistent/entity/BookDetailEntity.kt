@@ -6,9 +6,11 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.Index
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.SequenceGenerator
+import jakarta.persistence.Table
 import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.book.persistent.entity.BookEntity
 import plain.bookmaru.domain.inventory.vo.RentalStatus
@@ -21,6 +23,10 @@ import java.time.LocalDate
     name = "bookDetail_seq_generator",
     sequenceName = "bookDetail_seq",
     allocationSize = 200
+)
+@Table(
+    name = "book_detail",
+    indexes = [Index(name = "idx_book_detail_id", columnList = "id")]
 )
 class BookDetailEntity(
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

@@ -10,10 +10,12 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.Index
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.SequenceGenerator
+import jakarta.persistence.Table
 import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.member.persistent.converter.EmailConverter
@@ -28,6 +30,10 @@ import java.time.LocalTime
     name = "member_seq_generator",
     sequenceName = "members_seq",
     allocationSize = 50
+)
+@Table(
+    name = "member",
+    indexes = [Index(name = "idx_member_id", columnList = "id")]
 )
 class MemberEntity(
     @ManyToOne(optional = false, cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)

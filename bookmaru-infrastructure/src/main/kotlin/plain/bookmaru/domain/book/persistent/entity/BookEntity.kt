@@ -7,8 +7,10 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.Index
 import jakarta.persistence.OneToMany
 import jakarta.persistence.SequenceGenerator
+import jakarta.persistence.Table
 import plain.bookmaru.domain.community.persistent.entity.BookCommentEntity
 import plain.bookmaru.domain.inventory.persistent.entity.BookDetailEntity
 import plain.bookmaru.global.entity.BaseEntity
@@ -19,6 +21,10 @@ import java.time.LocalDate
     name = "book_seq_generator",
     sequenceName = "book_seq",
     allocationSize = 100
+)
+@Table(
+    name = "book",
+    indexes = [Index(name = "idx_book_id", columnList = "id")]
 )
 class BookEntity(
     @Column(nullable = false, length = 100)
