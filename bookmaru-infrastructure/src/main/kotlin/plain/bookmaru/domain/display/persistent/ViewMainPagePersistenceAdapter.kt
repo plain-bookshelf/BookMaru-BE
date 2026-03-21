@@ -1,6 +1,8 @@
 package plain.bookmaru.domain.display.persistent
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import kotlinx.serialization.encodeToByteArray
+import kotlinx.serialization.decodeFromByteArray
+import kotlinx.serialization.protobuf.ProtoBuf
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Component
@@ -26,8 +28,7 @@ private val RECENT_BOOK_TTL = Duration.ofHours(24)
 @Component
 class ViewMainPagePersistenceAdapter(
     @Qualifier("cacheRedisTemplate")
-    private val cacheRedisTemplate: RedisTemplate<String, Any>,
-    private val objectMapper: ObjectMapper,
+    private val cacheRedisTemplate: RedisTemplate<String, ByteArray>,
     private val dbProtection: DbProtection
 ) : MainPagePort {
     /*
@@ -37,10 +38,10 @@ class ViewMainPagePersistenceAdapter(
         if (books.isEmpty()) return@withTransaction
 
         val key = "$POPULAR_BOOK_KEY:$platformType:affiliationId$affiliationId"
-        val jsonList = books.map { objectMapper.writeValueAsString(it) }
+        val byteArray = books.map { ProtoBuf.encodeToByteArray(it) }
 
         cacheRedisTemplate.delete(key)
-        cacheRedisTemplate.opsForList().rightPushAll(key, jsonList)
+        cacheRedisTemplate.opsForList().rightPushAll(key, byteArray)
         cacheRedisTemplate.expire(key, POPULAR_BOOK_TTL)
     }
 
@@ -48,10 +49,10 @@ class ViewMainPagePersistenceAdapter(
         if (books.isEmpty()) return@withTransaction
 
         val key = "$RECENT_BOOK_KEY:$platformType:affiliationId$affiliationId"
-        val jsonList = books.map { objectMapper.writeValueAsString(it) }
+        val byteArray = books.map { ProtoBuf.encodeToByteArray(it) }
 
         cacheRedisTemplate.delete(key)
-        cacheRedisTemplate.opsForList().rightPushAll(key, jsonList)
+        cacheRedisTemplate.opsForList().rightPushAll(key, byteArray)
         cacheRedisTemplate.expire(key, RECENT_BOOK_TTL)
     }
 
@@ -59,10 +60,10 @@ class ViewMainPagePersistenceAdapter(
         if (events.isEmpty()) return@withTransaction
 
         val key = "$EVENT_KEY:affiliationId$affiliationId"
-        val jsonList = events.map { objectMapper.writeValueAsString(it) }
+        val byteArray = events.map { ProtoBuf.encodeToByteArray(it) }
 
         cacheRedisTemplate.delete(key)
-        cacheRedisTemplate.opsForList().rightPushAll(key, jsonList)
+        cacheRedisTemplate.opsForList().rightPushAll(key, byteArray)
         cacheRedisTemplate.expire(key, EVENT_TTL)
     }
     /*
@@ -83,11 +84,11 @@ class ViewMainPagePersistenceAdapter(
 
     override suspend fun loadEvents(affiliationId: Long): List<EventInfoResult>? = dbProtection.withReadOnly {
         val key = "$EVENT_KEY:affiliationId$affiliationId"
-        val jsonList = cacheRedisTemplate.opsForList().range(key, 0, -1)
+        val rangeResult = cacheRedisTemplate.opsForList().range(key, 0, -1)
 
-        if (jsonList.isNullOrEmpty()) return@withReadOnly null
+        if (rangeResult.isNullOrEmpty()) return@withReadOnly null
 
-        val events = jsonList.map { objectMapper.readValue(it.toString(), EventInfoResult::class.java) }
+        val events = rangeResult.map { ProtoBuf.decodeFromByteArray<EventInfoResult>(it) }
 
         return@withReadOnly events
     }
@@ -97,11 +98,13 @@ class ViewMainPagePersistenceAdapter(
         val start = command.offset
         val end = start + size - 1
 
-        val jsonList = cacheRedisTemplate.opsForList().range(key, start, end)
+        val rangeResult = cacheRedisTemplate.opsForList().range(key, start, end)
 
-        if (jsonList.isNullOrEmpty()) return null
+        if (rangeResult.isNullOrEmpty()) return null
 
-        val books = jsonList.map { objectMapper.readValue(it.toString(), T::class.java) }
+        val books = rangeResult.map {
+            ProtoBuf.decodeFromByteArray<T>(it)
+        }
 
         val totalElements = cacheRedisTemplate.opsForList().size(key) ?: 0L
         val totalPages = ceil(totalElements.toDouble() / size).toInt()

@@ -37,6 +37,7 @@ subprojects {
         "implementation"("org.jetbrains.kotlin:kotlin-reflect")
         "implementation"("com.fasterxml.jackson.module:jackson-module-kotlin")
         "implementation"("io.github.oshai:kotlin-logging-jvm:5.1.0")
+        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.6.0")
     }
 
     tasks.withType<Test> {

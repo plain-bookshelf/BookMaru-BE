@@ -7,7 +7,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
+import org.springframework.data.redis.serializer.RedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
 import plain.bookmaru.global.properties.RedisProperties
 
@@ -51,12 +51,14 @@ class RedisConfig(
     }
 
     @Bean(name = ["cacheRedisTemplate"])
-    fun cacheRedisTemplate(): RedisTemplate<String, Any> {
-        val template = RedisTemplate<String, Any>()
-
+    fun cacheRedisTemplate(): RedisTemplate<String, ByteArray> {
+        val template = RedisTemplate<String, ByteArray>()
         template.connectionFactory = cacheRedisConnectionFactory()
+
         template.keySerializer = StringRedisSerializer()
-        template.valueSerializer = GenericJackson2JsonRedisSerializer()
+        template.valueSerializer = RedisSerializer.byteArray()
+        template.hashKeySerializer = StringRedisSerializer()
+        template.hashValueSerializer = RedisSerializer.byteArray()
 
         return template
     }
