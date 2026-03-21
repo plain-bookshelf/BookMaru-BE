@@ -20,7 +20,6 @@ class MemberPersistenceAdapter(
     override suspend fun save(member: Member) : Member = dbProtection.withTransaction {
         val affiliationProxy = affiliationRepository.getReferenceById(member.affiliationId!!)
 
-
         if (member.id == null) {
             val memberEntity = memberMapper.toEntity(member, affiliationProxy)
             val saved = memberRepository.save(memberEntity)

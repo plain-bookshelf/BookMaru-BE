@@ -3,7 +3,6 @@ package plain.bookmaru.domain.book.persistent.entity
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
-import jakarta.persistence.Index
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.MapsId
@@ -12,10 +11,7 @@ import plain.bookmaru.domain.book.persistent.entity.embedded.BookGenreEmbeddedId
 import plain.bookmaru.global.entity.BaseEntity
 
 @Entity
-@Table(
-    name = "book_genre",
-    indexes = [Index(name = "idx_book_id", columnList = "book_id")]
-)
+@Table(name = "book_genre")
 class BookGenreEntity(
     @EmbeddedId
     override val id: BookGenreEmbeddedId,

@@ -7,7 +7,7 @@ import plain.bookmaru.domain.community.vo.BookReact
 class Comment(
     val id: Long? = null,
     val memberId: Long,
-    val bookId: Long,
+    val bookAffiliationId: Long,
     val bookReact: BookReact,
     val likeCount: Int
 )

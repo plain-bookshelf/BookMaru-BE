@@ -11,8 +11,6 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.SequenceGenerator
 import jakarta.persistence.Table
-import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
-import plain.bookmaru.domain.book.persistent.entity.BookEntity
 import plain.bookmaru.domain.inventory.vo.RentalStatus
 import plain.bookmaru.domain.member.persistent.entity.MemberEntity
 import plain.bookmaru.global.entity.BaseEntity
@@ -26,7 +24,11 @@ import java.time.LocalDate
 )
 @Table(
     name = "book_detail",
-    indexes = [Index(name = "idx_book_detail_id", columnList = "id")]
+    indexes = [
+        Index(name = "idx_book_detail_id", columnList = "id"),
+        Index(name = "idx_book_detail_book_affiliation_id", columnList = "book_affiliation_id"),
+        Index(name = "idx_book_detail_member_id", columnList = "member_id")
+    ]
 )
 class BookDetailEntity(
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -34,12 +36,8 @@ class BookDetailEntity(
     val memberEntity: MemberEntity,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id", nullable = false)
-    val bookEntity: BookEntity,
-
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "affiliation_id", nullable = false)
-    val affiliationEntity: AffiliationEntity,
+    @JoinColumn(name = "book_affiliation_id", nullable = false)
+    val bookAffiliationEntity: BookAffiliationEntity,
 
     @Column(nullable = false)
     val registrationNumber : String,

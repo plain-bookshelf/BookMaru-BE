@@ -1,8 +1,7 @@
 package plain.bookmaru.domain.lending.persistent.mapper
 
 import org.springframework.stereotype.Component
-import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
-import plain.bookmaru.domain.book.persistent.entity.BookEntity
+import plain.bookmaru.domain.inventory.persistent.entity.BookAffiliationEntity
 import plain.bookmaru.domain.inventory.persistent.entity.BookDetailEntity
 import plain.bookmaru.domain.lending.model.Rental
 import plain.bookmaru.domain.lending.vo.BookRecord
@@ -28,16 +27,14 @@ class RentalMapper {
     fun toEntity(
         domain: Rental,
         memberEntity: MemberEntity,
-        bookEntity: BookEntity,
-        affiliationEntity: AffiliationEntity,
-        bookDetailEntity: BookDetailEntity
+        bookAffiliationEntity: BookAffiliationEntity,
+        bookDetailEntity: BookDetailEntity,
     ) : BookDetailEntity {
         return BookDetailEntity(
             memberEntity = memberEntity,
-            bookEntity = bookEntity,
-            affiliationEntity = affiliationEntity,
+            bookAffiliationEntity = bookAffiliationEntity,
             registrationNumber = bookDetailEntity.registrationNumber,
-            callNumber = bookDetailEntity.callNumber,
+            callNumber = bookDetailEntity.callNumber
         ).apply {
             this.rentalRequestStatus = domain.rentalRequestStatus
             this.rentalStatus = domain.rentalStatus

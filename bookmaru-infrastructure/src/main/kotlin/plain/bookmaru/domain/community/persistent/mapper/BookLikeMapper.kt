@@ -11,7 +11,7 @@ class BookLikeMapper {
     fun toDomain(entity: BookLikeEntity) : BookLike {
         return BookLike(
             memberId = entity.id.memberId,
-            bookId = entity.id.bookId,
+            bookAffiliationId = entity.id.bookAffiliationId,
             status = entity.status
         )
     }
@@ -19,7 +19,7 @@ class BookLikeMapper {
     fun toEntity(domain: BookLike) : BookLikeEntity {
         val embeddedId = BookLikeEmbeddedId(
             memberId = domain.memberId,
-            bookId = domain.bookId
+            bookAffiliationId = domain.bookAffiliationId
         )
 
         return BookLikeEntity(

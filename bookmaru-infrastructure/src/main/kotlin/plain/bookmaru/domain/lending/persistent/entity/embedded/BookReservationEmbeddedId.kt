@@ -6,5 +6,5 @@ import java.io.Serializable
 @Embeddable
 data class BookReservationEmbeddedId(
     val memberId: Long,
-    val bookDetailId: Long
+    val bookAffiliationId: Long
 ) : Serializable

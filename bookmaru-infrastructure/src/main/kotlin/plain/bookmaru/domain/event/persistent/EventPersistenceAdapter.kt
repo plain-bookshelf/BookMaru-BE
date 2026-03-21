@@ -11,5 +11,5 @@ class EventPersistenceAdapter(
     private val eventRepository: EventRepository,
     private val eventMapper: EventMapper
 ) : EventPort{
-    override suspend fun findAll(): List<Event> = eventMapper.toDomainList(eventRepository.findAll())
+    override suspend fun findAll(): List<Event>? = eventMapper.toDomainList(eventRepository.findAll())
 }

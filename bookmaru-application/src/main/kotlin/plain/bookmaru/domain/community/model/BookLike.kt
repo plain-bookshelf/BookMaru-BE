@@ -5,6 +5,6 @@ import plain.bookmaru.common.annotation.Aggregate
 @Aggregate
 class BookLike(
     val memberId: Long,
-    val bookId: Long,
+    val bookAffiliationId: Long,
     val status: Boolean
 )
