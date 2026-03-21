@@ -1,8 +1,6 @@
 package plain.bookmaru.domain.inventory.persistent.mapper
 
 import org.springframework.stereotype.Component
-import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
-import plain.bookmaru.domain.book.persistent.entity.BookEntity
 import plain.bookmaru.domain.inventory.model.BookDetail
 import plain.bookmaru.domain.inventory.persistent.entity.BookAffiliationEntity
 import plain.bookmaru.domain.inventory.persistent.entity.BookDetailEntity

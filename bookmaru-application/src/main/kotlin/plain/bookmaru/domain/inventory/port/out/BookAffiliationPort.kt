@@ -1,7 +1,6 @@
 package plain.bookmaru.domain.inventory.port.out
 
 import plain.bookmaru.common.command.PageCommand
-import plain.bookmaru.common.result.PageResult
 import plain.bookmaru.common.result.SliceResult
 import plain.bookmaru.domain.book.model.Book
 import plain.bookmaru.domain.inventory.port.out.result.BookDetailInfoResult

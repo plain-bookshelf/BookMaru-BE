@@ -1,7 +1,6 @@
 package plain.bookmaru.domain.community.persistent.mapper
 
 import org.springframework.stereotype.Component
-import plain.bookmaru.domain.book.persistent.entity.BookEntity
 import plain.bookmaru.domain.community.model.Comment
 import plain.bookmaru.domain.community.persistent.entity.BookCommentEntity
 import plain.bookmaru.domain.community.vo.BookReact
