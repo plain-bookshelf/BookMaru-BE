@@ -13,7 +13,7 @@ class MemberMapper{
     fun toDomain(entity: MemberEntity) : Member {
         return Member(
             id = entity.id,
-            affiliationId = entity.affiliation.id!!,
+            affiliationId = entity.affiliationEntity.id!!,
             accountInfo = AccountInfo(entity.username, entity.password),
             profile = Profile(entity.nickname, entity.profileImage, entity.oneMonthStatics, entity.overdueTerm, entity.oftenBookReadTime),
             authority = entity.role,
@@ -23,7 +23,7 @@ class MemberMapper{
 
     fun toEntity(domain: Member, affiliationProxy: AffiliationEntity) : MemberEntity {
         return MemberEntity(
-            affiliation = affiliationProxy,
+            affiliationEntity = affiliationProxy,
             username = domain.accountInfo?.username ?: domain.email.email.toString(),
             nickname = domain.profile.nickname,
             email = domain.email,
@@ -38,7 +38,7 @@ class MemberMapper{
     }
 
     fun updateEntity(domain: Member, entity: MemberEntity, affiliationProxy: AffiliationEntity) {
-        entity.affiliation = affiliationProxy
+        entity.affiliationEntity = affiliationProxy
         entity.nickname = domain.profile.nickname
         entity.profileImage = domain.profile.profileImage ?: ""
         entity.oneMonthStatics = domain.profile.oneMonthStatics ?: 0

@@ -42,12 +42,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: ${DDL:validate}
-    database: postgresql
     properties:
       hibernate:
         default_schema: public
         show_sql: true
         default_batch_fetch_size: 100
+    open-in-view: false
 
   jackson:
     property-naming-strategy: SNAKE_CASE

@@ -11,7 +11,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.SequenceGenerator
 import jakarta.persistence.Table
-import plain.bookmaru.domain.book.persistent.entity.BookEntity
+import plain.bookmaru.domain.inventory.persistent.entity.BookAffiliationEntity
 import plain.bookmaru.domain.member.persistent.entity.MemberEntity
 import plain.bookmaru.global.entity.BaseEntity
 
@@ -24,8 +24,8 @@ import plain.bookmaru.global.entity.BaseEntity
 @Table(
     name = "book_comment",
     indexes = [
-        Index(name = "idx_book_id", columnList = "book_id"),
-        Index(name = "idx_member_id", columnList = "member_id")
+        Index(name = "idx_book_comment_member_id", columnList = "member_id"),
+        Index(name = "idx_book_comment_book_id", columnList = "book_id")
     ]
 )
 class BookCommentEntity(
@@ -34,8 +34,8 @@ class BookCommentEntity(
     val memberEntity: MemberEntity,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id", nullable = false)
-    val bookEntity: BookEntity
+    @JoinColumn(name = "book_affiliation_id", nullable = false)
+    val bookAffiliationEntity: BookAffiliationEntity
 ) : BaseEntity() {
 
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bookComment_seq_generator")

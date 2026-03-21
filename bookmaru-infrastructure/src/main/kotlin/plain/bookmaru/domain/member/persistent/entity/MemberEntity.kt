@@ -10,7 +10,6 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import jakarta.persistence.Index
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
@@ -31,14 +30,11 @@ import java.time.LocalTime
     sequenceName = "members_seq",
     allocationSize = 50
 )
-@Table(
-    name = "member",
-    indexes = [Index(name = "idx_member_id", columnList = "id")]
-)
+@Table(name = "member")
 class MemberEntity(
     @ManyToOne(optional = false, cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
     @JoinColumn(name = "affiliation_id", nullable = false )
-    var affiliation: AffiliationEntity,
+    var affiliationEntity: AffiliationEntity,
 
     @Column(nullable = true, length = 45)
     val username: String,

@@ -7,14 +7,12 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import jakarta.persistence.Index
-import jakarta.persistence.OneToMany
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
 import jakarta.persistence.SequenceGenerator
 import jakarta.persistence.Table
-import plain.bookmaru.domain.community.persistent.entity.BookCommentEntity
-import plain.bookmaru.domain.inventory.persistent.entity.BookDetailEntity
+import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.global.entity.BaseEntity
-import java.time.LocalDate
 
 @Entity
 @SequenceGenerator(
@@ -22,11 +20,12 @@ import java.time.LocalDate
     sequenceName = "book_seq",
     allocationSize = 100
 )
-@Table(
-    name = "book",
-    indexes = [Index(name = "idx_book_id", columnList = "id")]
-)
+@Table(name = "book")
 class BookEntity(
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "affiliation_id", nullable = false)
+    val affiliationEntity: AffiliationEntity,
+
     @Column(nullable = false, length = 100)
     val title: String,
 
@@ -40,26 +39,10 @@ class BookEntity(
 
     val publisher: String,
 
-    val introduction: String,
-
-    val registrationDate: LocalDate,
-
-    val similarityToken: String
+    val introduction: String
 ) : BaseEntity() {
 
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "book_seq_generator")
     @Column(unique = true, nullable = false)
     override val id: Long? = null
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bookEntity", cascade = [CascadeType.ALL])
-    val bookDetailEntities : MutableList<BookDetailEntity> = mutableListOf()
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
-    val bookCommentEntities : MutableList<BookCommentEntity> = mutableListOf()
-
-    var rentalCount: Int = 0
-
-    var reservationCount: Int = 0
-
-    var likeCount: Int = 0
 }

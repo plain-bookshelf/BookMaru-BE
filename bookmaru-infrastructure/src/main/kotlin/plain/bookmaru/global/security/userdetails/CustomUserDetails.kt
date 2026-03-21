@@ -8,12 +8,12 @@ import plain.bookmaru.domain.member.persistent.entity.MemberEntity
 import java.util.Collections
 
 data class CustomUserDetails(
-    val id: Long,
+    private val id: Long,
     private val username: String,
     private val password: String,
     private val role: Authority,
-    private val affiliationId: Long,
-    private val isEnabled: Boolean = true,
+    internal val affiliationId: Long,
+    private val isEnabled: Boolean = true
 ) : UserDetails {
 
     constructor(memberEntity: MemberEntity) : this(
@@ -21,8 +21,8 @@ data class CustomUserDetails(
         username = memberEntity.username,
         password = memberEntity.password ?: "",
         role = memberEntity.role,
-        affiliationId = memberEntity.affiliation.id!!,
-        isEnabled = memberEntity.affiliation.affiliationName.isNotBlank()
+        affiliationId = memberEntity.affiliationEntity.id!!,
+        isEnabled = memberEntity.affiliationEntity.affiliationName.isNotBlank() && memberEntity.username.isNotBlank()
     )
 
     override fun getUsername(): String? = username
