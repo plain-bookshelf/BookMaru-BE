@@ -37,4 +37,10 @@ class BookCommentMapper {
     fun toDomainList(entities: List<BookCommentEntity>) : List<Comment> {
         return entities.map { toDomain(it) }
     }
+
+    fun updateEntity(domain: Comment, entity: BookCommentEntity) {
+        entity.comment = domain.bookReact.comment
+        entity.starCount = domain.bookReact.starCount
+        entity.likeCount = domain.likeCount
+    }
 }

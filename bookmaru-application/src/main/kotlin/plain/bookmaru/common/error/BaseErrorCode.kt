@@ -1,6 +1,6 @@
 package plain.bookmaru.common.error
 
-interface ErrorCode {
+interface BaseErrorCode {
     val status: CustomHttpStatus
     val code: String
     val message: String
