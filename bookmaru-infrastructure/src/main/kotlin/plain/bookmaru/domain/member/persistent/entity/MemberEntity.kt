@@ -44,7 +44,7 @@ class MemberEntity(
 
     @Column(unique = true,length = 45)
     @Convert(converter = EmailConverter::class)
-    val email: Email,
+    var email: Email,
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

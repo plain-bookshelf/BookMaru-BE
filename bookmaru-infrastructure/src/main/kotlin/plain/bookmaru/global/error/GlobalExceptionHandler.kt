@@ -7,9 +7,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import plain.bookmaru.common.error.BaseException
-import plain.bookmaru.common.error.ErrorCode
+import plain.bookmaru.common.error.BaseErrorCode
 import plain.bookmaru.global.error.response.ErrorResponse
 
 private val log = KotlinLogging.logger {}
@@ -19,13 +18,13 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(BaseException::class)
     fun handlerBaseException(e: BaseException): ResponseEntity<ErrorResponse> {
-        val errorCode : ErrorCode = e.errorCode
+        val baseErrorCode : BaseErrorCode = e.baseErrorCode
 
-        log.error {"Error Code: [${errorCode.code}], Error Message: [{${errorCode.message}}], Details: [${e.details}]"}
+        log.error {"Error Code: [${baseErrorCode.code}], Error Message: [{${baseErrorCode.message}}], Details: [${e.details}]"}
 
         return ResponseEntity
-            .status(errorCode.status.value)
-            .body(ErrorResponse(errorCode.code, errorCode.message, errorCode.status.value, "${e.javaClass.name}.${e.javaClass.methods}"))
+            .status(baseErrorCode.status.value)
+            .body(ErrorResponse(baseErrorCode.code, baseErrorCode.message, baseErrorCode.status.value, "${e.javaClass.name}.${e.javaClass.methods}"))
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

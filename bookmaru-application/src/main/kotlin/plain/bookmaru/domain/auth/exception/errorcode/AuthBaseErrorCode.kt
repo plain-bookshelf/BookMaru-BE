@@ -1,13 +1,13 @@
 package plain.bookmaru.domain.auth.exception.errorcode
 
 import plain.bookmaru.common.error.CustomHttpStatus
-import plain.bookmaru.common.error.ErrorCode
+import plain.bookmaru.common.error.BaseErrorCode
 
-enum class AuthErrorCode(
+enum class AuthBaseErrorCode(
     override val status: CustomHttpStatus,
     override val code: String,
     override val message: String
-) : ErrorCode {
+) : BaseErrorCode {
     EXPIRED_JWT_TOKEN(CustomHttpStatus.UNAUTHORIZED, "AUTH-001", "토큰이 만료 되었습니다."),
     UNSUPPORTED_JWT_TOKEN(CustomHttpStatus.UNAUTHORIZED, "AUTH-002", "지원하지 않는 토큰입니다."),
     PASSWORD_NOT_MATCH(CustomHttpStatus.BAD_REQUEST, "AUTH-003", "비밀번호가 일치하지 않습니다."),

@@ -1,7 +1,7 @@
 package plain.bookmaru.domain.auth.exception
 
 import plain.bookmaru.common.error.BaseException
-import plain.bookmaru.domain.auth.exception.errorcode.AuthErrorCode
+import plain.bookmaru.domain.auth.exception.errorcode.AuthBaseErrorCode
 
-class NotFoundAuthenticationException(value: String) : BaseException(AuthErrorCode.NOT_FOUND_AUTHENTICATION, value) {
+class NotFoundAuthenticationException(value: String) : BaseException(AuthBaseErrorCode.NOT_FOUND_AUTHENTICATION, value) {
 }

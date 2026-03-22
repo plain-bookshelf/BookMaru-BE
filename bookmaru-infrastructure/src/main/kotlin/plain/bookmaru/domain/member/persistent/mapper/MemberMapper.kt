@@ -39,9 +39,11 @@ class MemberMapper{
 
     fun updateEntity(domain: Member, entity: MemberEntity, affiliationProxy: AffiliationEntity) {
         entity.affiliationEntity = affiliationProxy
+        entity.password = domain.accountInfo?.password ?: entity.password
+        entity.email = domain.email
         entity.nickname = domain.profile.nickname
-        entity.profileImage = domain.profile.profileImage ?: ""
-        entity.oneMonthStatics = domain.profile.oneMonthStatics ?: 0
+        entity.profileImage = domain.profile.profileImage ?: entity.profileImage
+        entity.oneMonthStatics = domain.profile.oneMonthStatics ?: entity.oneMonthStatics
         entity.overdueTerm = domain.profile.overdueTerm
         entity.oftenBookReadTime = domain.profile.oftenBookReadTime
     }

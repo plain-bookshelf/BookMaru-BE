@@ -8,7 +8,7 @@ import plain.bookmaru.domain.member.persistent.entity.MemberEntity
 import java.util.Collections
 
 data class CustomUserDetails(
-    private val id: Long,
+    internal val id: Long,
     private val username: String,
     private val password: String,
     private val role: Authority,

@@ -2,6 +2,7 @@ package plain.bookmaru.domain.inventory.persistent
 
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
 import plain.bookmaru.common.command.PageCommand
 import plain.bookmaru.common.result.SliceResult
@@ -21,6 +22,7 @@ import plain.bookmaru.domain.inventory.vo.RentalStatus
 import plain.bookmaru.global.config.DbProtection
 
 private const val MAX_BOOKS_SIZE = 100L
+private val log = KotlinLogging.logger {}
 
 @Component
 class BookAffiliationPersistenceAdapter(
@@ -64,6 +66,8 @@ class BookAffiliationPersistenceAdapter(
             .limit(limit)
             .fetch()
 
+        log.info { "메인 페이지의 인기순 정렬 책 정보를 $offset 부터 ~ $limit 까지 가져오는데 성공했습니다." }
+
         return@withReadOnly sliceResult(books, size, offset)
     }
 
@@ -94,6 +98,8 @@ class BookAffiliationPersistenceAdapter(
             .limit(limit)
             .fetch()
 
+        log.info { "메인 페이지의 최신순 정렬 책 정보를 $offset 부터 ~ $limit 까지 가져오는데 성공했습니다." }
+
         return@withReadOnly sliceResult(books, size, offset)
     }
 
@@ -104,7 +110,7 @@ class BookAffiliationPersistenceAdapter(
     }
 
     override suspend fun findBookInfoByBookId(bookId: Long, affiliationId: Long): BookDetailInfoResult? = dbProtection.withReadOnly {
-        return@withReadOnly queryFactory
+        val bookInfo = queryFactory
             .select(
                 Projections.constructor(
                     BookDetailInfoResult::class.java,
@@ -165,6 +171,10 @@ class BookAffiliationPersistenceAdapter(
                 bookAffiliation.likeCount
             )
             .fetchOne()
+
+        log.info { "${bookAffiliation.bookEntity.title} 책 제목의 책 상세 페이지의 정보를 가져오는데 성공했습니다." }
+
+        return@withReadOnly bookInfo
     }
 
     /*
