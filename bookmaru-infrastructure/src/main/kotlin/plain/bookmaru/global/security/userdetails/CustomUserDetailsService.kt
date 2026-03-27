@@ -12,7 +12,7 @@ class CustomUserDetailsService(
     private val memberRepository: MemberRepository
 ) : UserDetailsService {
     override fun loadUserByUsername(username: String): UserDetails {
-        val member = if (username.contains("@")) memberRepository.findByEmail(Email(username))
+        val member = if (username.contains("@")) memberRepository.findByEmail(username)
         else memberRepository.findByUsername(username)
             ?: throw NotFoundMemberException("유저 정보를 찾지 못 했습니다: $username")
 

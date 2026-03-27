@@ -4,7 +4,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import plain.bookmaru.common.annotation.ReadOnlyService
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.port.out.MemberPort
-import plain.bookmaru.domain.member.vo.Email
 import plain.bookmaru.domain.verification.exception.NotFoundEmailException
 import plain.bookmaru.domain.verification.exception.NotMatchVerificationCodeException
 import plain.bookmaru.domain.verification.port.`in`.FindPasswordUseCase
@@ -26,7 +25,7 @@ class FindPasswordService(
         val email = command.email
         val verificationCode = command.verificationCode
 
-        memberPort.findByEmail(Email(email))
+        memberPort.findByEmail(email)
             ?: throw NotFoundMemberException("$email 를 사용하는 유저 정보를 찾을 수 없습니다.")
 
         val emailVerification = emailVerificationCodePort.load(email)

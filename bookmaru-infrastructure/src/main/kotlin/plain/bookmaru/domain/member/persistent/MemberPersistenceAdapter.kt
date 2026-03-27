@@ -34,7 +34,7 @@ class MemberPersistenceAdapter(
         }
     }
 
-    override suspend fun findByEmail(email: Email): Member? = dbProtection.withReadOnly {
+    override suspend fun findByEmail(email: String): Member? = dbProtection.withReadOnly {
         memberRepository.findByEmail(email)?.let {
             memberMapper.toDomain(it)
         }

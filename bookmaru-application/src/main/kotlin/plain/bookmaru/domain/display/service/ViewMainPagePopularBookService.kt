@@ -5,7 +5,6 @@ import plain.bookmaru.common.annotation.Service
 import plain.bookmaru.common.command.PageCommand
 import plain.bookmaru.common.result.SliceResult
 import plain.bookmaru.domain.auth.vo.PlatformType
-import plain.bookmaru.domain.book.model.Book
 import plain.bookmaru.domain.book.port.out.BookGenrePort
 import plain.bookmaru.domain.inventory.port.out.BookAffiliationPort
 import plain.bookmaru.domain.display.port.`in`.ViewMainPagePopularBookUseCase
@@ -15,6 +14,7 @@ import plain.bookmaru.domain.display.port.out.MainPagePort
 import plain.bookmaru.domain.display.port.out.result.BookGenreResult
 import plain.bookmaru.domain.display.port.out.result.PopularBookSortResult
 import plain.bookmaru.domain.display.port.out.result.RecentBookSortResult
+import plain.bookmaru.domain.inventory.model.BookAffiliation
 
 private val log = KotlinLogging.logger {}
 
@@ -63,7 +63,7 @@ class ViewMainPagePopularBookService(
         if (cachePopularBooks == null) {
             log.info { "popularBook cache 정보를 찾지 못 했습니다." }
 
-            val sortedPopular = bookAffiliationPort.loadPopularSort(command, affiliationId)
+            val sortedPopular = bookAffiliationPort.findPopularSort(command, affiliationId)
             log.info { "popularBook 정보를 불러오는데 성공했습니다." }
 
             val popularBookSortResult =
@@ -89,7 +89,7 @@ class ViewMainPagePopularBookService(
         if (cacheRecentBooks == null) {
             log.info { "recentBook cache 정보를 찾지 못 했습니다." }
 
-            val sortedRecent = bookAffiliationPort.loadRecentSort(command, affiliationId)
+            val sortedRecent = bookAffiliationPort.findRecentSort(command, affiliationId)
             log.info { "recentBook 정보를 불러오는데 성공했습니다." }
 
             val recentBookSortResult =
@@ -113,19 +113,27 @@ class ViewMainPagePopularBookService(
     Result App
      */
 
-    private suspend fun popularBookSortAppResult(startRank: Int, result: SliceResult<Book>) : List<PopularBookSortResult> {
+    private suspend fun popularBookSortAppResult(startRank: Int, result: SliceResult<BookAffiliation>) : List<PopularBookSortResult> {
 
-        val popularBookSortResult = result.content.mapIndexed { index, book ->
+        val popularBookSortResult = result.content.mapIndexed { index, ba ->
             PopularBookSortResult(
-                rank = startRank + index + 1, id = book.id!! , bookImage = book.bookInfo.bookImage) }
+                rank = startRank + index + 1, 
+                id = ba.id!! , 
+                bookImage = ba.book.bookInfo.bookImage
+            ) 
+        }
 
         return popularBookSortResult
     }
 
-    private suspend fun recentBookSortAppResult(result: SliceResult<Book>) : List<RecentBookSortResult> {
+    private suspend fun recentBookSortAppResult(result: SliceResult<BookAffiliation>) : List<RecentBookSortResult> {
 
         val recentBookSortResult = result.content.map {
-            RecentBookSortResult(id = it.id!!, bookImage = it.bookInfo.bookImage) }
+            RecentBookSortResult(
+                id = it.id!!, 
+                bookImage = it.book.bookInfo.bookImage
+            ) 
+        }
 
         return recentBookSortResult
     }
@@ -134,20 +142,20 @@ class ViewMainPagePopularBookService(
     Result Web
      */
 
-    private suspend fun popularBookSortWebResult(startRank: Int, result: SliceResult<Book>) : List<PopularBookSortResult> {
-        val ids = result.content.map { it.id!! }
+    private suspend fun popularBookSortWebResult(startRank: Int, result: SliceResult<BookAffiliation>) : List<PopularBookSortResult> {
+        val ids = result.content.map { it.book.id!! }
 
         val bookGenre = bookGenrePort.loadBookGenre(ids)
         log.info { "책 장르 정보를 불러오는데 성공했습니다." }
 
-        val popularBookSortResult = result.content.mapIndexed { index, book ->
+        val popularBookSortResult = result.content.mapIndexed { index, ba ->
             PopularBookSortResult(
                 rank = startRank + index + 1,
-                id = book.id!!,
-                bookImage = book.bookInfo.bookImage,
-                title = book.bookInfo.title,
-                author = book.bookInfo.author,
-                genreList = bookGenre[book.id]?.map { genre ->
+                id = ba.id!!,
+                bookImage = ba.book.bookInfo.bookImage,
+                title = ba.book.bookInfo.title,
+                author = ba.book.bookInfo.author,
+                genreList = bookGenre[ba.book.id!!]?.map { genre ->
                     BookGenreResult(genre = genre.genreName)
                 }
             )
@@ -156,8 +164,8 @@ class ViewMainPagePopularBookService(
         return popularBookSortResult
     }
 
-    private suspend fun recentBookSortWebResult(result: SliceResult<Book>) : List<RecentBookSortResult> {
-        val ids = result.content.map { it.id!! }
+    private suspend fun recentBookSortWebResult(result: SliceResult<BookAffiliation>) : List<RecentBookSortResult> {
+        val ids = result.content.map { it.book.id!! }
 
         val bookGenre = bookGenrePort.loadBookGenre(ids)
         log.info { "책 장르 정보를 불러오는데 성공했습니다." }
@@ -165,10 +173,10 @@ class ViewMainPagePopularBookService(
         val recentBookSortResult = result.content.map {
             RecentBookSortResult(
                 id = it.id!!,
-                bookImage = it.bookInfo.bookImage,
-                title = it.bookInfo.title,
-                author = it.bookInfo.author,
-                genreList = bookGenre[it.id]?.map { genre ->
+                bookImage = it.book.bookInfo.bookImage,
+                title = it.book.bookInfo.title,
+                author = it.book.bookInfo.author,
+                genreList = bookGenre[it.book.id!!]?.map { genre ->
                     BookGenreResult(genre = genre.genreName)
                 }
             )

@@ -4,6 +4,8 @@ import org.springframework.stereotype.Component
 import plain.bookmaru.domain.community.model.BookLike
 import plain.bookmaru.domain.community.persistent.entity.BookLikeEntity
 import plain.bookmaru.domain.community.persistent.entity.embedded.BookLikeEmbeddedId
+import plain.bookmaru.domain.inventory.persistent.entity.BookAffiliationEntity
+import plain.bookmaru.domain.member.persistent.entity.MemberEntity
 
 @Component
 class BookLikeMapper {
@@ -11,8 +13,7 @@ class BookLikeMapper {
     fun toDomain(entity: BookLikeEntity) : BookLike {
         return BookLike(
             memberId = entity.id.memberId,
-            bookAffiliationId = entity.id.bookAffiliationId,
-            status = entity.status
+            bookAffiliationId = entity.id.bookAffiliationId
         )
     }
 
@@ -23,9 +24,7 @@ class BookLikeMapper {
         )
 
         return BookLikeEntity(
-            id = embeddedId,
-        ).apply {
-            status = domain.status
-        }
+            id = embeddedId
+        )
     }
 }

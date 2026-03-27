@@ -18,8 +18,8 @@ class ViewBookDetailPageService(
     private val bookAffiliationPort: BookAffiliationPort,
     private val commentPort: CommentPort
 ) : ViewBookDetailPageUseCase, ViewBookDetailPageCommentUseCase {
-    override suspend fun bookDetailExecute(command: ViewBookDetailPageCommand): BookDetailPageResult {
-        val bookInfo = bookAffiliationPort.findBookInfoByBookId(command.bookAffiliationId, command.affiliationId)
+    override suspend fun execute(command: ViewBookDetailPageCommand): BookDetailPageResult {
+        val bookInfo = bookAffiliationPort.findBookInfoByBookId(command.bookAffiliationId, command.affiliationId, command.memberId)
             ?: throw NotFoundBookException("${command.bookAffiliationId} 아이디를 가진 책 정보를 찾지 못 했습니다.")
 
         val bookDetailInfo = bookInfo.book.bookInfo
@@ -38,7 +38,7 @@ class ViewBookDetailPageService(
         )
     }
 
-    override suspend fun commentExecute(command: ViewBookDetailPageCommentCommand): SliceResult<CommentResult> {
+    override suspend fun execute(command: ViewBookDetailPageCommentCommand): SliceResult<CommentResult> {
         val commentList = commentPort.findByBookAffiliationId(command.bookAffiliationId, command.pageCommand)
 
         return SliceResult(

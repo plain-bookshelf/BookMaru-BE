@@ -35,7 +35,7 @@ class CustomOAuth2Service(
 
     override suspend fun execute(command: CustomOAuth2Command) : LoginResult {
         val targetEmail = command.email
-        var member = memberPort.findByEmail(targetEmail)
+        var member = memberPort.findByEmail(targetEmail.email)
 
         val provider = command.oAuthInfo.provider
         val providerId = command.oAuthInfo.providerId
