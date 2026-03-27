@@ -2,7 +2,6 @@ package plain.bookmaru.domain.community.persistent
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
-import plain.bookmaru.domain.community.model.Comment
 import plain.bookmaru.domain.community.model.CommentLike
 import plain.bookmaru.domain.community.persistent.entity.embedded.BookCommentLikeEmbeddedId
 import plain.bookmaru.domain.community.persistent.mapper.BookCommentLikeMapper

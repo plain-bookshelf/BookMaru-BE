@@ -210,6 +210,13 @@ class BookAffiliationPersistenceAdapter(
             .execute()
     }
 
+    override suspend fun decrementLikeCount(bookAffiliationId: Long): Unit = dbProtection.withTransaction {
+        queryFactory.update(bookAffiliation)
+            .set(bookAffiliation.likeCount, bookAffiliation.likeCount.add(-1))
+            .where(bookAffiliation.id.eq(bookAffiliationId), bookAffiliation.likeCount.gt(0))
+            .execute()
+    }
+
     private fun sliceResult(entities: List<BookAffiliationEntity>, requestSize: Int, offset: Long): SliceResult<BookAffiliation> {
         val hasNext = entities.size > requestSize
         val content = if (hasNext) entities.dropLast(1) else entities

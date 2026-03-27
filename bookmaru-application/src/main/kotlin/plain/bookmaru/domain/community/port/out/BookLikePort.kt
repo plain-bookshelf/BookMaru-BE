@@ -6,4 +6,6 @@ interface BookLikePort {
     suspend fun findByBookAffiliationIdAndMemberId(bookAffiliationId: Long, memberId: Long) : BookLike?
 
     suspend fun save(bookLike: BookLike)
+
+    suspend fun delete(bookLike: BookLike)
 }
