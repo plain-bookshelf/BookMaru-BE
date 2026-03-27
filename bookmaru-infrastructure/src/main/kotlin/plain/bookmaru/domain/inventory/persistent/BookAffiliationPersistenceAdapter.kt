@@ -203,13 +203,11 @@ class BookAffiliationPersistenceAdapter(
         return@withReadOnly result
     }
 
-    override suspend fun update(bookAffiliation: BookAffiliation): Unit = dbProtection.withTransaction {
-        val entity = bookAffiliationRepository.findByIdOrNull(bookAffiliation.id ?: 0L)
-            ?: throw IllegalStateException("저장할 BookAffiliation 엔티티를 찾을 수 없습니다.")
-        
-        bookAffiliationMapper.updateEntity(entity, bookAffiliation)
-        
-        bookAffiliationRepository.save(entity)
+    override suspend fun incrementLikeCount(bookAffiliationId: Long): Unit = dbProtection.withTransaction {
+        queryFactory.update(bookAffiliation)
+            .set(bookAffiliation.likeCount, bookAffiliation.likeCount.add(1))
+            .where(bookAffiliation.id.eq(bookAffiliationId))
+            .execute()
     }
 
     private fun sliceResult(entities: List<BookAffiliationEntity>, requestSize: Int, offset: Long): SliceResult<BookAffiliation> {

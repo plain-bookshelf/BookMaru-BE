@@ -7,7 +7,6 @@ import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.persistent.mapper.MemberMapper
 import plain.bookmaru.domain.member.persistent.repository.MemberRepository
 import plain.bookmaru.domain.member.port.out.MemberPort
-import plain.bookmaru.domain.member.vo.Email
 import plain.bookmaru.global.config.DbProtection
 
 @Component

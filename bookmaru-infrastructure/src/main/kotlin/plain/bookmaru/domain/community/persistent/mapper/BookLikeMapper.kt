@@ -4,8 +4,6 @@ import org.springframework.stereotype.Component
 import plain.bookmaru.domain.community.model.BookLike
 import plain.bookmaru.domain.community.persistent.entity.BookLikeEntity
 import plain.bookmaru.domain.community.persistent.entity.embedded.BookLikeEmbeddedId
-import plain.bookmaru.domain.inventory.persistent.entity.BookAffiliationEntity
-import plain.bookmaru.domain.member.persistent.entity.MemberEntity
 
 @Component
 class BookLikeMapper {

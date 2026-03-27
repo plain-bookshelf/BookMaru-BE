@@ -11,6 +11,7 @@ class Comment(
     val bookReact: BookReact,
     val likeCount: Int = 0
 ) {
+
     companion object {
         fun createComment(
             memberId: Long,
@@ -21,8 +22,7 @@ class Comment(
                 memberId = memberId,
                 bookAffiliationId = bookAffiliationId,
                 bookReact = BookReact(
-                    comment = bookReact.comment,
-                    starCount = bookReact.starCount
+                    comment = bookReact.comment
                 )
             )
         }

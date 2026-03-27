@@ -21,8 +21,7 @@ class BookCommentService(
             command.memberId,
             command.bookAffiliationId,
             BookReact(
-                comment = command.comment,
-                starCount = command.starCount
+                comment = command.comment
             )
         )
 
@@ -30,7 +29,7 @@ class BookCommentService(
     }
 
     override suspend fun execute(command: BookCommentDeleteCommand) {
-        val comment = commentPort.findByCommentId(command.commentId)
+        val comment = commentPort.findById(command.commentId)
 
         if (comment.memberId != command.memberId) {
             throw NotMatchWriterMemberException("${comment.memberId} 아이디를 가진 유저가 다른 유저의 댓글 정보를 수정하려고 시도했습니다.")
@@ -40,7 +39,7 @@ class BookCommentService(
     }
 
     override suspend fun execute(command: BookCommentChangeCommand) {
-        val comment = commentPort.findByCommentId(command.commentId)
+        val comment = commentPort.findById(command.commentId)
 
         if (comment.memberId != command.memberId) {
             throw NotMatchWriterMemberException("${comment.memberId} 아이디를 가진 유저가 다른 유저의 댓글 정보를 수정하려고 시도했습니다.")

@@ -5,7 +5,6 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.persistent.repository.MemberRepository
-import plain.bookmaru.domain.member.vo.Email
 
 @Service
 class CustomUserDetailsService(

@@ -43,8 +43,7 @@ class CommentPersistenceAdapter(
                     comment.id,
                     member.nickname,
                     comment.comment,
-                    comment.likeCount,
-                    comment.starCount
+                    comment.likeCount
                 )
             )
             .from(comment)
@@ -60,34 +59,42 @@ class CommentPersistenceAdapter(
         return@withReadOnly sliceResult(results, size)
     }
 
-    override suspend fun findByCommentId(commentId: Long): Comment = dbProtection.withReadOnly {
+    override suspend fun findById(commentId: Long): Comment = dbProtection.withReadOnly {
         val entity = bookCommentRepository.findByIdOrNull(commentId)
             ?: throw NotFoundCommentException("$commentId 아이디를 가진 책 정보를 찾지 못 했습니다.")
 
         return@withReadOnly bookCommentMapper.toDomain(entity)
     }
 
-    override suspend fun save(comment: Comment, bookAffiliationId: Long, memberId: Long): Comment = dbProtection.withTransaction {
-        val bookAffiliation = bookAffiliationRepository.getReferenceById(bookAffiliationId)
-        val memberEntity = memberRepository.getReferenceById(memberId)
-
+    override suspend fun save(comment: Comment, bookAffiliationId: Long?, memberId: Long?): Comment = dbProtection.withTransaction {
         if (comment.id == null) {
+            val bookAffiliation = bookAffiliationRepository.getReferenceById(bookAffiliationId!!)
+            val memberEntity = memberRepository.getReferenceById(memberId!!)
+
             val entity = bookCommentMapper.toEntity(comment, memberEntity, bookAffiliation)
             val savedEntity = bookCommentRepository.save(entity)
 
             return@withTransaction bookCommentMapper.toDomain(savedEntity)
         } else {
             val existingEntity = bookCommentRepository.findById(comment.id!!)
-                .orElseThrow {  throw NotFoundCommentException("${bookAffiliation.bookEntity.title} 책에서 ${memberEntity.username} 아이디를 사용한 유저의 댓글 정보를 가져오지 못 했습니다.") }
+                .orElseThrow {  throw NotFoundCommentException("유저의 댓글 정보를 가져오지 못 했습니다.") }
 
             bookCommentMapper.updateEntity(comment, existingEntity)
+            val savedEntity = bookCommentRepository.save(existingEntity)
 
-            return@withTransaction bookCommentMapper.toDomain(existingEntity)
+            return@withTransaction bookCommentMapper.toDomain(savedEntity)
         }
     }
 
     override suspend fun delete(commentId: Long) = dbProtection.withTransaction {
         bookCommentRepository.deleteById(commentId)
+    }
+
+    override suspend fun incrementLikeCount(commentId: Long) {
+        queryFactory.update(comment)
+            .set(comment.likeCount, comment.likeCount.add(1))
+            .where(comment.id.eq(commentId))
+            .execute()
     }
 
     /*

@@ -47,7 +47,4 @@ class BookCommentEntity(
 
     @Column(nullable = false)
     var likeCount: Int = 0
-
-    @Column(nullable = false)
-    var starCount: Int = 0
 }

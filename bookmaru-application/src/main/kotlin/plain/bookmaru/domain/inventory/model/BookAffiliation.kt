@@ -10,13 +10,6 @@ class BookAffiliation(
     val affiliationId: Long,
     val rentalCount: Int,
     val reservationCount: Int,
-    likeCount: Int,
+    val likeCount: Int,
     val similarityToken: String
-) {
-    var likeCount: Int = likeCount
-        private set
-
-    fun modifyLikeCount() {
-        this.likeCount++
-    }
-}
+)

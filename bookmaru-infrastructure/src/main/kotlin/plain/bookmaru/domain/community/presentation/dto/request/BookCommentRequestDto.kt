@@ -4,22 +4,19 @@ import plain.bookmaru.domain.community.port.`in`.command.BookCommentChangeComman
 import plain.bookmaru.domain.community.port.`in`.command.BookCommentWriteCommand
 
 data class BookCommentRequestDto(
-    val comment: String,
-    val starCount: Int
+    val comment: String
 ) {
     fun toWriteCommand(bookAffiliationId: Long, memberId: Long) : BookCommentWriteCommand
         = BookCommentWriteCommand(
         memberId = memberId,
         bookAffiliationId = bookAffiliationId,
-        comment = comment,
-        starCount = starCount
+        comment = comment
     )
 
     fun toChangeCommand(commentId: Long, memberId: Long) : BookCommentChangeCommand
         = BookCommentChangeCommand(
         memberId = memberId,
         commentId = commentId,
-        comment = comment,
-        starCount = starCount
+        comment = comment
     )
 }
