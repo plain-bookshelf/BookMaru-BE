@@ -25,7 +25,6 @@ import java.time.LocalDate
 @Table(
     name = "book_detail",
     indexes = [
-        Index(name = "idx_book_detail_id", columnList = "id"),
         Index(name = "idx_book_detail_book_affiliation_id", columnList = "book_affiliation_id"),
         Index(name = "idx_book_detail_member_id", columnList = "member_id")
     ]
@@ -48,9 +47,6 @@ class BookDetailEntity(
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bookDetail_seq_generator")
     @Column(nullable = false, unique = true)
     override val id: Long? = null
-
-    @Column(nullable = false)
-    var rentalRequestStatus : Boolean = false
 
     @Column(nullable = false)
     var rentalStatus : RentalStatus = RentalStatus.RETURN

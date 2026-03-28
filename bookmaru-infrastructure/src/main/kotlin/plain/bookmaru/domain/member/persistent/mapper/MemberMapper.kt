@@ -6,6 +6,7 @@ import plain.bookmaru.domain.auth.vo.AccountInfo
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.persistent.entity.MemberEntity
 import plain.bookmaru.domain.member.vo.Email
+import plain.bookmaru.domain.member.vo.LendingBook
 import plain.bookmaru.domain.member.vo.Profile
 
 @Component
@@ -16,9 +17,16 @@ class MemberMapper{
             id = entity.id,
             affiliationId = entity.affiliationEntity.id!!,
             accountInfo = AccountInfo(entity.username, entity.password),
-            profile = Profile(entity.nickname, entity.profileImage, entity.oneMonthStatics, entity.overdueTerm, entity.oftenBookReadTime),
+            profile = Profile(
+                entity.nickname,
+                entity.profileImage,
+                entity.oneMonthStatics,
+                entity.overdueTerm,
+                entity.oftenBookReadTime
+            ),
             authority = entity.role,
-            email = Email(email = entity.email)
+            email = Email(email = entity.email),
+            lendingBook = LendingBook(entity.rentalCount, entity.reservationCount)
         )
     }
 
@@ -35,6 +43,8 @@ class MemberMapper{
             this.oftenBookReadTime = domain.profile.oftenBookReadTime
             this.overdueTerm = domain.profile.overdueTerm
             this.oneMonthStatics = domain.profile.oneMonthStatics ?: 0
+            this.rentalCount = domain.lendingBook.rentalCount
+            this.reservationCount = domain.lendingBook.reservationCount
         }
     }
 

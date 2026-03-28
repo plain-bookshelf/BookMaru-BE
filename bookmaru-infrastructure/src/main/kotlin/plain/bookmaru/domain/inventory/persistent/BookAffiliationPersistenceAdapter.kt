@@ -42,6 +42,10 @@ class BookAffiliationPersistenceAdapter(
     private val member = QMemberEntity.memberEntity
     private val bookLike = QBookLikeEntity.bookLikeEntity
 
+    /*
+    find
+     */
+
     override suspend fun findPopularSort(command: PageCommand, affiliationId: Long): SliceResult<BookAffiliation> = dbProtection.withReadOnly {
         val offset = command.offset
         val size = command.size
@@ -196,12 +200,17 @@ class BookAffiliationPersistenceAdapter(
                 bookAffiliation.reservationCount,
                 bookAffiliation.likeCount,
                 bookAffiliation.similarityToken,
-                bookLike.id
+                bookLike.id,
+                bookDetail.id
             )
             .fetchOne()
 
         return@withReadOnly result
     }
+
+    /*
+    update
+     */
 
     override suspend fun incrementLikeCount(bookAffiliationId: Long): Unit = dbProtection.withTransaction {
         queryFactory.update(bookAffiliation)

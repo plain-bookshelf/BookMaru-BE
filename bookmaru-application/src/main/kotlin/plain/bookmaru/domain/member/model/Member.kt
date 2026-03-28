@@ -7,6 +7,7 @@ import plain.bookmaru.domain.auth.vo.OAuthInfo
 import plain.bookmaru.domain.auth.vo.OAuthProvider
 import plain.bookmaru.domain.member.vo.Profile
 import plain.bookmaru.domain.member.vo.Email
+import plain.bookmaru.domain.member.vo.LendingBook
 import java.time.LocalTime
 
 @Aggregate
@@ -17,6 +18,7 @@ class Member(
     val authority: Authority,
     accountInfo: AccountInfo? = null,
     val email: Email,
+    val lendingBook: LendingBook,
     oAuthInfo: OAuthInfo? = null
 ) {
     var accountInfo: AccountInfo? = accountInfo
@@ -42,7 +44,8 @@ class Member(
             profile: Profile,
             authority: Authority,
             accountInfo: AccountInfo,
-            email: Email
+            email: Email,
+            lending: LendingBook,
         ): Member {
             return Member(
                 id = id,
@@ -50,7 +53,8 @@ class Member(
                 profile = profile,
                 authority = authority,
                 accountInfo = accountInfo,
-                email = email
+                email = email,
+                lendingBook = lending
             )
         }
         
@@ -60,7 +64,8 @@ class Member(
             profile: Profile,
             email: Email,
             authority: Authority,
-            oAuthInfo: OAuthInfo? = null
+            oAuthInfo: OAuthInfo? = null,
+            lendingBook: LendingBook
         ) : Member {
             return Member(
                 id = id,
@@ -69,7 +74,8 @@ class Member(
                 authority = authority,
                 accountInfo = null,
                 email = email,
-                oAuthInfo = oAuthInfo
+                oAuthInfo = oAuthInfo,
+                lendingBook = lendingBook
             )
         }
     }
