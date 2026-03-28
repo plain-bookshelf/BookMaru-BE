@@ -33,7 +33,7 @@ class ViewMainPagePopularBookService(
         )
 
         return SliceResult(
-            content = popularPageResult!!.content,
+            content = popularPageResult.content,
             isLastPage = popularPageResult.isLastPage,
         )
     }
@@ -46,7 +46,7 @@ class ViewMainPagePopularBookService(
         )
 
         return SliceResult(
-            content = recentPageResult!!.content,
+            content = recentPageResult.content,
             isLastPage = recentPageResult.isLastPage,
         )
     }
@@ -55,7 +55,7 @@ class ViewMainPagePopularBookService(
     Cache Check
      */
 
-    private suspend fun popularBooksCacheCheck(command: PageCommand, platformType: PlatformType, affiliationId: Long) : SliceResult<PopularBookSortResult>? {
+    private suspend fun popularBooksCacheCheck(command: PageCommand, platformType: PlatformType, affiliationId: Long) : SliceResult<PopularBookSortResult> {
         val startRank = command.page * command.size
 
         var cachePopularBooks = mainPagePort.loadPopularBooks(command, platformType, affiliationId)
@@ -83,7 +83,7 @@ class ViewMainPagePopularBookService(
         return cachePopularBooks
     }
 
-    private suspend fun recentBooksCacheCheck(command: PageCommand, platformType: PlatformType, affiliationId: Long) : SliceResult<RecentBookSortResult>? {
+    private suspend fun recentBooksCacheCheck(command: PageCommand, platformType: PlatformType, affiliationId: Long) : SliceResult<RecentBookSortResult> {
         var cacheRecentBooks = mainPagePort.loadRecentBooks(command, platformType, affiliationId)
 
         if (cacheRecentBooks == null) {

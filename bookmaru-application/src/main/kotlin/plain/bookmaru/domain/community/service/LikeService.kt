@@ -37,7 +37,12 @@ class LikeService(
             bookAffiliationId = bookAffiliationId
         )
 
-        bookLikePort.save(newBookLike)
+        try {
+            bookLikePort.save(newBookLike)
+        } catch (e: IllegalStateException) {
+            log.error { "${e.message} 예외가 발생하면서 책 좋아요 데이터 적재를 실패했습니다." }
+        }
+
         log.info { "$bookAffiliationId 좋아요 데이터를 추가하는데 성공했습니다." }
 
         bookAffiliationPort.incrementLikeCount(bookAffiliationId)
@@ -48,7 +53,7 @@ class LikeService(
         val memberId = command.memberId
         val commentId = command.commentId
 
-        val commentLike = commentLikePort.findByCommentIdAndMemberId(memberId, commentId)
+        val commentLike = commentLikePort.findByCommentIdAndMemberId(commentId, memberId)
 
         if (commentLike != null)
             throw AlreadyLikedException("댓글 아이디: $commentId 에서 $memberId 유저가 이미 좋아요를 눌렀습니다.")
@@ -58,7 +63,12 @@ class LikeService(
             commentId = commentId
         )
 
-        commentLikePort.save(newCommentLike)
+        try {
+            commentLikePort.save(newCommentLike)
+        } catch (e: IllegalStateException) {
+            log.error { "${e.message} 예외가 발생하면서 댓글 좋아요 데이터 적재를 실패했습니다." }
+        }
+
         log.info { "$commentId 좋아요 데이터를 추가하는데 성공했습니다." }
 
         commentPort.incrementLikeCount(commentId)

@@ -30,7 +30,11 @@ class UnLikeService(
         if (bookLike == null)
             throw NoLikedException("$memberId 유저가 기존에 $bookAffiliationId 아이디의 책에 좋아요를 누르지 않았습니다.")
 
-        bookLikePort.delete(bookLike)
+        try {
+            bookLikePort.delete(bookLike)
+        } catch (e: IllegalStateException) {
+            log.error { "${e.message} 예외가 발생하면서 책 좋아요 데이터 삭제를 실패했습니다." }
+        }
         log.info { "$bookAffiliationId 좋아요 데이터를 지우는데 성공했습니다." }
 
         bookAffiliationPort.decrementLikeCount(bookAffiliationId)
@@ -46,7 +50,11 @@ class UnLikeService(
         if (commentLike == null)
             throw NoLikedException("$memberId 유저가 기존에 $commentId 아이디의 댓글에 좋아요를 누르지 않았습니다.")
 
-        commentLikePort.delete(commentLike)
+        try {
+            commentLikePort.delete(commentLike)
+        } catch (e: IllegalStateException) {
+            log.error { "${e.message} 예외가 발생하면서 댓글 좋아요 데이터 삭제를 실패했습니다." }
+        }
         log.info { "$commentId 좋아요 데이터를 지우는데 성공했습니다." }
 
         commentPort.decrementLikeCount(commentId)

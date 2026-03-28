@@ -22,10 +22,7 @@ class BookLikePersistenceAdapter(
         val embeddedId = BookLikeEmbeddedId(bookAffiliationId, memberId)
         val bookLikeEntity = bookLikeRepository.findBookLikeEntityById(embeddedId)
 
-        if (bookLikeEntity != null) {
-            return@withReadOnly bookLikeMapper.toDomain(bookLikeEntity)
-        }
-        return@withReadOnly null
+        bookLikeEntity?.let { bookLikeMapper.toDomain(it) }
     }
 
     override suspend fun save(bookLike: BookLike): Unit = dbProtection.withTransaction {

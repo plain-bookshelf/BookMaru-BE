@@ -8,9 +8,11 @@ class Comment(
     val id: Long? = null,
     val memberId: Long,
     val bookAffiliationId: Long,
-    val bookReact: BookReact,
+    bookReact: BookReact,
     val likeCount: Int = 0
 ) {
+    var bookReact = bookReact
+        private set
 
     companion object {
         fun createComment(
@@ -26,5 +28,9 @@ class Comment(
                 )
             )
         }
+    }
+
+    fun modifyComment(bookReact: BookReact) {
+        this.bookReact = bookReact
     }
 }

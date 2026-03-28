@@ -21,7 +21,7 @@ class BookCommentService(
             command.memberId,
             command.bookAffiliationId,
             BookReact(
-                comment = command.comment
+                comment = command.bookReact.comment
             )
         )
 
@@ -32,7 +32,7 @@ class BookCommentService(
         val comment = commentPort.findById(command.commentId)
 
         if (comment.memberId != command.memberId) {
-            throw NotMatchWriterMemberException("${comment.memberId} 아이디를 가진 유저가 다른 유저의 댓글 정보를 수정하려고 시도했습니다.")
+            throw NotMatchWriterMemberException("${command.memberId} 아이디를 가진 유저가 다른 유저의 댓글 정보를 수정하려고 시도했습니다.")
         }
 
         commentPort.delete(command.commentId)
@@ -42,9 +42,10 @@ class BookCommentService(
         val comment = commentPort.findById(command.commentId)
 
         if (comment.memberId != command.memberId) {
-            throw NotMatchWriterMemberException("${comment.memberId} 아이디를 가진 유저가 다른 유저의 댓글 정보를 수정하려고 시도했습니다.")
+            throw NotMatchWriterMemberException("${command.memberId} 아이디를 가진 유저가 다른 유저의 댓글 정보를 수정하려고 시도했습니다.")
         }
 
+        comment.modifyComment(command.bookReact)
         commentPort.save(comment, comment.bookAffiliationId, command.memberId)
     }
 }

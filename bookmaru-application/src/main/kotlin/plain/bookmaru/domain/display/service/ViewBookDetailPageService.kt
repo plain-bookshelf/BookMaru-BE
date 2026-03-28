@@ -34,7 +34,8 @@ class ViewBookDetailPageService(
                 bookImage = bookDetailInfo.bookImage,
                 publisher = bookDetailInfo.publisher,
             ),
-            isEnableRental = bookInfo.availableCount != 0
+            isEnableRental = bookInfo.availableCount != 0,
+            isLiked = bookInfo.isBookLiked
         )
     }
 

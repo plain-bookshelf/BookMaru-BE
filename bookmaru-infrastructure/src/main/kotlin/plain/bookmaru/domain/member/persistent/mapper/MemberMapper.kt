@@ -25,7 +25,7 @@ class MemberMapper{
     fun toEntity(domain: Member, affiliationProxy: AffiliationEntity) : MemberEntity {
         return MemberEntity(
             affiliationEntity = affiliationProxy,
-            username = domain.accountInfo?.username ?: domain.email.email.toString(),
+            username = domain.accountInfo?.username ?: domain.email.email,
             nickname = domain.profile.nickname,
             email = domain.email.email,
             role = domain.authority,

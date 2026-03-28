@@ -4,5 +4,6 @@ import plain.bookmaru.domain.book.vo.BookInfo
 
 data class BookDetailPageResult(
     val bookInfo: BookInfo,
-    val isEnableRental: Boolean
+    val isEnableRental: Boolean,
+    val isLiked: Boolean
 )

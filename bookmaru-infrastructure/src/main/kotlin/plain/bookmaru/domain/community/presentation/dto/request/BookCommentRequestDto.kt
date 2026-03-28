@@ -2,6 +2,7 @@ package plain.bookmaru.domain.community.presentation.dto.request
 
 import plain.bookmaru.domain.community.port.`in`.command.BookCommentChangeCommand
 import plain.bookmaru.domain.community.port.`in`.command.BookCommentWriteCommand
+import plain.bookmaru.domain.community.vo.BookReact
 
 data class BookCommentRequestDto(
     val comment: String
@@ -10,13 +11,13 @@ data class BookCommentRequestDto(
         = BookCommentWriteCommand(
         memberId = memberId,
         bookAffiliationId = bookAffiliationId,
-        comment = comment
+        bookReact = BookReact(comment)
     )
 
     fun toChangeCommand(commentId: Long, memberId: Long) : BookCommentChangeCommand
         = BookCommentChangeCommand(
         memberId = memberId,
         commentId = commentId,
-        comment = comment
+        bookReact = BookReact(comment)
     )
 }
