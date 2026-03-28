@@ -7,7 +7,10 @@ import plain.bookmaru.domain.display.port.out.result.CommentResult
 
 interface CommentPort {
     suspend fun findByBookAffiliationId(bookAffiliationId: Long, pageCommand: PageCommand): SliceResult<CommentResult>
-    suspend fun findByCommentId(commentId: Long) : Comment
-    suspend fun save(comment: Comment, bookAffiliationId: Long, memberId: Long): Comment
+    suspend fun findById(commentId: Long) : Comment
+    suspend fun save(comment: Comment, bookAffiliationId: Long?, memberId: Long?): Comment
     suspend fun delete(commentId: Long)
+
+    suspend fun incrementLikeCount(commentId: Long)
+    suspend fun decrementLikeCount(commentId: Long)
 }

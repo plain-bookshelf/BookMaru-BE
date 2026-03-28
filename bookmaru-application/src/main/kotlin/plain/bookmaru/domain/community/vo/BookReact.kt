@@ -1,6 +1,5 @@
 package plain.bookmaru.domain.community.vo
 
 data class BookReact(
-    val comment: String,
-    val starCount: Int
+    val comment: String
 )

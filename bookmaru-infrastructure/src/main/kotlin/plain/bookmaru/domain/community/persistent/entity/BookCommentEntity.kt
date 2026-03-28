@@ -25,7 +25,7 @@ import plain.bookmaru.global.entity.BaseEntity
     name = "book_comment",
     indexes = [
         Index(name = "idx_book_comment_member_id", columnList = "member_id"),
-        Index(name = "idx_book_comment_book_id", columnList = "book_id")
+        Index(name = "idx_book_comment_book_affiliation_id", columnList = "book_affiliation_id")
     ]
 )
 class BookCommentEntity(
@@ -47,7 +47,4 @@ class BookCommentEntity(
 
     @Column(nullable = false)
     var likeCount: Int = 0
-
-    @Column(nullable = false)
-    var starCount: Int = 0
 }

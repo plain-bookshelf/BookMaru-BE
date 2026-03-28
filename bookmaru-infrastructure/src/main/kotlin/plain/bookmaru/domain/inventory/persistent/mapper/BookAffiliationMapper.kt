@@ -3,16 +3,19 @@ package plain.bookmaru.domain.inventory.persistent.mapper
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.book.persistent.entity.BookEntity
+import plain.bookmaru.domain.book.persistent.mapper.BookMapper
 import plain.bookmaru.domain.inventory.model.BookAffiliation
 import plain.bookmaru.domain.inventory.persistent.entity.BookAffiliationEntity
 
 @Component
-class BookAffiliationMapper {
+class BookAffiliationMapper(
+    private val bookMapper: BookMapper
+) {
 
     fun toDomain(entity: BookAffiliationEntity) : BookAffiliation {
         return BookAffiliation(
             id = entity.id,
-            bookId = entity.bookEntity.id!!,
+            book = bookMapper.toDomain(entity.bookEntity),
             affiliationId = entity.affiliationEntity.id!!,
             rentalCount = entity.rentalCount,
             reservationCount = entity.reservationCount,
@@ -31,5 +34,15 @@ class BookAffiliationMapper {
             this.reservationCount = domain.reservationCount
             this.likeCount = domain.likeCount
         }
+    }
+
+    fun updateEntity(entity: BookAffiliationEntity, domain: BookAffiliation) {
+        entity.rentalCount = domain.rentalCount
+        entity.reservationCount = domain.reservationCount
+        entity.likeCount = domain.likeCount
+    }
+
+    fun toDomainList(entities: List<BookAffiliationEntity>) : List<BookAffiliation> {
+        return entities.map { toDomain(it) }
     }
 }

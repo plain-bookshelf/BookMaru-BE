@@ -34,9 +34,10 @@ class BookDetailPageAdapter(
     ): ResponseEntity<SuccessResponse> {
         val command = ViewBookDetailPageCommand(
             bookAffiliationId = bookAffiliationId,
-            affiliationId = principal.affiliationId
+            affiliationId = principal.affiliationId,
+            memberId = principal.id
         )
-        val result = viewBookDetailPageUseCase.bookDetailExecute(command)
+        val result = viewBookDetailPageUseCase.execute(command)
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(SuccessResponse.success(CustomHttpStatus.OK, "책 상세 정보를 가져오는데 성공했습니다.", result))
@@ -56,7 +57,7 @@ class BookDetailPageAdapter(
             bookAffiliationId = bookAffiliationId
         )
 
-        val result = viewBookDetailPageCommentUseCase.commentExecute(command)
+        val result = viewBookDetailPageCommentUseCase.execute(command)
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(SuccessResponse.success(CustomHttpStatus.OK, "책 상세정보의 댓글을 가져오는데 성공했습니다.", result))

@@ -5,5 +5,5 @@ import plain.bookmaru.domain.display.port.`in`.command.ViewBookDetailPageComment
 import plain.bookmaru.domain.display.port.out.result.CommentResult
 
 interface ViewBookDetailPageCommentUseCase {
-    suspend fun commentExecute(command: ViewBookDetailPageCommentCommand): SliceResult<CommentResult>
+    suspend fun execute(command: ViewBookDetailPageCommentCommand): SliceResult<CommentResult>
 }

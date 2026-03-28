@@ -15,7 +15,6 @@ import plain.bookmaru.domain.auth.vo.PlatformType
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.port.out.MemberPort
-import plain.bookmaru.domain.member.vo.Email
 
 private val log = KotlinLogging.logger {}
 
@@ -31,7 +30,7 @@ class LoginMemberService(
         log.info { "${command.accountInfo.username} 이 로그인을 시도 했습니다." }
 
         if (command.accountInfo.username.contains("@")) {
-            val member = memberPort.findByEmail(Email(command.accountInfo.username))
+            val member = memberPort.findByEmail(command.accountInfo.username)
                 ?: throw NotFoundMemberException("${command.accountInfo.username} 이메일을 가진 유저가 없습니다.")
 
             return validationAndResponse(command, member, command.platformType)

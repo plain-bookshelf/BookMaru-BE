@@ -16,8 +16,7 @@ class BookCommentMapper {
             memberId = entity.memberEntity.id!!,
             bookAffiliationId = entity.bookAffiliationEntity.id!!,
             bookReact = BookReact(
-                comment = entity.comment,
-                starCount = entity.starCount
+                comment = entity.comment
             ),
             likeCount = entity.likeCount,
         )
@@ -29,7 +28,6 @@ class BookCommentMapper {
             bookAffiliationEntity = bookAffiliationEntity
         ).apply {
             this.comment = domain.bookReact.comment
-            this.starCount = domain.bookReact.starCount
             this.likeCount = domain.likeCount
         }
     }
@@ -40,7 +38,6 @@ class BookCommentMapper {
 
     fun updateEntity(domain: Comment, entity: BookCommentEntity) {
         entity.comment = domain.bookReact.comment
-        entity.starCount = domain.bookReact.starCount
         entity.likeCount = domain.likeCount
     }
 }

@@ -11,7 +11,4 @@ import plain.bookmaru.global.entity.BaseEntity
 class BookCommentLikeEntity(
     @EmbeddedId
     override val id: BookCommentLikeEmbeddedId
-) : BaseEntity() {
-
-    var status: Boolean = false
-}
+) : BaseEntity()

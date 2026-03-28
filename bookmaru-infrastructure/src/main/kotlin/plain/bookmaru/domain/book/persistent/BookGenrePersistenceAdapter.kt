@@ -10,7 +10,7 @@ import plain.bookmaru.domain.book.port.out.BookGenrePort
 import plain.bookmaru.global.config.DbProtection
 
 @Component
-class BookBookGenrePersistenceAdapter(
+class BookGenrePersistenceAdapter(
     private val queryFactory: JPAQueryFactory,
     private val genreMapper: GenreMapper,
     private val dbProtection: DbProtection

@@ -11,8 +11,7 @@ class BookCommentLikeMapper {
     fun toDomain(entity: BookCommentLikeEntity) : CommentLike {
         return CommentLike(
             memberId = entity.id.memberId,
-            commentId = entity.id.bookCommentId,
-            status = entity.status
+            commentId = entity.id.bookCommentId
         )
     }
 
@@ -26,8 +25,6 @@ class BookCommentLikeMapper {
 
         return BookCommentLikeEntity(
             id = embeddedId,
-        ).apply {
-            status = domain.status
-        }
+        )
     }
 }

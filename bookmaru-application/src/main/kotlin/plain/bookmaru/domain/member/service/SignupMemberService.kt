@@ -128,7 +128,7 @@ class SignupMemberService(
         if (emailProxy == null) {
             throw NotFoundEmailException("이메일 정보를 찾지 못 했습니다: $email")
         }
-        if (memberPort.findByEmail(email) != null) {
+        if (memberPort.findByEmail(email.email) != null) {
             throw AlreadyUsedEmailException("이미 사용되는 이메일 입니다: ${email.email}")
         }
 
