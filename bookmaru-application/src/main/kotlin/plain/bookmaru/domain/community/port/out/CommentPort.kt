@@ -12,4 +12,5 @@ interface CommentPort {
     suspend fun delete(commentId: Long)
 
     suspend fun incrementLikeCount(commentId: Long)
+    suspend fun decrementLikeCount(commentId: Long)
 }

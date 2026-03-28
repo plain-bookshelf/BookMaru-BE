@@ -51,7 +51,7 @@ class BookLikeAdapter(
             memberId = principal.id
         )
 
-        bookUnLikeUseCase.bookUnLike(command)
+        bookUnLikeUseCase.execute(command)
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .body(SuccessResponse.success(CustomHttpStatus.NO_CONTENT, "책 좋아요를 취소하는데 성공했습니다.", ""))

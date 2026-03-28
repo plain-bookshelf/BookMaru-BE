@@ -33,4 +33,10 @@ class CommentLikePersistenceAdapter(
 
         bookCommentLikeRepository.save(entity)
     }
+
+    override suspend fun delete(commentLike: CommentLike) {
+        val entity = bookCommentLikeMapper.toEntity(commentLike)
+
+        bookCommentLikeRepository.delete(entity)
+    }
 }

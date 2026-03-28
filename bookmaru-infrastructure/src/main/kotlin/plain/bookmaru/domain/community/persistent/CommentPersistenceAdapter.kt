@@ -97,6 +97,13 @@ class CommentPersistenceAdapter(
             .execute()
     }
 
+    override suspend fun decrementLikeCount(commentId: Long) {
+        queryFactory.update(comment)
+            .set(comment.likeCount, comment.likeCount.add(-1))
+            .where(comment.id.eq(commentId), comment.likeCount.gt(0))
+            .execute()
+    }
+
     /*
     private helper method
      */

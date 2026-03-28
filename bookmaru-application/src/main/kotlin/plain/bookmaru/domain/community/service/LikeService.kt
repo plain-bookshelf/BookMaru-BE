@@ -1,5 +1,6 @@
 package plain.bookmaru.domain.community.service
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import plain.bookmaru.common.annotation.Service
 import plain.bookmaru.domain.community.exception.AlreadyLikedException
 import plain.bookmaru.domain.community.model.BookLike
@@ -12,6 +13,8 @@ import plain.bookmaru.domain.community.port.out.BookLikePort
 import plain.bookmaru.domain.community.port.out.CommentLikePort
 import plain.bookmaru.domain.community.port.out.CommentPort
 import plain.bookmaru.domain.inventory.port.out.BookAffiliationPort
+
+private val log = KotlinLogging.logger {}
 
 @Service
 class LikeService(
@@ -35,11 +38,13 @@ class LikeService(
         )
 
         bookLikePort.save(newBookLike)
+        log.info { "$bookAffiliationId 좋아요 데이터를 추가하는데 성공했습니다." }
 
         bookAffiliationPort.incrementLikeCount(bookAffiliationId)
+        log.info { "$bookAffiliationId 좋아요를 증가시키는데 성공했습니다." }
     }
 
-    override suspend fun commentLike(command: CommentLikeCommand) {
+    override suspend fun execute(command: CommentLikeCommand) {
         val memberId = command.memberId
         val commentId = command.commentId
 
@@ -54,7 +59,9 @@ class LikeService(
         )
 
         commentLikePort.save(newCommentLike)
+        log.info { "$commentId 좋아요 데이터를 추가하는데 성공했습니다." }
 
         commentPort.incrementLikeCount(commentId)
+        log.info { "$commentId 좋아요를 증가시키는데 성공했습니다." }
     }
 }
