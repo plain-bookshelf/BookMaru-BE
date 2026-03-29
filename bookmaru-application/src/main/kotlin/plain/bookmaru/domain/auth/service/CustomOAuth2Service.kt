@@ -18,7 +18,6 @@ import plain.bookmaru.domain.auth.port.out.result.LoginResult
 import plain.bookmaru.domain.auth.port.out.result.TokenResult
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.auth.vo.PlatformType
-import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.port.out.MemberPort
 import plain.bookmaru.domain.member.vo.LendingBook
