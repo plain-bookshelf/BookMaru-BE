@@ -30,7 +30,7 @@ class BookLendingAdapter(
     ) : ResponseEntity<SuccessResponse> {
         val command = LendingCommand(
             bookAffiliationId = bookAffiliationId,
-            username = principal.username,
+            username = principal.username.toString(),
         )
 
         rentalUseCase.execute(command)
@@ -47,7 +47,7 @@ class BookLendingAdapter(
     ) : ResponseEntity<SuccessResponse> {
         val command = LendingCommand(
             bookAffiliationId = bookAffiliationId,
-            username = principal.username,
+            username = principal.username.toString(),
         )
 
         reservationUseCase.execute(command)

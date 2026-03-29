@@ -9,7 +9,7 @@ import java.util.Collections
 
 data class CustomUserDetails(
     internal val id: Long,
-    internal val username: String,
+    private val username: String,
     private val password: String,
     private val role: Authority,
     internal val affiliationId: Long,

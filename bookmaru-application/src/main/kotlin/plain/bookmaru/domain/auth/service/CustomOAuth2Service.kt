@@ -19,6 +19,7 @@ import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.auth.vo.PlatformType
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.port.out.MemberPort
+import plain.bookmaru.domain.member.vo.LendingBook
 import plain.bookmaru.domain.member.vo.Profile
 import java.util.UUID
 
@@ -96,7 +97,8 @@ class CustomOAuth2Service(
             email = pendingUser.email,
             affiliationId = affiliation.id,
             profile = Profile(nickname = pendingUser.nickname, profileImage = pendingUser.profileImageUrl),
-            authority = Authority.ROLE_USER
+            authority = Authority.ROLE_USER,
+            lendingBook = LendingBook()
         )
 
         log.info { "$registerToken 를 통해서 유저 생성에 성공했습니다." }

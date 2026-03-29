@@ -20,6 +20,7 @@ import plain.bookmaru.domain.member.port.`in`.command.SignupMemberCommand
 import plain.bookmaru.domain.member.port.`in`.command.SignupOfficialCommand
 import plain.bookmaru.domain.member.port.out.MemberPort
 import plain.bookmaru.domain.member.vo.Email
+import plain.bookmaru.domain.member.vo.LendingBook
 import plain.bookmaru.domain.verification.exception.NotFoundEmailException
 import plain.bookmaru.domain.verification.exception.NotMatchOfficialCodeException
 import plain.bookmaru.domain.verification.model.OfficialCode
@@ -54,7 +55,8 @@ class SignupMemberService(
                 password = securityPort.passwordEncode(accountInfo.password ?: "")
             ),
             authority = Authority.ROLE_USER,
-            email = email
+            email = email,
+            lending = LendingBook()
         )
 
         log.info { "회원가입 성공 : ${accountInfo.username}" }
@@ -91,7 +93,8 @@ class SignupMemberService(
                 password = accountInfo.password
             ),
             authority = officialCode.role,
-            email = email
+            email = email,
+            lending = LendingBook()
         )
 
         val savedMember = memberPort.save(newMember)

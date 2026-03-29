@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.SequenceGenerator
 import jakarta.persistence.Table
+import jakarta.persistence.UniqueConstraint
 import plain.bookmaru.domain.inventory.vo.RentalStatus
 import plain.bookmaru.domain.member.persistent.entity.MemberEntity
 import plain.bookmaru.global.entity.BaseEntity
@@ -27,6 +28,12 @@ import java.time.LocalDate
     indexes = [
         Index(name = "idx_book_detail_book_affiliation_id", columnList = "book_affiliation_id"),
         Index(name = "idx_book_detail_member_id", columnList = "member_id")
+    ],
+    uniqueConstraints = [
+        UniqueConstraint(
+            name = "uk_id_member_id",
+            columnNames = ["id", "member_id"]
+        )
     ]
 )
 class BookDetailEntity(

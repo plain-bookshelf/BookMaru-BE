@@ -1,16 +1,19 @@
-package plain.bookmaru.common.management // 적절한 패키지 위치
+package plain.bookmaru.global.config
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.delay
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.stereotype.Component
+import plain.bookmaru.common.port.ConcurrencyPort
 
 private val log = KotlinLogging.logger {}
 
-class ConcurrencyManager {
-    suspend fun <T> executeWithRetry(
+@Component
+class ConcurrencyManager : ConcurrencyPort {
+    override suspend fun <T> executeWithRetry(
         operationName: String,
-        maxRetries: Int = 3,
-        baseDelay: Long = 50L,
+        maxRetries: Int,
+        baseDelay: Long,
         block: suspend () -> T
     ): T {
         var attempt = 0
@@ -29,13 +32,13 @@ class ConcurrencyManager {
                 delay(baseDelay * attempt)
             }
         }
-        throw IllegalStateException("코드 에러 발생")
+        error("Unreachable: retry loop exited unexpectedly")
     }
 
-    suspend fun <T> executeNetworkWithRetry(
+    override suspend fun <T> executeNetworkWithRetry(
         operationName: String,
-        maxRetries: Int = 3,
-        baseDelay: Long = 2000L,
+        maxRetries: Int,
+        baseDelay: Long,
         block: suspend () -> T
     ): T {
         var attempt = 0
@@ -54,6 +57,6 @@ class ConcurrencyManager {
                 delay(baseDelay * attempt)
             }
         }
-        throw Exception("코드 에러 발생")
+        error("Unreachable: retry loop exited unexpectedly")
     }
 }

@@ -57,5 +57,7 @@ class MemberMapper{
         entity.oneMonthStatics = domain.profile.oneMonthStatics ?: entity.oneMonthStatics
         entity.overdueTerm = domain.profile.overdueTerm
         entity.oftenBookReadTime = domain.profile.oftenBookReadTime
+        entity.rentalCount = domain.lendingBook.rentalCount
+        entity.reservationCount = domain.lendingBook.reservationCount
     }
 }

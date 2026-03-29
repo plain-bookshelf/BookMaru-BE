@@ -25,11 +25,11 @@ class BookLikePersistenceAdapter(
         bookLikeEntity?.let { bookLikeMapper.toDomain(it) }
     }
 
-    override suspend fun save(bookLike: BookLike): Unit = dbProtection.withTransaction {
+    override suspend fun save(bookLike: BookLike) {
         bookLikeRepository.save(bookLikeMapper.toEntity(bookLike))
     }
 
-    override suspend fun delete(bookLike: BookLike) = dbProtection.withTransaction {
+    override suspend fun delete(bookLike: BookLike) {
         val bookLikeEntity = bookLikeMapper.toEntity(bookLike)
         bookLikeRepository.delete(bookLikeEntity)
     }

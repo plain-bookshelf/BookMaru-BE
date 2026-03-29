@@ -166,7 +166,7 @@ class BookAffiliationPersistenceAdapter(
                     ),
 
                     affiliation.affiliationName,
-                    bookDetail.id.count().intValue(),
+                    bookDetail.id.countDistinct().intValue(),
                     bookLike.id.isNotNull
                 )
             )
@@ -200,8 +200,7 @@ class BookAffiliationPersistenceAdapter(
                 bookAffiliation.reservationCount,
                 bookAffiliation.likeCount,
                 bookAffiliation.similarityToken,
-                bookLike.id,
-                bookDetail.id
+                bookLike.id
             )
             .fetchOne()
 
@@ -212,14 +211,14 @@ class BookAffiliationPersistenceAdapter(
     update
      */
 
-    override suspend fun incrementLikeCount(bookAffiliationId: Long): Unit = dbProtection.withTransaction {
+    override suspend fun incrementLikeCount(bookAffiliationId: Long) {
         queryFactory.update(bookAffiliation)
             .set(bookAffiliation.likeCount, bookAffiliation.likeCount.add(1))
             .where(bookAffiliation.id.eq(bookAffiliationId))
             .execute()
     }
 
-    override suspend fun decrementLikeCount(bookAffiliationId: Long): Unit = dbProtection.withTransaction {
+    override suspend fun decrementLikeCount(bookAffiliationId: Long) {
         queryFactory.update(bookAffiliation)
             .set(bookAffiliation.likeCount, bookAffiliation.likeCount.add(-1))
             .where(bookAffiliation.id.eq(bookAffiliationId), bookAffiliation.likeCount.gt(0))
