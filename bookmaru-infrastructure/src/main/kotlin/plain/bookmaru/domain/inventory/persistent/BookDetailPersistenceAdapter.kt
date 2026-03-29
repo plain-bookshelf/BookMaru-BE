@@ -19,7 +19,7 @@ class BookDetailPersistenceAdapter(
 
     private val bookDetail = QBookDetailEntity.bookDetailEntity
 
-    override suspend fun findBookDetailByBookAffiliationId(
+    override suspend fun findRentalBookDetailByBookAffiliationId(
         bookAffiliationId: Long
     ): BookDetail? = dbProtection.withReadOnly {
         val bookDetailEntity = queryFactory

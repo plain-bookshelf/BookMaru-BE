@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType
 import plain.bookmaru.common.annotation.ReadOnlyService
 import plain.bookmaru.common.annotation.Service
+import plain.bookmaru.common.management.ConcurrencyManager
 
 @Configuration
 @ComponentScan(
@@ -14,10 +15,10 @@ import plain.bookmaru.common.annotation.Service
             type = FilterType.ANNOTATION,
             classes = [
                 Service::class,
-                ReadOnlyService::class
+                ReadOnlyService::class,
+                ConcurrencyManager::class
             ]
         )
     ]
 )
-class ComponentScanConfig {
-}
+class ComponentScanConfig

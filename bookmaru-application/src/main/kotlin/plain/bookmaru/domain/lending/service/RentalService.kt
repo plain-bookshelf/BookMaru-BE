@@ -34,7 +34,7 @@ class RentalService(
         if (memberRentalCount > 3 && member.authority == Authority.ROLE_USER
             || memberRentalCount > 10 && member.authority == Authority.ROLE_MANAGER) throw NoMoreRentalException("$username 아이디의 유저는 더 이상 책을 대여할 수 없습니다.")
 
-        val bookDetail = bookDetailPort.findBookDetailByBookAffiliationId(bookAffiliationId)
+        val bookDetail = bookDetailPort.findRentalBookDetailByBookAffiliationId(bookAffiliationId)
         log.info { "책 정보를 찾아오는데 성공했습니다." }
 
         if (bookDetail == null)

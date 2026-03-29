@@ -11,13 +11,15 @@ import plain.bookmaru.common.annotation.LogExecution
 import plain.bookmaru.common.error.CustomHttpStatus
 import plain.bookmaru.common.success.SuccessResponse
 import plain.bookmaru.domain.lending.port.`in`.RentalUseCase
+import plain.bookmaru.domain.lending.port.`in`.ReservationUseCase
 import plain.bookmaru.domain.lending.port.`in`.command.LendingCommand
 import plain.bookmaru.global.security.userdetails.CustomUserDetails
 
 @RestController
 @RequestMapping("/api/{bookAffiliationId}")
 class BookLendingAdapter(
-    private val rentalUseCase: RentalUseCase
+    private val rentalUseCase: RentalUseCase,
+    private val reservationUseCase: ReservationUseCase
 ) {
 
     @PostMapping("/rental")
@@ -35,5 +37,22 @@ class BookLendingAdapter(
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(SuccessResponse.success(CustomHttpStatus.OK, "책 대여에 성공했습니다.", ""))
+    }
+
+    @PostMapping("/reservation")
+    @LogExecution
+    suspend fun reservation(
+        @PathVariable bookAffiliationId: Long,
+        @AuthenticationPrincipal principal: CustomUserDetails
+    ) : ResponseEntity<SuccessResponse> {
+        val command = LendingCommand(
+            bookAffiliationId = bookAffiliationId,
+            username = principal.username,
+        )
+
+        reservationUseCase.execute(command)
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(SuccessResponse.success(CustomHttpStatus.OK, "책 예약에 성공했습니다.", ""))
     }
 }
