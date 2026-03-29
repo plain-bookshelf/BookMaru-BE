@@ -6,7 +6,6 @@ import plain.bookmaru.common.port.TransactionPort
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.inventory.port.out.BookDetailPort
 import plain.bookmaru.domain.lending.exception.NoMoreRentalException
-import plain.bookmaru.domain.lending.exception.NoMoreReservationException
 import plain.bookmaru.domain.lending.exception.NotExistBookDetailException
 import plain.bookmaru.domain.lending.model.Rental
 import plain.bookmaru.domain.lending.port.`in`.RentalUseCase
