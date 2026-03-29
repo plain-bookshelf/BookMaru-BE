@@ -90,14 +90,14 @@ class CommentPersistenceAdapter(
         bookCommentRepository.deleteById(commentId)
     }
 
-    override suspend fun incrementLikeCount(commentId: Long) {
+    override fun incrementLikeCount(commentId: Long) {
         queryFactory.update(comment)
             .set(comment.likeCount, comment.likeCount.add(1))
             .where(comment.id.eq(commentId))
             .execute()
     }
 
-    override suspend fun decrementLikeCount(commentId: Long) {
+    override fun decrementLikeCount(commentId: Long) {
         queryFactory.update(comment)
             .set(comment.likeCount, comment.likeCount.add(-1))
             .where(comment.id.eq(commentId), comment.likeCount.gt(0))

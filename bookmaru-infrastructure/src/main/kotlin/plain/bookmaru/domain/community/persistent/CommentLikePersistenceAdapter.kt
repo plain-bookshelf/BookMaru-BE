@@ -28,13 +28,13 @@ class CommentLikePersistenceAdapter(
         return@withReadOnly null
     }
 
-    override suspend fun save(commentLike: CommentLike) {
+    override fun save(commentLike: CommentLike) {
         val entity = bookCommentLikeMapper.toEntity(commentLike)
 
         bookCommentLikeRepository.save(entity)
     }
 
-    override suspend fun delete(commentLike: CommentLike) {
+    override fun delete(commentLike: CommentLike) {
         val entity = bookCommentLikeMapper.toEntity(commentLike)
 
         bookCommentLikeRepository.delete(entity)

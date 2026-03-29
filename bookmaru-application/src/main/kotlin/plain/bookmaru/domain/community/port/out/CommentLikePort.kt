@@ -5,7 +5,7 @@ import plain.bookmaru.domain.community.model.CommentLike
 interface CommentLikePort {
     suspend fun findByCommentIdAndMemberId(commentId: Long, memberId: Long) : CommentLike?
 
-    suspend fun save(commentLike: CommentLike)
+    fun save(commentLike: CommentLike)
 
-    suspend fun delete(commentLike: CommentLike)
+    fun delete(commentLike: CommentLike)
 }

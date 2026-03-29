@@ -6,5 +6,5 @@ import plain.bookmaru.domain.lending.model.Rental
 interface BookDetailPort {
     suspend fun findRentalBookDetailByBookAffiliationId(bookAffiliationId: Long) : BookDetail?
 
-    suspend fun updateRental(rental: Rental)
+    fun updateRental(rental: Rental)
 }

@@ -3,6 +3,7 @@ package plain.bookmaru.domain.auth.service
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
 import plain.bookmaru.common.annotation.Service
+import plain.bookmaru.common.port.TransactionPort
 import plain.bookmaru.domain.affiliation.exception.NotFoundAffiliationException
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
 import plain.bookmaru.domain.auth.exception.AuthSessionExpiredException
@@ -17,6 +18,7 @@ import plain.bookmaru.domain.auth.port.out.result.LoginResult
 import plain.bookmaru.domain.auth.port.out.result.TokenResult
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.auth.vo.PlatformType
+import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.port.out.MemberPort
 import plain.bookmaru.domain.member.vo.LendingBook
@@ -31,7 +33,8 @@ class CustomOAuth2Service(
     private val memberPort: MemberPort,
     private val jwtPort: JwtPort,
     private val oAuth2RegisterSessionPort: OAuth2RegisterSessionPort,
-    private val affiliationPort: AffiliationPort
+    private val affiliationPort: AffiliationPort,
+    private val transactionPort: TransactionPort
 ) : CustomOAuth2UseCase, SocialSignupUseCase {
 
     override suspend fun execute(command: CustomOAuth2Command) : LoginResult {
@@ -43,7 +46,9 @@ class CustomOAuth2Service(
 
         if (member != null) {
             member.linkOAuthAccount(provider, providerId)
-            member = memberPort.save(member)
+            transactionPort.withTransaction {
+                member = memberPort.save(member!!)
+            }
             val tokens = jwtPort.responseToken(
                 id = member.id!!,
                 username = member.accountInfo!!.username,

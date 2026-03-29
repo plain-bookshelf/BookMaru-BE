@@ -12,7 +12,7 @@ class BookRentalRecordPersistenceAdapter(
     private val rentalMapper: RentalMapper
 ) : BookRentalRecordPort {
 
-    override suspend fun save(renter: Rental): Unit {
+    override fun save(renter: Rental) {
         val rentalEntity = rentalMapper.toEntity(renter)
         bookRentalRecordRepository.save(rentalEntity)
     }

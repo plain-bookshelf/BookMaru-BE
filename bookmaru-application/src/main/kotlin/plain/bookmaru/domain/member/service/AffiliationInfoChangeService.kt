@@ -2,6 +2,7 @@ package plain.bookmaru.domain.member.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import plain.bookmaru.common.annotation.Service
+import plain.bookmaru.common.port.TransactionPort
 import plain.bookmaru.domain.affiliation.exception.MatchAffiliationException
 import plain.bookmaru.domain.affiliation.exception.NotFoundAffiliationException
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
@@ -18,7 +19,8 @@ private val log = KotlinLogging.logger {}
 class AffiliationInfoChangeService(
     private val memberPort: MemberPort,
     private val affiliationPort: AffiliationPort,
-    private val jwtPort: JwtPort
+    private val jwtPort: JwtPort,
+    private val transactionPort: TransactionPort
 ) : AffiliationInfoChangeUseCase {
     override suspend fun execute(command: AffiliationInfoChangeCommand): TokenResult {
         val username = command.username
@@ -33,7 +35,10 @@ class AffiliationInfoChangeService(
         if (member.affiliationId == affiliation.id) throw MatchAffiliationException("$affiliationName 기존에 사용하던 소속 정보와 같습니다.")
 
         member.modifyAffiliation(affiliation.id!!)
-        val savedMember = memberPort.save(member)
+        val savedMember = transactionPort.withTransaction {
+            memberPort.save(member)
+        }
+
 
         log.info { "$username 유저가 소속 정보를 $affiliationName (으)로 변경하는 것을 성공했습니다." }
 

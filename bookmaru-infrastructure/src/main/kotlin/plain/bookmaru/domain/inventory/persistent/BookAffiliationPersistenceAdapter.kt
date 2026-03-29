@@ -21,7 +21,6 @@ import plain.bookmaru.domain.inventory.persistent.repository.BookAffiliationRepo
 import plain.bookmaru.domain.inventory.port.out.BookAffiliationPort
 import plain.bookmaru.domain.inventory.port.out.result.BookDetailInfoResult
 import plain.bookmaru.domain.inventory.vo.RentalStatus
-import plain.bookmaru.domain.member.persistent.entity.QMemberEntity
 import plain.bookmaru.global.config.DbProtection
 
 private const val MAX_BOOKS_SIZE = 100L
@@ -39,7 +38,6 @@ class BookAffiliationPersistenceAdapter(
     private val affiliation = QAffiliationEntity.affiliationEntity
     private val bookDetail = QBookDetailEntity.bookDetailEntity
     private val bookAffiliation = QBookAffiliationEntity.bookAffiliationEntity
-    private val member = QMemberEntity.memberEntity
     private val bookLike = QBookLikeEntity.bookLikeEntity
 
     /*
@@ -211,14 +209,14 @@ class BookAffiliationPersistenceAdapter(
     update
      */
 
-    override suspend fun incrementLikeCount(bookAffiliationId: Long) {
+    override fun incrementLikeCount(bookAffiliationId: Long) {
         queryFactory.update(bookAffiliation)
             .set(bookAffiliation.likeCount, bookAffiliation.likeCount.add(1))
             .where(bookAffiliation.id.eq(bookAffiliationId))
             .execute()
     }
 
-    override suspend fun decrementLikeCount(bookAffiliationId: Long) {
+    override fun decrementLikeCount(bookAffiliationId: Long) {
         queryFactory.update(bookAffiliation)
             .set(bookAffiliation.likeCount, bookAffiliation.likeCount.add(-1))
             .where(bookAffiliation.id.eq(bookAffiliationId), bookAffiliation.likeCount.gt(0))

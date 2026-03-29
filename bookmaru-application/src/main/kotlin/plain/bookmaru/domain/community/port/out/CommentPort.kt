@@ -11,6 +11,6 @@ interface CommentPort {
     suspend fun save(comment: Comment, bookAffiliationId: Long?, memberId: Long?): Comment
     suspend fun delete(commentId: Long)
 
-    suspend fun incrementLikeCount(commentId: Long)
-    suspend fun decrementLikeCount(commentId: Long)
+    fun incrementLikeCount(commentId: Long)
+    fun decrementLikeCount(commentId: Long)
 }

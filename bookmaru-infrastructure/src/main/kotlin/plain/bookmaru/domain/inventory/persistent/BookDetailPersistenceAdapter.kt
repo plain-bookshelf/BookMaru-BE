@@ -33,7 +33,7 @@ class BookDetailPersistenceAdapter(
         return@withReadOnly bookDetailEntity?.let { bookDetailMapper.toDomain(it) }
     }
 
-    override suspend fun updateRental(rental: Rental) {
+    override fun updateRental(rental: Rental) {
         queryFactory.update(bookDetail)
             .set(bookDetail.rentalStatus, RentalStatus.RENTAL_REQUEST)
             .set(bookDetail.memberEntity.id, rental.memberId)

@@ -28,7 +28,7 @@ class BookReservationPersistenceAdapter(
         return@withReadOnly (waitingRank ?: 0) + 1
     }
 
-    override suspend fun save(reservation: Reservation) {
+    override fun save(reservation: Reservation) {
         val entity = reservationMapper.toEntity(reservation)
 
         bookReservationRepository.save(entity)
