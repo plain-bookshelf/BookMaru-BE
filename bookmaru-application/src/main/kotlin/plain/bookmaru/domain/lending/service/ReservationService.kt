@@ -2,6 +2,7 @@ package plain.bookmaru.domain.lending.service
 
 import plain.bookmaru.common.annotation.Service
 import plain.bookmaru.common.port.ConcurrencyPort
+import plain.bookmaru.common.port.TransactionPort
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.lending.exception.NoMoreReservationException
 import plain.bookmaru.domain.lending.model.Reservation
@@ -15,7 +16,8 @@ import plain.bookmaru.domain.member.port.out.MemberPort
 class ReservationService(
     private val membersPort: MemberPort,
     private val bookReservationPort: BookReservationPort,
-    private val concurrencyPort: ConcurrencyPort
+    private val concurrencyPort: ConcurrencyPort,
+    private val transactionPort: TransactionPort
 ): ReservationUseCase {
     override suspend fun execute(command: LendingCommand) {
         concurrencyPort.executeWithRetry("책 예약 서비스") {
@@ -38,7 +40,12 @@ class ReservationService(
                 memberId = member.id!!
             )
 
-            bookReservationPort.save(reservation)
+            member.incrementReservationCount()
+
+            transactionPort.withTransaction {
+                bookReservationPort.save(reservation)
+                membersPort.save(member)
+            }
         }
     }
 }

@@ -17,7 +17,7 @@ class RentalMapper {
             bookDetailId = entity.id!!,
             bookRecord = BookRecord(
                 rentalDate = rentalDate,
-                returnDate = entity.returnDate!!
+                returnDate = entity.returnDate
             )
         )
     }

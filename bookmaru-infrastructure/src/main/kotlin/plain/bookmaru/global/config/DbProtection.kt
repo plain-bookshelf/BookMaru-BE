@@ -1,7 +1,6 @@
 package plain.bookmaru.global.config
 
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
@@ -25,30 +24,26 @@ class DbProtection(
         isReadOnly = true
     }
 
-    override suspend fun <T> withReadOnly(block: suspend () -> T): T {
+    override suspend fun <T> withReadOnly(block: () -> T): T {
         return withContext(VirtualDispatcher) {
             withTimeout(5000L) {
                 DbSemaphore.withPermit {
                     @Suppress("UNCHECKED_CAST")
                     readOnlyTemplate.execute {
-                        runBlocking {
-                            block()
-                        }
+                        block()
                     } as T
                 }
             }
         }
     }
 
-    override suspend fun <T> withTransaction(block: suspend () -> T): T {
+    override suspend fun <T> withTransaction(block: () -> T): T {
         return withContext(VirtualDispatcher) {
             withTimeout(5000L) {
                 DbSemaphore.withPermit {
                     modifyTemplate.execute {
                         try {
-                            runBlocking {
-                                block()
-                            }
+                            block()
                         } catch (e: Exception) {
                             it.setRollbackOnly()
                             throw e

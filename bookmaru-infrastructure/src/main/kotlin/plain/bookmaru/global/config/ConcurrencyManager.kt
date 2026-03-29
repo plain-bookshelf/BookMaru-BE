@@ -2,9 +2,10 @@ package plain.bookmaru.global.config
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.delay
-import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.dao.ConcurrencyFailureException
 import org.springframework.stereotype.Component
 import plain.bookmaru.common.port.ConcurrencyPort
+import kotlin.coroutines.cancellation.CancellationException
 
 private val log = KotlinLogging.logger {}
 
@@ -22,7 +23,7 @@ class ConcurrencyManager : ConcurrencyPort {
             try {
                 return block()
 
-            } catch (e: DataIntegrityViolationException) {
+            } catch (e: ConcurrencyFailureException) {
                 attempt++
                 log.debug { "$operationName $attempt:$maxRetries 시도 중" }
                 if (attempt >= maxRetries) {
@@ -48,6 +49,8 @@ class ConcurrencyManager : ConcurrencyPort {
                 return block()
 
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
+
                 attempt++
                 log.debug { "$operationName $attempt:$maxRetries 시도 중" }
                 if (attempt >= maxRetries) {

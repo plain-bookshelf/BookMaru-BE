@@ -18,7 +18,7 @@ class Member(
     val authority: Authority,
     accountInfo: AccountInfo? = null,
     val email: Email,
-    val lendingBook: LendingBook,
+    lendingBook: LendingBook,
     oAuthInfo: OAuthInfo? = null
 ) {
     var accountInfo: AccountInfo? = accountInfo
@@ -31,6 +31,9 @@ class Member(
         private set
 
     var affiliationId: Long? = affiliationId
+        private set
+
+    var lendingBook: LendingBook = lendingBook
         private set
 
     fun linkOAuthAccount(provider: OAuthProvider, providerId: String) {
@@ -98,5 +101,13 @@ class Member(
 
     fun modifyProfileImage(newProfileImageUrl: String) {
         this.profile = profile.copy(profileImage = newProfileImageUrl)
+    }
+
+    fun incrementRentalCount() {
+        this.lendingBook = lendingBook.copy(rentalCount = this.lendingBook.rentalCount + 1)
+    }
+
+    fun incrementReservationCount() {
+        this.lendingBook = lendingBook.copy(reservationCount = this.lendingBook.reservationCount + 1)
     }
 }

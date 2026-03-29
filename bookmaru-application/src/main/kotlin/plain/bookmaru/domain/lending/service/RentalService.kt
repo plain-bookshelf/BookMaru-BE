@@ -46,7 +46,7 @@ class RentalService(
             if (bookDetail == null)
                 throw NotExistBookDetailException("bookAffiliationId: $bookAffiliationId 에서 대여할 수 있는 책 정보가 없습니다.")
 
-            val renter = Rental(
+            val rental = Rental(
                 memberId = member.id!!,
                 bookDetailId = bookDetail.id!!,
                 bookRecord = BookRecord(
@@ -54,10 +54,14 @@ class RentalService(
                 )
             )
 
+            member.incrementRentalCount()
+
             transactionPort.withTransaction {
-                bookDetailPort.updateRental(renter)
+                bookDetailPort.updateRental(rental)
                 log.info { "책 대여자 정보와 책 상태 변경에 성공했습니다." }
-                bookRentalRecordPort.save(renter)
+                memberPort.save(member)
+                log.info { "유저 대여한 책 권 수 증가 완료" }
+                bookRentalRecordPort.save(rental)
                 log.info { "대여 기록을 남기는데 성공했습니다." }
             }
         }
