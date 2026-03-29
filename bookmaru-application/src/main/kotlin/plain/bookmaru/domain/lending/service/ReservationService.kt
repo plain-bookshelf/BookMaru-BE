@@ -21,28 +21,26 @@ class ReservationService(
 ): ReservationUseCase {
     override suspend fun execute(command: LendingCommand) {
         concurrencyManager.executeWithRetry("책 예약 서비스") {
-            transactionPort.withTransaction {
-                val username = command.username
-                val bookAffiliationId = command.bookAffiliationId
+            val username = command.username
+            val bookAffiliationId = command.bookAffiliationId
 
-                val member = membersPort.findByUsername(username)
-                    ?: throw NotFoundMemberException("$username 을 사용하는 유저를 찾지 못 했습니다.")
+            val member = membersPort.findByUsername(username)
+                ?: throw NotFoundMemberException("$username 을 사용하는 유저를 찾지 못 했습니다.")
 
-                val count = member.lendingBook.reservationCount + member.lendingBook.rentalCount
-                val availReservationBook = if (member.authority == Authority.ROLE_USER) 3 else if (member.authority == Authority.ROLE_MANAGER) 10 else 1000
-                if (count > availReservationBook)
-                    throw NoMoreReservationException("bookAffiliation: $bookAffiliationId 아이디의 책을 $username 아이디의 유저가 대여 횟수 및 예약 횟수가 많아 실패했습니다.")
+            val count = member.lendingBook.reservationCount + member.lendingBook.rentalCount
+            val availReservationBook = if (member.authority == Authority.ROLE_USER) 3 else if (member.authority == Authority.ROLE_MANAGER) 10 else 1000
+            if (count > availReservationBook)
+                throw NoMoreReservationException("bookAffiliation: $bookAffiliationId 아이디의 책을 $username 아이디의 유저가 대여 횟수 및 예약 횟수가 많아 실패했습니다.")
 
-                val waitingRank = bookReservationPort.waiting(bookAffiliationId)
+            val waitingRank = bookReservationPort.waiting(bookAffiliationId)
 
-                val reservation = Reservation(
-                    waitingRank = waitingRank,
-                    bookAffiliationId = bookAffiliationId,
-                    memberId = member.id!!
-                )
+            val reservation = Reservation(
+                waitingRank = waitingRank,
+                bookAffiliationId = bookAffiliationId,
+                memberId = member.id!!
+            )
 
-                bookReservationPort.save(reservation)
-            }
+            bookReservationPort.save(reservation)
         }
     }
 }

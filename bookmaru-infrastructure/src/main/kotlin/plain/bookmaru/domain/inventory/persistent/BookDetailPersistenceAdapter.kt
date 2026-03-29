@@ -33,7 +33,7 @@ class BookDetailPersistenceAdapter(
         return@withReadOnly bookDetailEntity?.let { bookDetailMapper.toDomain(it) }
     }
 
-    override suspend fun updateRental(renter: Rental): Unit = dbProtection.withTransaction {
+    override suspend fun updateRental(renter: Rental) {
         queryFactory.update(bookDetail)
             .set(bookDetail.rentalStatus, RentalStatus.RENTAL_REQUEST)
             .set(bookDetail.memberEntity.id, renter.memberId)

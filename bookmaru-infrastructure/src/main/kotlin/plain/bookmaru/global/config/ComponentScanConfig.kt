@@ -3,9 +3,7 @@ package plain.bookmaru.global.config
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType
-import plain.bookmaru.common.annotation.ReadOnlyService
 import plain.bookmaru.common.annotation.Service
-import plain.bookmaru.common.management.ConcurrencyManager
 
 @Configuration
 @ComponentScan(
@@ -14,9 +12,7 @@ import plain.bookmaru.common.management.ConcurrencyManager
         ComponentScan.Filter(
             type = FilterType.ANNOTATION,
             classes = [
-                Service::class,
-                ReadOnlyService::class,
-                ConcurrencyManager::class
+                Service::class
             ]
         )
     ]

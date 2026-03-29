@@ -1,7 +1,7 @@
 package plain.bookmaru.domain.verification.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import plain.bookmaru.common.annotation.ReadOnlyService
+import plain.bookmaru.common.annotation.Service
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.port.out.MemberPort
 import plain.bookmaru.domain.verification.exception.NotFoundEmailException
@@ -15,7 +15,7 @@ import java.util.UUID
 
 private val log = KotlinLogging.logger {}
 
-@ReadOnlyService
+@Service
 class FindPasswordService(
     private val emailVerificationCodePort: EmailVerificationCodePort,
     private val memberPort: MemberPort,

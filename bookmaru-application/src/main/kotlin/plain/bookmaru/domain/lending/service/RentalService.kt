@@ -2,9 +2,11 @@ package plain.bookmaru.domain.lending.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import plain.bookmaru.common.annotation.Service
+import plain.bookmaru.common.port.TransactionPort
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.inventory.port.out.BookDetailPort
 import plain.bookmaru.domain.lending.exception.NoMoreRentalException
+import plain.bookmaru.domain.lending.exception.NoMoreReservationException
 import plain.bookmaru.domain.lending.exception.NotExistBookDetailException
 import plain.bookmaru.domain.lending.model.Rental
 import plain.bookmaru.domain.lending.port.`in`.RentalUseCase
@@ -21,7 +23,8 @@ private val log = KotlinLogging.logger {}
 class RentalService(
     private val bookDetailPort: BookDetailPort,
     private val memberPort: MemberPort,
-    private val bookRentalRecordPort: BookRentalRecordPort
+    private val bookRentalRecordPort: BookRentalRecordPort,
+    private val transactionPort: TransactionPort
 ) : RentalUseCase {
     override suspend fun execute(command: LendingCommand) {
         val bookAffiliationId = command.bookAffiliationId
@@ -30,9 +33,10 @@ class RentalService(
         val member = memberPort.findByUsername(username)
             ?: throw NotFoundMemberException("$username 아이디를 사용하는 유저를 찾지 못 했습니다.")
 
-        val memberRentalCount = member.lendingBook.rentalCount
-        if (memberRentalCount > 3 && member.authority == Authority.ROLE_USER
-            || memberRentalCount > 10 && member.authority == Authority.ROLE_MANAGER) throw NoMoreRentalException("$username 아이디의 유저는 더 이상 책을 대여할 수 없습니다.")
+        val count = member.lendingBook.rentalCount
+        val availReservationBook = if (member.authority == Authority.ROLE_USER) 3 else if (member.authority == Authority.ROLE_MANAGER) 10 else 1000
+        if (count > availReservationBook)
+            throw NoMoreRentalException("$username 아이디의 유저는 더 이상 책을 대여할 수 없습니다.")
 
         val bookDetail = bookDetailPort.findRentalBookDetailByBookAffiliationId(bookAffiliationId)
         log.info { "책 정보를 찾아오는데 성공했습니다." }
@@ -48,9 +52,11 @@ class RentalService(
             )
         )
 
-        bookDetailPort.updateRental(renter)
-        log.info { "책 대여자 정보와 책 상태 변경에 성공했습니다." }
-        bookRentalRecordPort.save(renter)
-        log.info { "대여 기록을 남기는데 성공했습니다." }
+        transactionPort.withTransaction {
+            bookDetailPort.updateRental(renter)
+            log.info { "책 대여자 정보와 책 상태 변경에 성공했습니다." }
+            bookRentalRecordPort.save(renter)
+            log.info { "대여 기록을 남기는데 성공했습니다." }
+        }
     }
 }
