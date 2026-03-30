@@ -1,6 +1,7 @@
 package plain.bookmaru.domain.member.service
 
 import plain.bookmaru.common.annotation.Service
+import plain.bookmaru.common.port.TransactionPort
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.port.`in`.OftenReadBookTimeSetUseCase
 import plain.bookmaru.domain.member.port.`in`.command.OftenReadBookTimeSetCommand
@@ -8,7 +9,8 @@ import plain.bookmaru.domain.member.port.out.MemberPort
 
 @Service
 class OftenReadBookTimeService(
-    private val memberPort: MemberPort
+    private val memberPort: MemberPort,
+    private val transactionPort: TransactionPort
 ) : OftenReadBookTimeSetUseCase{
     override suspend fun execute(command: OftenReadBookTimeSetCommand) {
         val time = command.time
@@ -19,6 +21,8 @@ class OftenReadBookTimeService(
 
         member.modifyOftenBookReadTime(time)
 
-        memberPort.save(member)
+        transactionPort.withTransaction {
+            memberPort.save(member)
+        }
     }
 }

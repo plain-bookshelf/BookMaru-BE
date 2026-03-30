@@ -73,4 +73,10 @@ class MemberEntity(
     var overdueTerm: LocalDateTime? = null
 
     var oftenBookReadTime: LocalTime? = null
+
+    @Column(nullable = false)
+    var rentalCount: Int = 0
+
+    @Column(nullable = false)
+    var reservationCount: Int = 0
 }

@@ -5,5 +5,5 @@ import java.time.LocalDateTime
 
 data class BookRecord(
     val rentalDate: LocalDateTime,
-    val returnDate: LocalDate
+    val returnDate: LocalDate? = null
 )

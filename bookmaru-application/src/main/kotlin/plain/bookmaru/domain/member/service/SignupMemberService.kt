@@ -2,6 +2,7 @@ package plain.bookmaru.domain.member.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import plain.bookmaru.common.annotation.Service
+import plain.bookmaru.common.port.TransactionPort
 import plain.bookmaru.domain.affiliation.exception.NotFoundAffiliationException
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
 import plain.bookmaru.domain.affiliation.model.Affiliation
@@ -11,6 +12,7 @@ import plain.bookmaru.domain.auth.port.out.result.TokenResult
 import plain.bookmaru.domain.auth.vo.AccountInfo
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.auth.vo.OAuthProvider
+import plain.bookmaru.domain.auth.vo.PlatformType
 import plain.bookmaru.domain.member.exception.AlreadyExistsMemberException
 import plain.bookmaru.domain.member.exception.AlreadyUsedEmailException
 import plain.bookmaru.domain.member.model.Member
@@ -20,6 +22,7 @@ import plain.bookmaru.domain.member.port.`in`.command.SignupMemberCommand
 import plain.bookmaru.domain.member.port.`in`.command.SignupOfficialCommand
 import plain.bookmaru.domain.member.port.out.MemberPort
 import plain.bookmaru.domain.member.vo.Email
+import plain.bookmaru.domain.member.vo.LendingBook
 import plain.bookmaru.domain.verification.exception.NotFoundEmailException
 import plain.bookmaru.domain.verification.exception.NotMatchOfficialCodeException
 import plain.bookmaru.domain.verification.model.OfficialCode
@@ -35,7 +38,8 @@ class SignupMemberService(
     private val emailVerifiedPort: EmailVerifiedPort,
     private val securityPort: SecurityPort,
     private val jwtPort: JwtPort,
-    private val officialCodePort: OfficialCodePort
+    private val officialCodePort: OfficialCodePort,
+    private val transactionPort: TransactionPort
 ) : SignupMemberUseCase , SignupOfficialUseCase {
 
     override suspend fun execute(command: SignupMemberCommand) : TokenResult {
@@ -54,22 +58,13 @@ class SignupMemberService(
                 password = securityPort.passwordEncode(accountInfo.password ?: "")
             ),
             authority = Authority.ROLE_USER,
-            email = email
+            email = email,
+            lending = LendingBook()
         )
 
         log.info { "회원가입 성공 : ${accountInfo.username}" }
 
-        val savedMember = memberPort.save(newMember)
-
-        return jwtPort.responseToken(
-            id = savedMember.id!!,
-            username = savedMember.accountInfo!!.username,
-            platformType = command.platformType,
-            authority = savedMember.authority,
-            affiliationId = affiliation.id,
-            oAuthProvider = OAuthProvider.DEFAULT,
-            profileImage = savedMember.profile.profileImage.toString()
-        )
+        return saveMemberAndReturnResponseToken(newMember, affiliation, command.platformType)
     }
 
     override suspend fun execute(command: SignupOfficialCommand): TokenResult {
@@ -91,21 +86,16 @@ class SignupMemberService(
                 password = accountInfo.password
             ),
             authority = officialCode.role,
-            email = email
+            email = email,
+            lending = LendingBook()
         )
 
-        val savedMember = memberPort.save(newMember)
-
-        return jwtPort.responseToken(
-            id = savedMember.id!!,
-            username = savedMember.accountInfo!!.username,
-            platformType = command.platformType,
-            authority = savedMember.authority,
-            affiliationId = affiliation.id,
-            oAuthProvider = OAuthProvider.DEFAULT,
-            profileImage = savedMember.profile.profileImage.toString()
-        )
+        return saveMemberAndReturnResponseToken(newMember, affiliation, command.platformType)
     }
+
+    /*
+    private helper method
+     */
 
     private suspend fun isMatch(affiliationName: String, code: String) : OfficialCode {
         val affiliation = affiliationPort.findByAffiliationName(affiliationName)
@@ -136,5 +126,21 @@ class SignupMemberService(
             ?: throw NotFoundAffiliationException("존재하지 않는 도서관 정보 입니다:  $affiliationName")
 
         return affiliation
+    }
+
+    private suspend fun saveMemberAndReturnResponseToken(newMember: Member, affiliation: Affiliation, platformType: PlatformType): TokenResult {
+        val savedMember = transactionPort.withTransaction {
+            memberPort.save(newMember)
+        }
+
+        return jwtPort.responseToken(
+            id = savedMember.id!!,
+            username = savedMember.accountInfo!!.username,
+            platformType = platformType,
+            authority = savedMember.authority,
+            affiliationId = affiliation.id!!,
+            oAuthProvider = OAuthProvider.DEFAULT,
+            profileImage = savedMember.profile.profileImage.toString()
+        )
     }
 }

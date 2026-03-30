@@ -16,20 +16,21 @@ class MemberPersistenceAdapter(
     private val memberMapper: MemberMapper,
     private val dbProtection: DbProtection
 ) : MemberPort {
-    override suspend fun save(member: Member) : Member = dbProtection.withTransaction {
+    override fun save(member: Member) : Member {
         val affiliationProxy = affiliationRepository.getReferenceById(member.affiliationId!!)
 
         if (member.id == null) {
             val memberEntity = memberMapper.toEntity(member, affiliationProxy)
             val saved = memberRepository.save(memberEntity)
-            return@withTransaction memberMapper.toDomain(saved)
+            return memberMapper.toDomain(saved)
         } else {
             val existingEntity = memberRepository.findById(member.id!!)
                 .orElseThrow { throw NotFoundMemberException("존재하지 않는 유저입니다.") }
 
             memberMapper.updateEntity(member, existingEntity, affiliationProxy)
+            val saved = memberRepository.save(existingEntity)
 
-            return@withTransaction memberMapper.toDomain(existingEntity)
+            return memberMapper.toDomain(saved)
         }
     }
 

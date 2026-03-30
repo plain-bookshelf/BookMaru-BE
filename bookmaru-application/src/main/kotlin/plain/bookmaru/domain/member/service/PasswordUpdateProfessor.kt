@@ -1,6 +1,7 @@
 package plain.bookmaru.domain.member.service
 
 import plain.bookmaru.common.annotation.Service
+import plain.bookmaru.common.port.TransactionPort
 import plain.bookmaru.domain.auth.port.out.SecurityPort
 import plain.bookmaru.domain.member.exception.UsedPasswordException
 import plain.bookmaru.domain.member.model.Member
@@ -9,7 +10,8 @@ import plain.bookmaru.domain.member.port.out.MemberPort
 @Service
 class PasswordUpdateProfessor(
     private val memberPort: MemberPort,
-    private val securityPort: SecurityPort
+    private val securityPort: SecurityPort,
+    private val transactionPort: TransactionPort
 ) {
     suspend fun updatePassword(member: Member, newPassword: String) {
         val newPassword = newPassword
@@ -21,6 +23,8 @@ class PasswordUpdateProfessor(
 
         member.modifyPassword(newEncodePassword)
 
-        memberPort.save(member)
+        transactionPort.withTransaction {
+            memberPort.save(member)
+        }
     }
 }

@@ -3,6 +3,7 @@ package plain.bookmaru.domain.auth.service
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
 import plain.bookmaru.common.annotation.Service
+import plain.bookmaru.common.port.TransactionPort
 import plain.bookmaru.domain.affiliation.exception.NotFoundAffiliationException
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
 import plain.bookmaru.domain.auth.exception.AuthSessionExpiredException
@@ -19,6 +20,7 @@ import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.auth.vo.PlatformType
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.port.out.MemberPort
+import plain.bookmaru.domain.member.vo.LendingBook
 import plain.bookmaru.domain.member.vo.Profile
 import java.util.UUID
 
@@ -30,7 +32,8 @@ class CustomOAuth2Service(
     private val memberPort: MemberPort,
     private val jwtPort: JwtPort,
     private val oAuth2RegisterSessionPort: OAuth2RegisterSessionPort,
-    private val affiliationPort: AffiliationPort
+    private val affiliationPort: AffiliationPort,
+    private val transactionPort: TransactionPort
 ) : CustomOAuth2UseCase, SocialSignupUseCase {
 
     override suspend fun execute(command: CustomOAuth2Command) : LoginResult {
@@ -42,7 +45,9 @@ class CustomOAuth2Service(
 
         if (member != null) {
             member.linkOAuthAccount(provider, providerId)
-            member = memberPort.save(member)
+            transactionPort.withTransaction {
+                member = memberPort.save(member!!)
+            }
             val tokens = jwtPort.responseToken(
                 id = member.id!!,
                 username = member.accountInfo!!.username,
@@ -96,7 +101,8 @@ class CustomOAuth2Service(
             email = pendingUser.email,
             affiliationId = affiliation.id,
             profile = Profile(nickname = pendingUser.nickname, profileImage = pendingUser.profileImageUrl),
-            authority = Authority.ROLE_USER
+            authority = Authority.ROLE_USER,
+            lendingBook = LendingBook()
         )
 
         log.info { "$registerToken 를 통해서 유저 생성에 성공했습니다." }

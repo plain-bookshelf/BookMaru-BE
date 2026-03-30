@@ -11,6 +11,6 @@ interface BookAffiliationPort {
     suspend fun findById(id: Long): BookAffiliation?
     suspend fun findBookInfoByBookId(bookAffiliationId: Long, affiliationId: Long, memberId: Long): BookDetailInfoResult?
 
-    suspend fun incrementLikeCount(bookAffiliationId: Long)
-    suspend fun decrementLikeCount(bookAffiliationId: Long)
+    fun incrementLikeCount(bookAffiliationId: Long)
+    fun decrementLikeCount(bookAffiliationId: Long)
 }
