@@ -28,8 +28,9 @@ class MemberPersistenceAdapter(
                 .orElseThrow { throw NotFoundMemberException("존재하지 않는 유저입니다.") }
 
             memberMapper.updateEntity(member, existingEntity, affiliationProxy)
+            val saved = memberRepository.save(existingEntity)
 
-            return memberMapper.toDomain(existingEntity)
+            return memberMapper.toDomain(saved)
         }
     }
 

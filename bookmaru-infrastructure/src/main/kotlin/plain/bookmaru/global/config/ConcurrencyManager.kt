@@ -40,6 +40,7 @@ class ConcurrencyManager : ConcurrencyPort {
         operationName: String,
         maxRetries: Int,
         baseDelay: Long,
+        shouldRetry: (Throwable) -> Boolean,
         block: suspend () -> T
     ): T {
         var attempt = 0
@@ -50,6 +51,11 @@ class ConcurrencyManager : ConcurrencyPort {
 
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
+
+                if (!shouldRetry(e)) {
+                    log.warn(e) { "[$operationName] 재시도 대상이 아닌 네트워크 예외가 발생하여 즉시 실패 처리합니다. (사유: ${e.javaClass.simpleName})" }
+                    throw e
+                }
 
                 attempt++
                 log.debug { "$operationName $attempt:$maxRetries 시도 중" }

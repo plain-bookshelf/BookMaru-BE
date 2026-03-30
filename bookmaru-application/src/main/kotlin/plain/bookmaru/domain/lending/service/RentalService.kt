@@ -8,6 +8,7 @@ import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.inventory.port.out.BookDetailPort
 import plain.bookmaru.domain.lending.exception.NoMoreRentalException
 import plain.bookmaru.domain.lending.exception.NotExistBookDetailException
+import plain.bookmaru.domain.lending.exception.OverdueException
 import plain.bookmaru.domain.lending.model.Rental
 import plain.bookmaru.domain.lending.port.`in`.RentalUseCase
 import plain.bookmaru.domain.lending.port.`in`.command.LendingCommand
@@ -35,9 +36,17 @@ class RentalService(
             val member = memberPort.findByUsername(username)
                 ?: throw NotFoundMemberException("$username 아이디를 사용하는 유저를 찾지 못 했습니다.")
 
+            if (member.authority == Authority.ROLE_OVERDUE)
+                throw OverdueException("연체 상태이기에 대여할 수 없습니다.")
+
             val count = member.lendingBook.rentalCount
-            val availReservationBook = if (member.authority == Authority.ROLE_USER) 3 else if (member.authority == Authority.ROLE_MANAGER) 10 else 1000
-            if (count > availReservationBook)
+            val availReservationBook = when (member.authority) {
+                Authority.ROLE_USER -> 3
+                Authority.ROLE_MANAGER -> 10
+                else -> 1000
+            }
+
+            if (count >= availReservationBook)
                 throw NoMoreRentalException("$username 아이디의 유저는 더 이상 책을 대여할 수 없습니다.")
 
             val bookDetail = bookDetailPort.findRentalBookDetailByBookAffiliationId(bookAffiliationId)

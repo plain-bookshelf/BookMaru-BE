@@ -12,6 +12,10 @@ interface ConcurrencyPort {
         operationName: String,
         maxRetries: Int = 3,
         baseDelay: Long = 2000L,
+        shouldRetry: (Throwable) -> Boolean= { e ->
+                    e is java.net.SocketTimeoutException ||
+                    e is java.net.ConnectException
+        },
         block: suspend () -> T
     ): T
 }
