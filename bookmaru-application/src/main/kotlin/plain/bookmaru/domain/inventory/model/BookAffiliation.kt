@@ -11,5 +11,5 @@ class BookAffiliation(
     val rentalCount: Int,
     val reservationCount: Int,
     val likeCount: Int,
-    val similarityToken: String
+    val similarityToken: String?
 )

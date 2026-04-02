@@ -9,7 +9,7 @@ spring:
   data:
     redis:
       host: ${REDIS_HOST}
-      port: 6379
+      port: 6381
       password: ${REDIS_PASSWORD}
 
       db-index:

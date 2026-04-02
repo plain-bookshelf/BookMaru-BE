@@ -38,7 +38,8 @@ class BookAffiliationEntity(
     @JoinColumn(name = "affiliation_id", nullable = false)
     val affiliationEntity: AffiliationEntity,
 
-    val similarityToken: String
+    @Column(name = "similarity_token", columnDefinition = "tsvector", insertable = false, updatable = false)
+    val similarityToken: String?
 
 ) : BaseEntity() {
     @Id
