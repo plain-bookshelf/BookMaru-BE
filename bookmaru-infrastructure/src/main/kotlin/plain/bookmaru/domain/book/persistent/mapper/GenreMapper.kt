@@ -20,4 +20,10 @@ class GenreMapper {
             genreName = domain.genreName
         )
     }
+
+    fun toDomainList(entities: List<GenreEntity>): List<Genre>
+        = entities.map { toDomain(it) }
+
+    fun toEntityList(domains: List<Genre>): List<GenreEntity>
+        = domains.map { toEntity(it) }
 }

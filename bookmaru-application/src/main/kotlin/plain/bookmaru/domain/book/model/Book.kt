@@ -6,5 +6,6 @@ import plain.bookmaru.domain.book.vo.BookInfo
 @Aggregate
 class Book(
     val id: Long? = null,
-    val bookInfo: BookInfo
+    val bookInfo: BookInfo,
+    val genres: List<BookGenre>
 )

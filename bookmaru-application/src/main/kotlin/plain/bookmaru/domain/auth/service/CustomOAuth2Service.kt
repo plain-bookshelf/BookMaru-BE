@@ -27,7 +27,6 @@ import java.util.UUID
 private val log = KotlinLogging.logger {}
 
 @Service
-@Transactional
 class CustomOAuth2Service(
     private val memberPort: MemberPort,
     private val jwtPort: JwtPort,

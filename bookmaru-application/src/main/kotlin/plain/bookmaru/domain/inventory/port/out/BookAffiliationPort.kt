@@ -10,6 +10,7 @@ interface BookAffiliationPort {
     suspend fun findRecentSort(command: PageCommand, affiliationId: Long) : SliceResult<BookAffiliation>
     suspend fun findById(id: Long): BookAffiliation?
     suspend fun findBookInfoByBookId(bookAffiliationId: Long, affiliationId: Long, memberId: Long): BookDetailInfoResult?
+    suspend fun findAllWithBookAndGenresAndAffiliation(): List<BookAffiliation>
 
     fun incrementLikeCount(bookAffiliationId: Long)
     fun decrementLikeCount(bookAffiliationId: Long)

@@ -1,5 +1,7 @@
 package plain.bookmaru.domain.inventory.persistent
 
+import com.querydsl.core.group.GroupBy.groupBy
+import com.querydsl.core.group.GroupBy.list
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -9,7 +11,11 @@ import plain.bookmaru.common.command.PageCommand
 import plain.bookmaru.common.result.SliceResult
 import plain.bookmaru.domain.affiliation.persistent.entity.QAffiliationEntity
 import plain.bookmaru.domain.book.model.Book
+import plain.bookmaru.domain.book.model.BookGenre
+import plain.bookmaru.domain.book.model.Genre
 import plain.bookmaru.domain.book.persistent.entity.QBookEntity
+import plain.bookmaru.domain.book.persistent.entity.QBookGenreEntity
+import plain.bookmaru.domain.book.persistent.entity.QGenreEntity
 import plain.bookmaru.domain.book.vo.BookInfo
 import plain.bookmaru.domain.community.persistent.entity.QBookLikeEntity
 import plain.bookmaru.domain.inventory.model.BookAffiliation
@@ -39,6 +45,8 @@ class BookAffiliationPersistenceAdapter(
     private val bookDetail = QBookDetailEntity.bookDetailEntity
     private val bookAffiliation = QBookAffiliationEntity.bookAffiliationEntity
     private val bookLike = QBookLikeEntity.bookLikeEntity
+    private val genre = QGenreEntity.genreEntity
+    private val bookGenre = QBookGenreEntity.bookGenreEntity
 
     /*
     find
@@ -62,7 +70,7 @@ class BookAffiliationPersistenceAdapter(
         val bookAffiliations =  queryFactory
             .selectFrom(bookAffiliation)
             .innerJoin(bookAffiliation.bookEntity, book).fetchJoin() // Fetch Join to solve N+1
-            .innerJoin(book.affiliationEntity, affiliation).fetchJoin() // Join with Affiliation
+            .innerJoin(bookAffiliation.affiliationEntity, affiliation).fetchJoin() // Join with Affiliation
             .orderBy(
                 popularScore.desc(),
                 book.title.desc()
@@ -95,7 +103,7 @@ class BookAffiliationPersistenceAdapter(
         val bookAffiliations =  queryFactory
             .selectFrom(bookAffiliation)
             .innerJoin(bookAffiliation.bookEntity, book).fetchJoin() // Fetch Join to solve N+1
-            .innerJoin(book.affiliationEntity, affiliation).fetchJoin() // Join with Affiliation
+            .innerJoin(bookAffiliation.affiliationEntity, affiliation).fetchJoin() // Join with Affiliation
             .orderBy(
                 book.publicationDate.desc(),
                 book.title.desc()
@@ -129,7 +137,6 @@ class BookAffiliationPersistenceAdapter(
                         book.id,
                         Projections.constructor(
                             BookInfo::class.java,
-                            affiliation.affiliationName,
                             book.title,
                             book.author,
                             book.publicationDate,
@@ -147,7 +154,6 @@ class BookAffiliationPersistenceAdapter(
                             book.id,
                             Projections.constructor(
                                 BookInfo::class.java,
-                                affiliation.affiliationName,
                                 book.title,
                                 book.author,
                                 book.publicationDate,
@@ -203,6 +209,55 @@ class BookAffiliationPersistenceAdapter(
             .fetchOne()
 
         return@withReadOnly result
+    }
+
+    override suspend fun findAllWithBookAndGenresAndAffiliation(): List<BookAffiliation> {
+        val bookAffiliation = queryFactory
+            .from(bookAffiliation)
+            .distinct()
+            .innerJoin(bookAffiliation.bookEntity, book).fetchJoin()
+            .innerJoin(bookAffiliation.affiliationEntity, affiliation).fetchJoin()
+            .leftJoin(book.bookGenreEntities, bookGenre).fetchJoin()
+            .leftJoin(bookGenre.genreEntity, genre).fetchJoin()
+            .transform(
+                groupBy(bookAffiliation.id).list(
+                    Projections.constructor(
+                        BookAffiliation::class.java,
+                        bookAffiliation.id,
+                        Projections.constructor(
+                            Book::class.java,
+                            book.id,
+                            Projections.constructor(
+                                BookInfo::class.java,
+                                book.title,
+                                book.author,
+                                book.publicationDate,
+                                book.introduction,
+                                book.bookImage,
+                                book.publisher
+                            ),
+                            list(
+                                Projections.constructor(
+                                    BookGenre::class.java,
+                                    bookGenre.id,
+                                    Projections.constructor(
+                                        Genre::class.java,
+                                        genre.id,
+                                        genre.genreName
+                                    )
+                                )
+                            )
+                        ),
+                        affiliation.id,
+                        bookAffiliation.rentalCount,
+                        bookAffiliation.reservationCount,
+                        bookAffiliation.likeCount,
+                        bookAffiliation.similarityToken
+                    )
+                )
+            )
+
+        return bookAffiliation
     }
 
     /*

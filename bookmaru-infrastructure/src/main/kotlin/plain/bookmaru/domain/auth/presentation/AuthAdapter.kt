@@ -3,7 +3,6 @@ package plain.bookmaru.domain.auth.presentation
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -21,6 +20,7 @@ import plain.bookmaru.domain.auth.port.`in`.command.LogoutCommand
 import plain.bookmaru.domain.auth.port.`in`.command.ReissueCommand
 import plain.bookmaru.domain.auth.presentation.dto.request.LoginMemberRequestDto
 import plain.bookmaru.domain.auth.vo.PlatformType
+import plain.bookmaru.global.security.userdetails.CustomUserDetails
 
 @RestController
 @RequestMapping("/api/auth")
@@ -61,10 +61,10 @@ class AuthAdapter(
     @PostMapping("/logout")
     @LogExecution
     suspend fun logout(
-        @AuthenticationPrincipal user: UserDetails,
+        @AuthenticationPrincipal user: CustomUserDetails,
         @RequestHeader("Authorization") token: String,
     ): ResponseEntity<SuccessResponse> {
-        val command = LogoutCommand(token, user.username)
+        val command = LogoutCommand(token, user.username.toString())
 
         logoutUseCase.execute(command)
 
