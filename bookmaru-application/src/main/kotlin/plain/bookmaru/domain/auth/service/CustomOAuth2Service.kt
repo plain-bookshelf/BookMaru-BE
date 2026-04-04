@@ -1,7 +1,6 @@
 package plain.bookmaru.domain.auth.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.springframework.transaction.annotation.Transactional
 import plain.bookmaru.common.annotation.Service
 import plain.bookmaru.common.port.TransactionPort
 import plain.bookmaru.domain.affiliation.exception.NotFoundAffiliationException
