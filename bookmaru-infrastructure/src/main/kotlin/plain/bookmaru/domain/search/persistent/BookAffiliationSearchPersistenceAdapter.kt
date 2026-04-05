@@ -114,7 +114,7 @@ class BookAffiliationSearchPersistenceAdapter(
 
         val sortedResults = results.sortedBy { idToIndex[idSelector(it)] ?: Int.MAX_VALUE }
 
-        return sliceResult(sortedResults, command.size)
+        return sliceResult(sortedResults, hasNext)
     }
 
     private fun searchBookAffiliation(keyword: String, affiliationId: Long, pageable: Pageable): NativeQuery {

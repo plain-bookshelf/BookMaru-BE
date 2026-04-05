@@ -44,7 +44,7 @@ data class BookAffiliationDocument(
                 publicationDate = bookAffiliation.book.bookInfo.publicationDate,
                 publisher = bookAffiliation.book.bookInfo.publisher,
                 introduction = bookAffiliation.book.bookInfo.introduction,
-                genres = bookAffiliation.book.genres.map { it.genre.genreName }
+                genres = bookAffiliation.book.genres?.map { it.genre.genreName } ?: emptyList()
             )
         }
     }

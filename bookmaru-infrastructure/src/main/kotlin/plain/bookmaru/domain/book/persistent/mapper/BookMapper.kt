@@ -36,7 +36,7 @@ class BookMapper(
             bookGenreEntities = mutableListOf()
         )
 
-        val genreEntities = bookGenreMapper.toEntityList(domain.genres, bookEntity)
+        val genreEntities = bookGenreMapper.toEntityList(domain.genres ?: emptyList(), bookEntity)
         bookEntity.bookGenreEntities.addAll(genreEntities)
 
         return bookEntity
