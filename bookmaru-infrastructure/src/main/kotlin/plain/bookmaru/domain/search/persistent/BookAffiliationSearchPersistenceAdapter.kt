@@ -94,11 +94,14 @@ class BookAffiliationSearchPersistenceAdapter(
         fetcher: (List<Long>) -> List<T>,
         idSelector: (T) -> Long
     ): SliceResult<T> {
-        val pageable = PageRequest.of(command.page, command.size + 1)
+        val requestSize = command.size
+
+        val pageable = PageRequest.of(command.page, requestSize)
         val query = searchBookAffiliation(keyword, affiliationId, pageable)
 
         val searchHits = elasticsearchOperations.search(query, BookAffiliationDocument::class.java)
         val documentIds = searchHits.searchHits.mapNotNull { it.content.id }
+        val hasNext = documentIds.size > requestSize
 
         if (documentIds.isEmpty()) return SliceResult(emptyList(), true)
 
@@ -138,13 +141,10 @@ class BookAffiliationSearchPersistenceAdapter(
             .build()
     }
 
-    private fun <T> sliceResult(domains: List<T>, requestSize: Int): SliceResult<T> {
-        val hasNext = domains.size > requestSize
-        val contents = if (hasNext) domains.dropLast(1) else domains
-
+    private fun <T> sliceResult(domains: List<T>, hasNext: Boolean): SliceResult<T> {
         return SliceResult(
-            content = contents,
-            isLastPage = !hasNext,
+            content = domains,
+            isLastPage = !hasNext
         )
     }
 }

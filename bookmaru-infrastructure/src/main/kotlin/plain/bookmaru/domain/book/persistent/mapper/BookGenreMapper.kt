@@ -1,15 +1,14 @@
 package plain.bookmaru.domain.book.persistent.mapper
 
 import org.springframework.stereotype.Component
-import plain.bookmaru.domain.book.model.Book
 import plain.bookmaru.domain.book.model.BookGenre
+import plain.bookmaru.domain.book.persistent.entity.BookEntity
 import plain.bookmaru.domain.book.persistent.entity.BookGenreEntity
 import plain.bookmaru.domain.book.persistent.entity.embedded.BookGenreEmbeddedId
 
 @Component
 class BookGenreMapper(
-    private val genreMapper: GenreMapper,
-    private val bookMapper: BookMapper
+    private val genreMapper: GenreMapper
 ) {
 
     fun toDomain(entity: BookGenreEntity): BookGenre {
@@ -19,7 +18,7 @@ class BookGenreMapper(
         )
     }
 
-    fun toEntity(domain: BookGenre, book: Book): BookGenreEntity {
+    fun toEntity(domain: BookGenre, bookEntity: BookEntity): BookGenreEntity {
         val embeddedId = BookGenreEmbeddedId(
             bookId = domain.bookId,
             genreId = domain.genre.id
@@ -28,16 +27,16 @@ class BookGenreMapper(
         return BookGenreEntity(
             id = embeddedId,
             genreEntity = genreMapper.toEntity(domain.genre),
-            bookEntity = bookMapper.toEntity(book)
+            bookEntity = bookEntity
         )
     }
 
     fun toDomainList(entities: List<BookGenreEntity>): List<BookGenre>
     = entities.map { toDomain(it) }
 
-    fun toEntityList(domains: List<BookGenre>, book: Book): List<BookGenreEntity>
+    fun toEntityList(domains: List<BookGenre>, bookEntity: BookEntity): List<BookGenreEntity>
     = domains.map { toEntity(
         it,
-        book = book
+        bookEntity = bookEntity
     ) }
 }

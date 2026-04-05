@@ -26,15 +26,20 @@ class BookMapper(
     }
 
     fun toEntity(domain: Book): BookEntity {
-        return BookEntity(
+        val bookEntity = BookEntity(
             title = domain.bookInfo.title,
             author = domain.bookInfo.author,
             publicationDate = domain.bookInfo.publicationDate,
             bookImage = domain.bookInfo.bookImage,
             publisher = domain.bookInfo.publisher,
             introduction = domain.bookInfo.introduction,
-            bookGenreEntities = bookGenreMapper.toEntityList(domain.genres, domain)
+            bookGenreEntities = mutableListOf()
         )
+
+        val genreEntities = bookGenreMapper.toEntityList(domain.genres, bookEntity)
+        bookEntity.bookGenreEntities.addAll(genreEntities)
+
+        return bookEntity
     }
 
     fun toEntityList(domains: List<Book>): List<BookEntity>

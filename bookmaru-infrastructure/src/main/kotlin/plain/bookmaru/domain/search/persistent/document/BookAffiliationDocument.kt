@@ -22,7 +22,7 @@ data class BookAffiliationDocument(
     @Field(type = FieldType.Keyword)
     val author: String,
 
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Text)
     val publicationDate: String,
 
     @Field(type = FieldType.Keyword)
@@ -31,7 +31,7 @@ data class BookAffiliationDocument(
     @Field(type = FieldType.Text, analyzer = "nori")
     val introduction: String,
 
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Text)
     val genres: List<String>
 ) {
     companion object {

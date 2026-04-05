@@ -211,14 +211,15 @@ class BookAffiliationPersistenceAdapter(
         return@withReadOnly result
     }
 
-    override suspend fun findAllWithBookAndGenresAndAffiliation(): List<BookAffiliation> {
+    override suspend fun findAllWithBookAndGenresAndAffiliation(): List<BookAffiliation> = dbProtection.withReadOnly {
         val bookAffiliation = queryFactory
             .from(bookAffiliation)
             .distinct()
-            .innerJoin(bookAffiliation.bookEntity, book).fetchJoin()
-            .innerJoin(bookAffiliation.affiliationEntity, affiliation).fetchJoin()
-            .leftJoin(book.bookGenreEntities, bookGenre).fetchJoin()
-            .leftJoin(bookGenre.genreEntity, genre).fetchJoin()
+            .innerJoin(bookAffiliation.bookEntity, book)
+
+            .innerJoin(bookAffiliation.affiliationEntity, affiliation)
+            .leftJoin(book.bookGenreEntities, bookGenre)
+            .leftJoin(bookGenre.genreEntity, genre)
             .transform(
                 groupBy(bookAffiliation.id).list(
                     Projections.constructor(
@@ -257,7 +258,7 @@ class BookAffiliationPersistenceAdapter(
                 )
             )
 
-        return bookAffiliation
+        return@withReadOnly bookAffiliation
     }
 
     /*

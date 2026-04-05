@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import plain.bookmaru.common.annotation.LogExecution
 import plain.bookmaru.common.command.PageCommand
 import plain.bookmaru.common.error.CustomHttpStatus
 import plain.bookmaru.common.success.SuccessResponse
@@ -25,6 +26,7 @@ class BookAffiliationSearchAdapter(
 ) {
 
     @GetMapping
+    @LogExecution
     suspend fun search(
         @RequestParam platformType: String,
         @RequestParam keyword: String,
@@ -33,7 +35,7 @@ class BookAffiliationSearchAdapter(
     ): ResponseEntity<SuccessResponse> {
         val command = BookAffiliationSearchCommand(
             pageCommand = PageCommand(
-                page = pageable.pageSize,
+                page = pageable.pageNumber,
                 size = pageable.pageNumber
             ),
             affiliationId = principal.affiliationId,

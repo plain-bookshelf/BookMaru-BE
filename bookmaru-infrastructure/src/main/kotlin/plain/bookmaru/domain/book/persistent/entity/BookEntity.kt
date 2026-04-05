@@ -21,8 +21,8 @@ import plain.bookmaru.global.entity.BaseEntity
 @Table(name = "book")
 class BookEntity(
 
-    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    val bookGenreEntities: List<BookGenreEntity>,
+    @OneToMany(mappedBy = "bookEntity", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val bookGenreEntities: MutableList<BookGenreEntity> = mutableListOf(),
 
     @Column(nullable = false, length = 100)
     val title: String,
