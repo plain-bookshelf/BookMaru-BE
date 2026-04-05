@@ -11,9 +11,9 @@ class FindPasswordPersistenceAdapter(
     private val redisTemplate: StringRedisTemplate,
     private val dbProtection: DbProtection
 ) : FindPasswordPort {
-    override suspend fun save(registerToken: String, username: String) = dbProtection.withTransaction {
+    override suspend fun save(registerToken: String, email: String) = dbProtection.withTransaction {
         redisTemplate.opsForValue().set(
-            username,
+            email,
             registerToken,
             Duration.ofMinutes(10)
         )

@@ -1,13 +1,14 @@
 package plain.bookmaru.domain.book.persistent.mapper
 
 import org.springframework.stereotype.Component
-import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.book.model.Book
 import plain.bookmaru.domain.book.persistent.entity.BookEntity
 import plain.bookmaru.domain.book.vo.BookInfo
 
 @Component
-class BookMapper {
+class BookMapper(
+    private val bookGenreMapper: BookGenreMapper
+) {
 
     fun toDomain(entity: BookEntity) : Book {
         return Book(
@@ -18,26 +19,31 @@ class BookMapper {
                 publicationDate = entity.publicationDate,
                 introduction = entity.introduction,
                 bookImage = entity.bookImage,
-                publisher = entity.publisher,
-                affiliationName = entity.affiliationEntity.affiliationName
-            )
+                publisher = entity.publisher
+            ),
+            genres = bookGenreMapper.toDomainList(entity.bookGenreEntities)
         )
     }
 
-    fun toEntity(domain: Book, affiliationEntity: AffiliationEntity): BookEntity {
-        return BookEntity(
-            affiliationEntity = affiliationEntity,
+    fun toEntity(domain: Book): BookEntity {
+        val bookEntity = BookEntity(
             title = domain.bookInfo.title,
             author = domain.bookInfo.author,
             publicationDate = domain.bookInfo.publicationDate,
             bookImage = domain.bookInfo.bookImage,
             publisher = domain.bookInfo.publisher,
-            introduction = domain.bookInfo.introduction
+            introduction = domain.bookInfo.introduction,
+            bookGenreEntities = mutableListOf()
         )
+
+        val genreEntities = bookGenreMapper.toEntityList(domain.genres ?: emptyList(), bookEntity)
+        bookEntity.bookGenreEntities.addAll(genreEntities)
+
+        return bookEntity
     }
 
-    fun toEntityList(domains: List<Book>, affiliationEntity: AffiliationEntity): List<BookEntity>
-        = domains.map { toEntity(it, affiliationEntity) }
+    fun toEntityList(domains: List<Book>): List<BookEntity>
+        = domains.map { toEntity(it) }
 
     fun toDomainList(entities: List<BookEntity>) : List<Book>
         = entities.map { toDomain(it) }
