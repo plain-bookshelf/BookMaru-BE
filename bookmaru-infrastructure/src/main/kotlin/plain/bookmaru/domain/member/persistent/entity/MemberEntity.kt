@@ -17,6 +17,8 @@ import jakarta.persistence.SequenceGenerator
 import jakarta.persistence.Table
 import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.auth.vo.Authority
+import plain.bookmaru.domain.inventory.persistent.entity.BookDetailEntity
+import plain.bookmaru.domain.lending.persistent.entity.BookReservationEntity
 import plain.bookmaru.domain.notification.persistent.entity.NotificationEntity
 import plain.bookmaru.global.entity.BaseEntity
 import java.time.LocalDateTime
@@ -36,7 +38,7 @@ import java.time.LocalTime
     ]
 )
 class MemberEntity(
-    @ManyToOne(optional = false, cascade = [CascadeType.REFRESH], fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "affiliation_id", nullable = false )
     var affiliationEntity: AffiliationEntity,
 
@@ -60,6 +62,9 @@ class MemberEntity(
 
     @OneToMany(mappedBy = "memberEntity", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     val notificationEntities: MutableList<NotificationEntity> = mutableListOf()
+
+    @OneToMany(mappedBy = "memberEntity", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val bookReservationEntities: MutableList<BookReservationEntity> = mutableListOf()
 
     @Column(nullable = true, length = 100)
     var password: String? = null

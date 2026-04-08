@@ -98,12 +98,32 @@ class SecurityConfig(
 
                 it.requestMatchers(
                     /*
+                    lending
+                     */
+                    "/api/{bookAffiliationId}/**"
+                ).hasAnyRole(
+                    "USER",
+                    "MANAGER",
+                    "LIBRARIAN",
+                    "TEACHER",
+                    "ADMIN"
+                )
+
+                it.requestMatchers(
+                    /*
                     verification
                      */
-                    "/api/verification/officialCode/save"
+                    "/api/verification/officialCode/save/"
                 ).hasRole("ADMIN")
 
-                it.anyRequest().authenticated()
+                it.anyRequest().hasAnyRole(
+                    "USER",
+                    "MANAGER",
+                    "LIBRARIAN",
+                    "TEACHER",
+                    "ADMIN",
+                    "OVERDUE"
+                )
             }
         return http.build()
     }

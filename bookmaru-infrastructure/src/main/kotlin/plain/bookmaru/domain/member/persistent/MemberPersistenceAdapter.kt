@@ -16,6 +16,7 @@ class MemberPersistenceAdapter(
     private val memberMapper: MemberMapper,
     private val dbProtection: DbProtection
 ) : MemberPort {
+
     override fun save(member: Member) : Member {
         val affiliationProxy = affiliationRepository.getReferenceById(member.affiliationId!!)
 
