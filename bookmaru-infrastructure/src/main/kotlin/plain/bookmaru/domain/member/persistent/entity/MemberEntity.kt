@@ -17,7 +17,6 @@ import jakarta.persistence.SequenceGenerator
 import jakarta.persistence.Table
 import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.auth.vo.Authority
-import plain.bookmaru.domain.inventory.persistent.entity.BookDetailEntity
 import plain.bookmaru.domain.lending.persistent.entity.BookReservationEntity
 import plain.bookmaru.domain.notification.persistent.entity.NotificationEntity
 import plain.bookmaru.global.entity.BaseEntity
