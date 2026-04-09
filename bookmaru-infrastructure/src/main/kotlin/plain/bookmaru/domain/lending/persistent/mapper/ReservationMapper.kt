@@ -1,7 +1,6 @@
 package plain.bookmaru.domain.lending.persistent.mapper
 
 import org.springframework.stereotype.Component
-import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.lending.model.Reservation
 import plain.bookmaru.domain.lending.persistent.entity.BookReservationEntity
 import plain.bookmaru.domain.lending.persistent.entity.embedded.BookReservationEmbeddedId
