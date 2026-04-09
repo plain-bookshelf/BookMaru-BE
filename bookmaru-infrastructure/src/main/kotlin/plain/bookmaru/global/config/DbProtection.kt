@@ -1,22 +1,22 @@
 package plain.bookmaru.global.config
 
-import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
 import plain.bookmaru.common.port.TransactionPort
-import java.util.concurrent.Executors
 
-private val VirtualDispatcher = Executors.newVirtualThreadPerTaskExecutor().asCoroutineDispatcher()
 private val DbSemaphore = Semaphore(30)
 
 @Component
 class DbProtection(
     transactionManager: PlatformTransactionManager,
+    @Qualifier("virtualDispatcher") private val virtualDispatcher: CoroutineDispatcher
 ) : TransactionPort {
     private val modifyTemplate = TransactionTemplate(transactionManager)
 
@@ -25,7 +25,7 @@ class DbProtection(
     }
 
     override suspend fun <T> withReadOnly(block: () -> T): T {
-        return withContext(VirtualDispatcher) {
+        return withContext(virtualDispatcher) {
             withTimeout(5000L) {
                 DbSemaphore.withPermit {
                     @Suppress("UNCHECKED_CAST")
@@ -38,7 +38,7 @@ class DbProtection(
     }
 
     override suspend fun <T> withTransaction(block: () -> T): T {
-        return withContext(VirtualDispatcher) {
+        return withContext(virtualDispatcher) {
             withTimeout(5000L) {
                 DbSemaphore.withPermit {
                     modifyTemplate.execute {

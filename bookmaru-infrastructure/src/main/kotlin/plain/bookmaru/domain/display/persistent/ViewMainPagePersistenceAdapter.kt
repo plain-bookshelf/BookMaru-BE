@@ -1,5 +1,7 @@
 package plain.bookmaru.domain.display.persistent
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
@@ -13,7 +15,6 @@ import plain.bookmaru.domain.display.port.out.MainPagePort
 import plain.bookmaru.domain.display.port.out.result.EventInfoResult
 import plain.bookmaru.domain.display.port.out.result.PopularBookSortResult
 import plain.bookmaru.domain.display.port.out.result.RecentBookSortResult
-import plain.bookmaru.global.config.DbProtection
 import java.time.Duration
 import kotlin.math.ceil
 
@@ -29,24 +30,24 @@ private val RECENT_BOOK_TTL = Duration.ofHours(24)
 class ViewMainPagePersistenceAdapter(
     @Qualifier("cacheRedisTemplate")
     private val cacheRedisTemplate: RedisTemplate<String, ByteArray>,
-    private val dbProtection: DbProtection
+    @Qualifier("virtualDispatcher") private val virtualDispatcher: CoroutineDispatcher
 ) : MainPagePort {
     /*
     SAVE
      */
-    override suspend fun savePopularBooks(books: List<PopularBookSortResult>, platformType: PlatformType, affiliationId: Long) = dbProtection.withTransaction {
-        if (books.isEmpty()) return@withTransaction
+    override suspend fun savePopularBooks(books: List<PopularBookSortResult>, platformType: PlatformType, affiliationId: Long): Unit = withContext(virtualDispatcher) {
+            if (books.isEmpty()) return@withContext
 
-        val key = "$POPULAR_BOOK_KEY:$platformType:affiliationId$affiliationId"
-        val byteArray = books.map { ProtoBuf.encodeToByteArray(it) }
+            val key = "$POPULAR_BOOK_KEY:$platformType:affiliationId$affiliationId"
+            val byteArray = books.map { ProtoBuf.encodeToByteArray(it) }
 
-        cacheRedisTemplate.delete(key)
-        cacheRedisTemplate.opsForList().rightPushAll(key, byteArray)
-        cacheRedisTemplate.expire(key, POPULAR_BOOK_TTL)
-    }
+            cacheRedisTemplate.delete(key)
+            cacheRedisTemplate.opsForList().rightPushAll(key, byteArray)
+            cacheRedisTemplate.expire(key, POPULAR_BOOK_TTL)
+        }
 
-    override suspend fun saveRecentBooks(books: List<RecentBookSortResult>, platformType: PlatformType, affiliationId: Long) = dbProtection.withTransaction {
-        if (books.isEmpty()) return@withTransaction
+    override suspend fun saveRecentBooks(books: List<RecentBookSortResult>, platformType: PlatformType, affiliationId: Long): Unit = withContext(virtualDispatcher) {
+        if (books.isEmpty()) return@withContext
 
         val key = "$RECENT_BOOK_KEY:$platformType:affiliationId$affiliationId"
         val byteArray = books.map { ProtoBuf.encodeToByteArray(it) }
@@ -56,8 +57,8 @@ class ViewMainPagePersistenceAdapter(
         cacheRedisTemplate.expire(key, RECENT_BOOK_TTL)
     }
 
-    override suspend fun saveEvents(events: List<EventInfoResult>, affiliationId: Long) = dbProtection.withTransaction {
-        if (events.isEmpty()) return@withTransaction
+    override suspend fun saveEvents(events: List<EventInfoResult>, affiliationId: Long): Unit = withContext(virtualDispatcher) {
+        if (events.isEmpty()) return@withContext
 
         val key = "$EVENT_KEY:affiliationId$affiliationId"
         val byteArray = events.map { ProtoBuf.encodeToByteArray(it) }
@@ -70,27 +71,27 @@ class ViewMainPagePersistenceAdapter(
     LOAD
      */
 
-    override suspend fun loadPopularBooks(command: PageCommand, platformType: PlatformType, affiliationId: Long): SliceResult<PopularBookSortResult>? = dbProtection.withReadOnly {
+    override suspend fun loadPopularBooks(command: PageCommand, platformType: PlatformType, affiliationId: Long): SliceResult<PopularBookSortResult>? = withContext(virtualDispatcher) {
         val key = "$POPULAR_BOOK_KEY:$platformType:affiliationId$affiliationId"
 
-        return@withReadOnly loadBookInfo(key, command)
+        return@withContext loadBookInfo(key, command)
     }
 
-    override suspend fun loadRecentBooks(command: PageCommand, platformType: PlatformType, affiliationId: Long): SliceResult<RecentBookSortResult>? = dbProtection.withReadOnly {
+    override suspend fun loadRecentBooks(command: PageCommand, platformType: PlatformType, affiliationId: Long): SliceResult<RecentBookSortResult>? = withContext(virtualDispatcher) {
         val key = "$RECENT_BOOK_KEY:$platformType:affiliationId$affiliationId"
 
-        return@withReadOnly loadBookInfo(key, command)
+        return@withContext loadBookInfo(key, command)
     }
 
-    override suspend fun loadEvents(affiliationId: Long): List<EventInfoResult>? = dbProtection.withReadOnly {
+    override suspend fun loadEvents(affiliationId: Long): List<EventInfoResult>? = withContext(virtualDispatcher) {
         val key = "$EVENT_KEY:affiliationId$affiliationId"
         val rangeResult = cacheRedisTemplate.opsForList().range(key, 0, -1)
 
-        if (rangeResult.isNullOrEmpty()) return@withReadOnly null
+        if (rangeResult.isNullOrEmpty()) return@withContext null
 
         val events = rangeResult.map { ProtoBuf.decodeFromByteArray<EventInfoResult>(it) }
 
-        return@withReadOnly events
+        return@withContext events
     }
 
     private inline fun <reified T> loadBookInfo(key: String, command: PageCommand): SliceResult<T>? {
