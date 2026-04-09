@@ -4,6 +4,8 @@ import jakarta.persistence.Id
 import org.springframework.data.elasticsearch.annotations.Document
 import org.springframework.data.elasticsearch.annotations.Field
 import org.springframework.data.elasticsearch.annotations.FieldType
+import org.springframework.data.elasticsearch.annotations.InnerField
+import org.springframework.data.elasticsearch.annotations.MultiField
 import org.springframework.data.elasticsearch.annotations.Setting
 import plain.bookmaru.domain.inventory.model.BookAffiliation
 
@@ -16,7 +18,17 @@ data class BookAffiliationDocument(
     @Field(type = FieldType.Long)
     val affiliationId: Long,
 
-    @Field(type = FieldType.Text, analyzer = "nori")
+    @MultiField(
+        mainField = Field(type = FieldType.Text, analyzer = "nori_analyzer"),
+        otherFields = [
+            InnerField(
+                suffix = "ac",
+                type = FieldType.Text,
+                analyzer = "nori_autocomplete_analyzer",
+                searchAnalyzer = "nori_analyzer"
+            )
+        ]
+    )
     val title: String,
 
     @Field(type = FieldType.Keyword)
@@ -28,10 +40,10 @@ data class BookAffiliationDocument(
     @Field(type = FieldType.Keyword)
     val publisher: String,
 
-    @Field(type = FieldType.Text, analyzer = "nori")
+    @Field(type = FieldType.Text, analyzer = "nori_analyzer")
     val introduction: String,
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
     val genres: List<String>
 ) {
     companion object {
