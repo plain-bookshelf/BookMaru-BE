@@ -15,9 +15,9 @@ class ViewMyPageService(
 ): ViewMyPageUseCase {
     override suspend fun execute(command: ViewMyPageCommand): ViewMyPageResult {
         val username = command.username
-        log.info { "$username my_page 정보 조회 시도" }
+        log.debug { "$username my_page 정보 조회 시도" }
         val myPageResult = myPagePort.findUserInfoByUsername(username)
-        log.info { "$username my_page 정보 조회 완료" }
+        log.debug { "$username my_page 정보 조회 완료" }
         return myPageResult
     }
 }

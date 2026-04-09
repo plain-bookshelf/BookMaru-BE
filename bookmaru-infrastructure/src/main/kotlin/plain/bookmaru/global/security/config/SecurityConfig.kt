@@ -113,7 +113,7 @@ class SecurityConfig(
                     /*
                     verification
                      */
-                    "/api/verification/officialCode/save/"
+                    "/api/verification/officialCode/save"
                 ).hasRole("ADMIN")
 
                 it.anyRequest().hasAnyRole(

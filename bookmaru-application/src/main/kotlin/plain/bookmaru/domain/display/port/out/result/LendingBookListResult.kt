@@ -1,9 +1,9 @@
 package plain.bookmaru.domain.display.port.out.result
 
 data class LendingBookListResult(
-    val rentalBookInfo: List<RentalBookInfo>?,
-    val reservationBookInfo: List<ReservationBookInfo>?,
-    val overDueBookInfo: List<OverDueBookInfo>?
+    val rentalBookInfo: List<RentalBookInfo> = emptyList(),
+    val reservationBookInfo: List<ReservationBookInfo> = emptyList(),
+    val overDueBookInfo: List<OverDueBookInfo> = emptyList()
 ) {
     data class RentalBookInfo(
         val bookAffiliationId: Long,

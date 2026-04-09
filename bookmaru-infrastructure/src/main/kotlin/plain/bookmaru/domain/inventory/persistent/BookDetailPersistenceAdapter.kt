@@ -39,7 +39,10 @@ class BookDetailPersistenceAdapter(
             .set(bookDetail.rentalStatus, RentalStatus.RENTAL_REQUEST)
             .set(bookDetail.memberEntity.id, rental.memberId)
             .set(bookDetail.returnDate, returnDate)
-            .where(bookDetail.id.eq(rental.bookDetailId))
+            .where(
+                bookDetail.id.eq(rental.bookDetailId),
+                bookDetail.rentalStatus.eq(RentalStatus.RETURN)
+            )
             .execute()
     }
 }

@@ -26,7 +26,7 @@ class ViewBookDetailPageService(
 
         return BookDetailPageResult(
             affiliationName = bookInfo.affiliationName,
-            BookInfo(
+            bookInfo = BookInfo(
                 title = bookDetailInfo.title,
                 author = bookDetailInfo.author,
                 publicationDate = bookDetailInfo.publicationDate,
