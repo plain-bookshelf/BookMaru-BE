@@ -16,6 +16,7 @@ import plain.bookmaru.domain.lending.port.out.BookRentalRecordPort
 import plain.bookmaru.domain.lending.vo.BookRecord
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.port.out.MemberPort
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 private val log = KotlinLogging.logger {}
@@ -64,9 +65,13 @@ class RentalService(
             )
 
             member.incrementRentalCount()
+            val returnDate = if (member.authority == Authority.ROLE_TEACHER || member.authority == Authority.ROLE_LIBRARIAN)
+                LocalDate.now().plusDays(365)
+            else
+                LocalDate.now().plusDays(14)
 
             transactionPort.withTransaction {
-                bookDetailPort.updateRental(rental)
+                bookDetailPort.updateRental(rental, returnDate)
                 log.info { "책 대여자 정보와 책 상태 변경에 성공했습니다." }
                 memberPort.save(member)
                 log.info { "유저 대여한 책 권 수 증가 완료" }

@@ -9,6 +9,7 @@ import plain.bookmaru.domain.inventory.port.out.BookDetailPort
 import plain.bookmaru.domain.inventory.vo.RentalStatus
 import plain.bookmaru.domain.lending.model.Rental
 import plain.bookmaru.global.config.DbProtection
+import java.time.LocalDate
 
 @Component
 class BookDetailPersistenceAdapter(
@@ -33,11 +34,15 @@ class BookDetailPersistenceAdapter(
         return@withReadOnly bookDetailEntity?.let { bookDetailMapper.toDomain(it) }
     }
 
-    override fun updateRental(rental: Rental) {
+    override fun updateRental(rental: Rental, returnDate: LocalDate) {
         queryFactory.update(bookDetail)
             .set(bookDetail.rentalStatus, RentalStatus.RENTAL_REQUEST)
             .set(bookDetail.memberEntity.id, rental.memberId)
-            .where(bookDetail.id.eq(rental.bookDetailId))
+            .set(bookDetail.returnDate, returnDate)
+            .where(
+                bookDetail.id.eq(rental.bookDetailId),
+                bookDetail.rentalStatus.eq(RentalStatus.RETURN)
+            )
             .execute()
     }
 }

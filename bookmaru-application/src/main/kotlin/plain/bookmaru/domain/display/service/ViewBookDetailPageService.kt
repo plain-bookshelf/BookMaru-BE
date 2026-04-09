@@ -25,7 +25,8 @@ class ViewBookDetailPageService(
         val bookDetailInfo = bookInfo.book.bookInfo
 
         return BookDetailPageResult(
-            BookInfo(
+            affiliationName = bookInfo.affiliationName,
+            bookInfo = BookInfo(
                 title = bookDetailInfo.title,
                 author = bookDetailInfo.author,
                 publicationDate = bookDetailInfo.publicationDate,
