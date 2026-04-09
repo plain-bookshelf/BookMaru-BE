@@ -15,7 +15,7 @@ class ViewMyPageLendingInfoService(
 ): ViewMyPageLendingInfoUseCase {
     override suspend fun execute(command: ViewMyPageLendingInfoCommand): LendingBookListResult {
         val memberId = command.memberId
-        val result = myPagePort.findUserLendingInfoByUsername(memberId)
+        val result = myPagePort.findUserLendingInfoByMemberId(memberId)
         log.info { "유저의 마이페이지 책 관련 정보를 가져왔습니다." }
 
         return result

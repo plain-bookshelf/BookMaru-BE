@@ -83,7 +83,7 @@ class ViewMyPagePersistenceAdapter(
         )
     }
 
-    override suspend fun findUserLendingInfoByUsername(memberId: Long): LendingBookListResult = dbProtection.withReadOnly {
+    override suspend fun findUserLendingInfoByMemberId(memberId: Long): LendingBookListResult = dbProtection.withReadOnly {
         val today = LocalDate.now()
 
         val rentalBookList = queryFactory
