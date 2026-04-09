@@ -21,7 +21,12 @@ data class BookAffiliationDocument(
     @MultiField(
         mainField = Field(type = FieldType.Text, analyzer = "nori_analyzer"),
         otherFields = [
-            InnerField(suffix = "ac", type = FieldType.Text, analyzer = "nori_autocomplete_analyzer")
+            InnerField(
+                suffix = "ac",
+                type = FieldType.Text,
+                analyzer = "nori_autocomplete_analyzer",
+                searchAnalyzer = "nori_analyzer"
+            )
         ]
     )
     val title: String,
