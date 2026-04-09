@@ -10,6 +10,7 @@ import jakarta.persistence.MapsId
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
 import plain.bookmaru.domain.lending.persistent.entity.embedded.BookReservationEmbeddedId
+import plain.bookmaru.domain.member.persistent.entity.MemberEntity
 import plain.bookmaru.global.entity.BaseEntity
 
 @Entity
@@ -32,5 +33,5 @@ class BookReservationEntity(
     @MapsId("memberId")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    val memberEntity: BookReservationEntity
+    val memberEntity: MemberEntity
 ) : BaseEntity()

@@ -2,6 +2,7 @@ package plain.bookmaru.domain.lending.persistent
 
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Component
+import plain.bookmaru.domain.affiliation.persistent.repository.AffiliationRepository
 import plain.bookmaru.domain.lending.model.Reservation
 import plain.bookmaru.domain.lending.persistent.entity.QBookReservationEntity
 import plain.bookmaru.domain.lending.persistent.mapper.ReservationMapper
@@ -14,6 +15,7 @@ class BookReservationPersistenceAdapter(
     private val bookReservationRepository: BookReservationRepository,
     private val queryFactory: JPAQueryFactory,
     private val reservationMapper: ReservationMapper,
+    private val affiliationRepository: AffiliationRepository,
     private val dbProtection: DbProtection
 ) : BookReservationPort {
     private val bookReservation = QBookReservationEntity.bookReservationEntity
@@ -29,7 +31,8 @@ class BookReservationPersistenceAdapter(
     }
 
     override fun save(reservation: Reservation) {
-        val entity = reservationMapper.toEntity(reservation)
+        val affiliationProxy = affiliationRepository.getReferenceById(reservation.member.affiliationId!!)
+        val entity = reservationMapper.toEntity(reservation, affiliationProxy)
 
         bookReservationRepository.save(entity)
     }

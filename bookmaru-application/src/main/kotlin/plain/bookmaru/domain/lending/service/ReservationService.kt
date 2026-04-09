@@ -49,7 +49,7 @@ class ReservationService(
             val reservation = Reservation(
                 waitingRank = waitingRank,
                 bookAffiliationId = bookAffiliationId,
-                memberId = member.id!!
+                member = member
             )
 
             member.incrementReservationCount()
