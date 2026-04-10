@@ -108,7 +108,9 @@ class ViewMainPagePersistenceAdapter(
     }
 
     private fun <T> paginate(allContents: List<T>, command: PageCommand): SliceResult<T>? {
-        val start = command.offset
+        if (command.size <= 0) return SliceResult(content = emptyList(), isLastPage = true)
+
+        val start = command.offset.toInt()
         val end = (start + command.size).coerceAtMost(allContents.size)
         val content = if (start >= allContents.size) emptyList() else allContents.subList(start, end)
 
