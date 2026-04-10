@@ -29,17 +29,10 @@ class LoginMemberService(
     override suspend fun execute(command: LoginMemberCommand) : TokenResult {
         log.info { "${command.accountInfo.username} 이 로그인을 시도 했습니다." }
 
-        if (command.accountInfo.username.contains("@")) {
-            val member = memberPort.findByEmail(command.accountInfo.username)
-                ?: throw NotFoundMemberException("${command.accountInfo.username} 이메일을 가진 유저가 없습니다.")
+        val member = memberPort.findByEmail(command.accountInfo.username)
+            ?: throw NotFoundMemberException("${command.accountInfo.username} 이메일을 가진 유저가 없습니다.")
 
-            return validationAndResponse(command, member, command.platformType)
-        } else {
-            val member = memberPort.findByUsername(command.accountInfo.username)
-                ?: throw NotFoundMemberException("${command.accountInfo.username} 아이디를 가진 유저가 없습니다.")
-
-            return validationAndResponse(command, member, command.platformType)
-        }
+        return validationAndResponse(command, member, command.platformType)
     }
 
     private suspend fun validationAndResponse(command: LoginMemberCommand, member: Member, platformType: PlatformType) :TokenResult {

@@ -25,7 +25,7 @@ class OAuth2RegisterSessionPersistenceAdapter(
     override suspend fun save(
         token: String,
         command: CustomOAuth2Command
-    ) {
+    ) = withContext(virtualDispatcher) {
         val jsonData = objectMapper.writeValueAsString(command)
 
         redisTemplate.opsForValue().set(

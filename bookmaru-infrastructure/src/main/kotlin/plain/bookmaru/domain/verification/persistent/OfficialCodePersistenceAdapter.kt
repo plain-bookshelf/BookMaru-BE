@@ -10,15 +10,16 @@ import plain.bookmaru.domain.verification.model.OfficialCode
 import plain.bookmaru.domain.verification.persistent.mapper.OfficialCodeMapper
 import plain.bookmaru.domain.verification.persistent.repository.OfficialCodeRepository
 import plain.bookmaru.domain.verification.port.out.OfficialCodePort
+import plain.bookmaru.global.config.DbProtection
 
 @Component
 class OfficialCodePersistenceAdapter(
     private val officialCodeRepository: OfficialCodeRepository,
     private val officialCodeMapper: OfficialCodeMapper,
     private val affiliationMapper: AffiliationMapper,
-    @Qualifier("virtualDispatcher") private val virtualDispatcher: CoroutineDispatcher
+    private val dbProtection: DbProtection
 ) : OfficialCodePort {
-    override suspend fun save(officialCodes: List<OfficialCode>, affiliation: Affiliation) : List<OfficialCode> = withContext(virtualDispatcher) {
+    override suspend fun save(officialCodes: List<OfficialCode>, affiliation: Affiliation) : List<OfficialCode> = dbProtection.withTransaction {
         officialCodeRepository.saveAll(officialCodeMapper.toEntityList(officialCodes, affiliation))
             .map { officialCodeMapper.toDomain(it) }
     }
@@ -26,7 +27,7 @@ class OfficialCodePersistenceAdapter(
     override suspend fun load(
         code: String,
         affiliation: Affiliation
-    ) : OfficialCode? = withContext(virtualDispatcher) {
+    ) : OfficialCode? = dbProtection.withReadOnly {
         officialCodeRepository.findByAffiliationAndCode(affiliationMapper.toEntity(affiliation), code)?.let {
             officialCodeMapper.toDomain(it)
         }
