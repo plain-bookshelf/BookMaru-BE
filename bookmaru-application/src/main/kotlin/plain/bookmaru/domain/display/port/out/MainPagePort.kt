@@ -10,7 +10,7 @@ import plain.bookmaru.domain.display.port.out.result.RecentBookSortResult
 interface MainPagePort {
     suspend fun savePopularBooks(books: List<PopularBookSortResult>, platformType: PlatformType, affiliationId: Long)
     suspend fun saveRecentBooks(books: List<RecentBookSortResult>, platformType: PlatformType, affiliationId: Long)
-    suspend fun saveEvents(events: List<EventInfoResult>, affiliationId: Long)
+    suspend fun saveEvents(events: List<EventInfoResult>?, affiliationId: Long)
 
     suspend fun loadPopularBooks(command: PageCommand, platformType: PlatformType, affiliationId: Long): SliceResult<PopularBookSortResult>?
     suspend fun loadRecentBooks(command: PageCommand, platformType: PlatformType, affiliationId: Long): SliceResult<RecentBookSortResult>?
