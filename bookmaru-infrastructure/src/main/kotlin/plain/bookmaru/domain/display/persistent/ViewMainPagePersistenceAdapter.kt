@@ -56,7 +56,9 @@ class ViewMainPagePersistenceAdapter(
         cacheRedisTemplate.opsForValue().set(key, byteArray, RECENT_BOOK_TTL)
     }
 
-    override suspend fun saveEvents(events: List<EventInfoResult>, affiliationId: Long): Unit = withContext(virtualDispatcher) {
+    override suspend fun saveEvents(events: List<EventInfoResult>?, affiliationId: Long): Unit = withContext(virtualDispatcher) {
+        if (events == null) return@withContext
+
         val key = "$EVENT_KEY:affiliationId$affiliationId"
         if (validIsNotEmptyBook(events, key)) return@withContext
 

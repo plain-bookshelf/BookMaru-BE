@@ -1,6 +1,5 @@
 package plain.bookmaru.domain.auth.persistent
 
-import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.auth.model.JwtRefreshToken
 import plain.bookmaru.domain.auth.persistent.mapper.RefreshTokenMapper

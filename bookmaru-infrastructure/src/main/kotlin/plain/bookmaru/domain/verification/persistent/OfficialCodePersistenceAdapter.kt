@@ -1,8 +1,5 @@
 package plain.bookmaru.domain.verification.persistent
 
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.model.Affiliation
 import plain.bookmaru.domain.affiliation.persistent.mapper.AffiliationMapper
