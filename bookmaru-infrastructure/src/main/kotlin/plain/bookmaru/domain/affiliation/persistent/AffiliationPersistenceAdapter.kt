@@ -13,8 +13,8 @@ class AffiliationPersistenceAdapter(
     private val affiliationRepository: AffiliationRepository,
     private val affiliationMapper: AffiliationMapper,
     private val dbProtection: DbProtection
-
 ) : AffiliationPort {
+
     override suspend fun findByAffiliationName(name: String): Affiliation? = dbProtection.withReadOnly {
         val entity = affiliationRepository.findByAffiliationName(name)
 
@@ -30,5 +30,4 @@ class AffiliationPersistenceAdapter(
 
         entity?.let { affiliationMapper.toDomain(it) }
     }
-
 }

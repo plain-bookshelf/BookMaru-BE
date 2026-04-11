@@ -2,8 +2,14 @@ package plain.bookmaru.domain.lending.persistent.entity
 
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.MapsId
 import jakarta.persistence.Table
+import plain.bookmaru.domain.inventory.persistent.entity.BookDetailEntity
 import plain.bookmaru.domain.lending.persistent.entity.embedded.BookRentalRecordEmbeddedId
+import plain.bookmaru.domain.member.persistent.entity.MemberEntity
 import plain.bookmaru.global.entity.BaseEntity
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -16,5 +22,15 @@ class BookRentalRecordEntity(
 
     val rentalDate: LocalDateTime,
 
-    var returnDate: LocalDate? = null
+    var returnDate: LocalDate? = null,
+
+    @MapsId("memberId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    val member: MemberEntity,
+
+    @MapsId("bookDetailId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_detail_id")
+    val bookDetail: BookDetailEntity
 ) : BaseEntity()
