@@ -2,7 +2,9 @@ package plain.bookmaru.domain.inventory.persistent
 
 import com.querydsl.core.group.GroupBy.groupBy
 import com.querydsl.core.group.GroupBy.list
+import com.querydsl.core.types.ExpressionUtils
 import com.querydsl.core.types.Projections
+import com.querydsl.jpa.JPAExpressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
@@ -170,17 +172,21 @@ class BookAffiliationPersistenceAdapter(
                     ),
 
                     affiliation.affiliationName,
-                    bookDetail.id.countDistinct().intValue(),
+                    ExpressionUtils.`as`(
+                        JPAExpressions.select(bookDetail.id.countDistinct())
+                            .from(bookDetail)
+                            .where(
+                                bookDetail.bookAffiliationEntity.id.eq(bookAffiliation.id),
+                                bookDetail.rentalStatus.eq(RentalStatus.RETURN)
+                            ),
+                        "availableCount"
+                    ),
                     bookLike.id.isNotNull
                 )
             )
             .from(bookAffiliation)
             .innerJoin(bookAffiliation.bookEntity, book)
             .innerJoin(bookAffiliation.affiliationEntity, affiliation)
-            .leftJoin(bookDetail).on(
-                bookDetail.bookAffiliationEntity.id.eq(bookAffiliation.id)
-                    .and(bookDetail.rentalStatus.eq(RentalStatus.RETURN))
-            )
             .leftJoin(bookLike).on(
                 bookLike.id.bookAffiliationId.eq(bookAffiliation.id)
                     .and(bookLike.id.memberId.eq(memberId))
@@ -188,23 +194,6 @@ class BookAffiliationPersistenceAdapter(
             .where(
                 book.id.eq(bookId),
                 affiliation.id.eq(affiliationId)
-            )
-            .groupBy(
-                book.id,
-                affiliation.id,
-                affiliation.affiliationName,
-                book.title,
-                book.author,
-                book.publicationDate,
-                book.introduction,
-                book.bookImage,
-                book.publisher,
-                bookAffiliation.id,
-                bookAffiliation.rentalCount,
-                bookAffiliation.reservationCount,
-                bookAffiliation.likeCount,
-                bookAffiliation.similarityToken,
-                bookLike.id
             )
             .fetchOne()
 
@@ -276,6 +265,13 @@ class BookAffiliationPersistenceAdapter(
         queryFactory.update(bookAffiliation)
             .set(bookAffiliation.likeCount, bookAffiliation.likeCount.add(-1))
             .where(bookAffiliation.id.eq(bookAffiliationId), bookAffiliation.likeCount.gt(0))
+            .execute()
+    }
+
+    override fun decrementReservationCount(bookAffiliationId: Long) {
+        queryFactory.update(bookAffiliation)
+            .set(bookAffiliation.reservationCount, bookAffiliation.reservationCount.subtract(1))
+            .where(bookAffiliation.id.eq(bookAffiliationId), bookAffiliation.reservationCount.gt(0))
             .execute()
     }
 

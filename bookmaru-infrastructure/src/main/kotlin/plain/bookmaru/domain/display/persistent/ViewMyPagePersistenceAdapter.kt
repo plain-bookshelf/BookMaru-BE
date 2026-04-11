@@ -90,7 +90,7 @@ class ViewMyPagePersistenceAdapter(
             .selectOne()
             .from(member)
             .where(member.id.eq(memberId))
-            .fetchFirst() ?: NotFoundMemberException("memberId: $memberId 유저를 찾지 못 했습니다.")
+            .fetchFirst() ?: throw NotFoundMemberException("memberId: $memberId 유저를 찾지 못 했습니다.")
 
         val rentalBookList = queryFactory
             .select(

@@ -22,5 +22,4 @@ class AffiliationEntity(
 
     @Column(nullable = false, length = 45)
     val affiliationName : String
-) {
-}
+)

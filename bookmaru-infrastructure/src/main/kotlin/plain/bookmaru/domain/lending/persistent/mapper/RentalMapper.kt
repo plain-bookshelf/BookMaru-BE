@@ -6,6 +6,7 @@ import plain.bookmaru.domain.lending.model.Rental
 import plain.bookmaru.domain.lending.persistent.entity.BookRentalRecordEntity
 import plain.bookmaru.domain.lending.persistent.entity.embedded.BookRentalRecordEmbeddedId
 import plain.bookmaru.domain.lending.vo.BookRecord
+import plain.bookmaru.domain.member.persistent.entity.MemberEntity
 import java.time.LocalDateTime
 
 @Component
@@ -13,7 +14,7 @@ class RentalMapper {
 
     fun toDomain(entity: BookDetailEntity, rentalDate: LocalDateTime) : Rental {
         return Rental(
-            memberId = entity.memberEntity.id!!,
+            memberId = entity.memberEntity?.id!!,
             bookDetailId = entity.id!!,
             bookRecord = BookRecord(
                 rentalDate = rentalDate,
@@ -23,7 +24,9 @@ class RentalMapper {
     }
 
     fun toEntity(
-        domain: Rental
+        domain: Rental,
+        memberProxy: MemberEntity,
+        bookDetailProxy: BookDetailEntity
     ) : BookRentalRecordEntity {
         val embeddedId = BookRentalRecordEmbeddedId(
             memberId = domain.memberId,
@@ -32,7 +35,10 @@ class RentalMapper {
 
         return BookRentalRecordEntity(
             id = embeddedId,
-            rentalDate = domain.bookRecord.rentalDate
+            rentalDate = domain.bookRecord.rentalDate,
+            returnDate = domain.bookRecord.returnDate,
+            member = memberProxy,
+            bookDetail = bookDetailProxy
         ).apply {
             this.returnDate = domain.bookRecord.returnDate
         }

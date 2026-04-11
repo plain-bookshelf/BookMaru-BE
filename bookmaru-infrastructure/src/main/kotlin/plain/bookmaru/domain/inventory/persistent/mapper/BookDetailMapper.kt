@@ -27,11 +27,12 @@ class BookDetailMapper {
         bookAffiliationEntity: BookAffiliationEntity,
     ) : BookDetailEntity {
         return BookDetailEntity(
-            memberEntity = memberEntity,
             bookAffiliationEntity = bookAffiliationEntity,
             registrationNumber = domain.bookDetailDiscernment.registrationNumber,
             callNumber = domain.bookDetailDiscernment.callNumber
-        )
+        ).apply {
+            this.memberEntity = memberEntity
+        }
     }
 
     fun toDomainList(entities: List<BookDetailEntity>) : List<BookDetail> {
