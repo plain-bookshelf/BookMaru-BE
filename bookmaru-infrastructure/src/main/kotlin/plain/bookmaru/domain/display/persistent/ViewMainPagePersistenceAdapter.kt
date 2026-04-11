@@ -2,6 +2,7 @@ package plain.bookmaru.domain.display.persistent
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
@@ -18,6 +19,7 @@ import plain.bookmaru.domain.display.port.out.MainPagePort
 import plain.bookmaru.domain.display.port.out.result.EventInfoResult
 import plain.bookmaru.domain.display.port.out.result.PopularBookSortResult
 import plain.bookmaru.domain.display.port.out.result.RecentBookSortResult
+import plain.bookmaru.domain.display.service.PaginateProfessor
 import java.time.Duration
 import kotlin.math.ceil
 
@@ -34,12 +36,14 @@ class ViewMainPagePersistenceAdapter(
     @Qualifier("cacheRedisTemplate")
     private val cacheRedisTemplate: RedisTemplate<String, ByteArray>,
     @Qualifier("virtualDispatcher")
-    private val virtualDispatcher: CoroutineDispatcher
+    private val virtualDispatcher: CoroutineDispatcher,
+    private val paginateProfessor: PaginateProfessor
 ) : MainPagePort {
     /*
     SAVE
      */
 
+    @OptIn(ExperimentalSerializationApi::class)
     override suspend fun savePopularBooks(books: List<PopularBookSortResult>, platformType: PlatformType, affiliationId: Long): Unit = withContext(virtualDispatcher) {
             val key = "$POPULAR_BOOK_KEY:$platformType:affiliationId$affiliationId"
             if (validIsNotEmptyBook(books, key)) return@withContext
@@ -48,6 +52,7 @@ class ViewMainPagePersistenceAdapter(
             cacheRedisTemplate.opsForValue().set(key, byteArray, POPULAR_BOOK_TTL)
         }
 
+    @OptIn(ExperimentalSerializationApi::class)
     override suspend fun saveRecentBooks(books: List<RecentBookSortResult>, platformType: PlatformType, affiliationId: Long): Unit = withContext(virtualDispatcher) {
         val key = "$RECENT_BOOK_KEY:$platformType:affiliationId$affiliationId"
         if (validIsNotEmptyBook(books, key)) return@withContext
@@ -56,6 +61,7 @@ class ViewMainPagePersistenceAdapter(
         cacheRedisTemplate.opsForValue().set(key, byteArray, RECENT_BOOK_TTL)
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
     override suspend fun saveEvents(events: List<EventInfoResult>?, affiliationId: Long): Unit = withContext(virtualDispatcher) {
         if (events == null) return@withContext
 
@@ -69,24 +75,27 @@ class ViewMainPagePersistenceAdapter(
     LOAD
      */
 
+    @OptIn(ExperimentalSerializationApi::class)
     override suspend fun loadPopularBooks(command: PageCommand, platformType: PlatformType, affiliationId: Long): SliceResult<PopularBookSortResult>? = withContext(virtualDispatcher) {
         val key = "$POPULAR_BOOK_KEY:$platformType:affiliationId$affiliationId"
 
         val byteArray = cacheRedisTemplate.opsForValue().get(key) ?: return@withContext null
 
         val allBooks = ProtoBuf.decodeFromByteArray<PopularBookListWrapper>(byteArray).books
-        return@withContext paginate(allBooks, command)
+        return@withContext paginateProfessor.paginate(allBooks, command)
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
     override suspend fun loadRecentBooks(command: PageCommand, platformType: PlatformType, affiliationId: Long): SliceResult<RecentBookSortResult>? = withContext(virtualDispatcher) {
         val key = "$RECENT_BOOK_KEY:$platformType:affiliationId$affiliationId"
 
         val byteArray = cacheRedisTemplate.opsForValue().get(key) ?: return@withContext null
 
         val allBooks = ProtoBuf.decodeFromByteArray<RecentBookListWrapper>(byteArray).books
-        return@withContext paginate(allBooks, command)
+        return@withContext paginateProfessor.paginate(allBooks, command)
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
     override suspend fun loadEvents(affiliationId: Long): List<EventInfoResult>? = withContext(virtualDispatcher) {
         val key = "$EVENT_KEY:affiliationId$affiliationId"
 
@@ -105,20 +114,5 @@ class ViewMainPagePersistenceAdapter(
             return true
         }
         return false
-    }
-
-    private fun <T> paginate(allContents: List<T>, command: PageCommand): SliceResult<T>? {
-        if (command.size <= 0) return SliceResult(content = emptyList(), isLastPage = true)
-
-        val start = command.offset.toInt()
-        val end = (start + command.size).coerceAtMost(allContents.size)
-        val content = if (start >= allContents.size) emptyList() else allContents.subList(start, end)
-
-        val isLastPage = (command.page + 1) >= ceil(allContents.size.toDouble() / command.size).toInt()
-
-        return SliceResult(
-            content = content,
-            isLastPage = isLastPage,
-        )
     }
 }

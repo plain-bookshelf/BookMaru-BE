@@ -5,7 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
 import plain.bookmaru.domain.auth.vo.PlatformType
-import plain.bookmaru.domain.display.service.MainPageCacheService
+import plain.bookmaru.domain.display.service.cache.MainPageCacheService
 
 @Component
 class MainPageCacheScheduler(

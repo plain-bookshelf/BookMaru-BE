@@ -20,7 +20,7 @@ class MemberMapper{
             profile = Profile(
                 entity.nickname,
                 entity.profileImage,
-                entity.oneMonthStatics,
+                entity.oneMonthStatistics,
                 entity.overdueTerm,
                 entity.oftenBookReadTime
             ),
@@ -42,7 +42,7 @@ class MemberMapper{
             this.profileImage = domain.profile.profileImage ?: ""
             this.oftenBookReadTime = domain.profile.oftenBookReadTime
             this.overdueTerm = domain.profile.overdueTerm
-            this.oneMonthStatics = domain.profile.oneMonthStatics ?: 0
+            this.oneMonthStatistics = domain.profile.oneMonthStatistics ?: 0
             this.rentalCount = domain.lendingBook.rentalCount
             this.reservationCount = domain.lendingBook.reservationCount
         }
@@ -54,7 +54,7 @@ class MemberMapper{
         entity.email = domain.email.email
         entity.nickname = domain.profile.nickname
         entity.profileImage = domain.profile.profileImage ?: entity.profileImage
-        entity.oneMonthStatics = domain.profile.oneMonthStatics ?: entity.oneMonthStatics
+        entity.oneMonthStatistics = domain.profile.oneMonthStatistics ?: entity.oneMonthStatistics
         entity.overdueTerm = domain.profile.overdueTerm
         entity.oftenBookReadTime = domain.profile.oftenBookReadTime
         entity.rentalCount = domain.lendingBook.rentalCount

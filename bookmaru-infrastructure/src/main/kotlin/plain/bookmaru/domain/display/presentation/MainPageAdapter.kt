@@ -48,7 +48,6 @@ class MainPageAdapter(
     @LogExecution
     suspend fun viewMainPagePopularBook(
         @AuthenticationPrincipal principal: CustomUserDetails,
-
         @RequestParam(defaultValue = "20") pageable: Pageable,
         @RequestParam bookFindType: String,
         @RequestParam platformType: String

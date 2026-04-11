@@ -72,7 +72,7 @@ class MemberEntity(
     var profileImage: String? = null
 
     @Column(nullable = false, precision = 1000)
-    var oneMonthStatics: Int? = 0
+    var oneMonthStatistics: Int? = 0
 
     var overdueTerm: LocalDateTime? = null
 
