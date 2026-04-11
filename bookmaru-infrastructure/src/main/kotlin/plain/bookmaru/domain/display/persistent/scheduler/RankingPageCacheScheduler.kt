@@ -15,8 +15,10 @@ class RankingPageCacheScheduler(
     suspend fun upRankingData() {
         val affiliationList = affiliationPort.findAll()
 
-        affiliationList.map {
-            rankingPageCacheService.upRanking(it.id!!)
-        }
+        affiliationList
+            .mapNotNull { it.id }
+            .forEach {
+                rankingPageCacheService.upRanking(it)
+            }
     }
 }

@@ -17,30 +17,36 @@ class MainPageCacheScheduler(
     suspend fun upPopularBookData() = runBlocking {
         val affiliationList = affiliationPort.findAll()
 
-        affiliationList.map {
-            cacheService.upPopularBooks(PlatformType.WEB, it.id!!)
-            cacheService.upPopularBooks(PlatformType.ANDROID, it.id!!)
-            cacheService.upPopularBooks(PlatformType.IOS, it.id!!)
-        }
+        affiliationList
+            .mapNotNull { it.id }
+            .forEach {
+                cacheService.upPopularBooks(PlatformType.WEB, it)
+                cacheService.upPopularBooks(PlatformType.ANDROID, it)
+                cacheService.upPopularBooks(PlatformType.IOS, it)
+            }
     }
 
     @Scheduled(cron = "0 0 12 * * *")
     suspend fun upRecentBookData() = runBlocking {
         val affiliationList = affiliationPort.findAll()
 
-        affiliationList.map {
-            cacheService.upRecentBooks(PlatformType.WEB, it.id!!)
-            cacheService.upRecentBooks(PlatformType.ANDROID, it.id!!)
-            cacheService.upRecentBooks(PlatformType.IOS, it.id!!)
-        }
+        affiliationList
+            .mapNotNull { it.id }
+            .forEach {
+                cacheService.upRecentBooks(PlatformType.WEB, it)
+                cacheService.upRecentBooks(PlatformType.ANDROID, it)
+                cacheService.upRecentBooks(PlatformType.IOS, it)
+            }
     }
 
     @Scheduled(cron = "0 0 12 * * *")
     suspend fun upEvent() = runBlocking {
         val affiliationList = affiliationPort.findAll()
 
-        affiliationList.map {
-            cacheService.upEvent(it.id!!)
-        }
+        affiliationList
+            .mapNotNull { it.id }
+            .forEach {
+                cacheService.upEvent(it)
+            }
     }
 }

@@ -57,6 +57,7 @@ class MemberPersistenceAdapter(
                 affiliation.affiliationName
             )
             .from(member)
+            .join(member.affiliationEntity, affiliation)
             .where(
                 member.affiliationEntity.id.eq(affiliationId)
             )

@@ -9,7 +9,7 @@ import kotlin.math.ceil
 class PaginateProfessor {
 
     fun <T> paginate(allContents: List<T>, command: PageCommand): SliceResult<T>? {
-        if (command.size <= 0) return SliceResult(content = emptyList(), isLastPage = true)
+        if (command.size < 0) return SliceResult(content = emptyList(), isLastPage = true)
 
         val start = command.offset.toInt()
         val end = (start + command.size).coerceAtMost(allContents.size)

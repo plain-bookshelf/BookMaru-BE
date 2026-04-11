@@ -1,6 +1,7 @@
 package plain.bookmaru.domain.display.presentation
 
 import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -48,7 +49,7 @@ class MainPageAdapter(
     @LogExecution
     suspend fun viewMainPagePopularBook(
         @AuthenticationPrincipal principal: CustomUserDetails,
-        @RequestParam(defaultValue = "20") pageable: Pageable,
+        @PageableDefault(size = 20) pageable: Pageable,
         @RequestParam bookFindType: String,
         @RequestParam platformType: String
     ) : ResponseEntity<SuccessResponse>{

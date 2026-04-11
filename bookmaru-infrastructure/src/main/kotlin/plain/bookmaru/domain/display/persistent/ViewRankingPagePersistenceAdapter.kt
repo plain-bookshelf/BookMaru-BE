@@ -47,7 +47,12 @@ class ViewRankingPagePersistenceAdapter(
         val key = "$RANKING_KEY:affiliationId:$affiliationId"
 
         val byteArray = cacheRedisTemplate.opsForValue().get(key) ?: return@withContext null
-        val ranking = ProtoBuf.decodeFromByteArray<RankingListWrapper>(byteArray).ranking
+        val ranking = runCatching {
+            ProtoBuf.decodeFromByteArray<RankingListWrapper>(byteArray).ranking
+        }.getOrElse {
+            cacheRedisTemplate.delete(key)
+            return@withContext null
+        }
 
         return@withContext paginateProfessor.paginate(ranking, command)
     }
