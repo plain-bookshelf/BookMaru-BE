@@ -19,9 +19,9 @@ class ManagerAdapter(
     private val rentalRequestCheckUseCase: RentalRequestCheckUseCase
 ) {
 
-    @GetMapping
+    @GetMapping("/rentalRequestCheck")
     @LogExecution
-    suspend fun getRentalRequestBook(
+    suspend fun getRentalRequestCheck(
         @AuthenticationPrincipal principal: CustomUserDetails
     ) : ResponseEntity<SuccessResponse> {
         val command = RentalRequestCheckCommand(principal.affiliationId)

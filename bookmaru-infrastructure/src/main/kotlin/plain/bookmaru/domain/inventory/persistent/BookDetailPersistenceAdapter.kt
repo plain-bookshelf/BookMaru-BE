@@ -1,6 +1,5 @@
 package plain.bookmaru.domain.inventory.persistent
 
-import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.inventory.model.BookDetail

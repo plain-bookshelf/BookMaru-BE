@@ -110,6 +110,10 @@ class SecurityConfig(
                 )
 
                 it.requestMatchers(
+                    "/manager/**"
+                ).hasAnyRole("MANAGER", "LIBRARIAN", "ADMIN")
+
+                it.requestMatchers(
                     /*
                     verification
                      */
