@@ -52,7 +52,7 @@ class MemberEntity(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    val role: Authority,
+    var role: Authority,
 ) : BaseEntity() {
 
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq_generator")
