@@ -1,9 +1,13 @@
 package plain.bookmaru.domain.member.persistent
 
+import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Component
+import plain.bookmaru.domain.affiliation.persistent.entity.QAffiliationEntity
 import plain.bookmaru.domain.affiliation.persistent.repository.AffiliationRepository
+import plain.bookmaru.domain.display.port.out.result.UserRankInfoResult
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.model.Member
+import plain.bookmaru.domain.member.persistent.entity.QMemberEntity
 import plain.bookmaru.domain.member.persistent.mapper.MemberMapper
 import plain.bookmaru.domain.member.persistent.repository.MemberRepository
 import plain.bookmaru.domain.member.port.out.MemberPort
@@ -14,8 +18,11 @@ class MemberPersistenceAdapter(
     private val affiliationRepository : AffiliationRepository,
     private val memberRepository: MemberRepository,
     private val memberMapper: MemberMapper,
-    private val dbProtection: DbProtection
+    private val dbProtection: DbProtection,
+    private val queryFactory: JPAQueryFactory
 ) : MemberPort {
+    private val member = QMemberEntity.memberEntity
+    private val affiliation = QAffiliationEntity.affiliationEntity
 
     override fun save(member: Member) : Member {
         val affiliationProxy = affiliationRepository.getReferenceById(member.affiliationId!!)
@@ -38,6 +45,37 @@ class MemberPersistenceAdapter(
     override suspend fun findByEmail(email: String): Member? = dbProtection.withReadOnly {
         memberRepository.findByEmail(email)?.let {
             memberMapper.toDomain(it)
+        }
+    }
+
+    override suspend fun findUserRanking(affiliationId: Long): List<UserRankInfoResult> = dbProtection.withReadOnly {
+        val entities = queryFactory
+            .select(
+                member.id!!,
+                member.nickname,
+                member.oneMonthStatistics,
+                affiliation.affiliationName
+            )
+            .from(member)
+            .join(member.affiliationEntity, affiliation)
+            .where(
+                member.affiliationEntity.id.eq(affiliationId)
+            )
+            .orderBy(
+                member.oneMonthStatistics.desc(),
+                member.id.asc()
+            )
+            .limit(100)
+            .fetch()
+
+        return@withReadOnly entities.mapIndexed { index, entity ->
+            UserRankInfoResult(
+                memberId = entity.get(member.id)!!,
+                rank = index + 1,
+                nickName = entity.get(member.nickname)!!,
+                oneMonthStatistics = entity.get(member.oneMonthStatistics)!!,
+                affiliationName = entity.get(affiliation.affiliationName)!!
+            )
         }
     }
 
