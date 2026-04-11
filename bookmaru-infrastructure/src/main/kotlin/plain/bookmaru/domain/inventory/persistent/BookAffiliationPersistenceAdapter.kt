@@ -271,7 +271,7 @@ class BookAffiliationPersistenceAdapter(
     override fun decrementReservationCount(bookAffiliationId: Long) {
         queryFactory.update(bookAffiliation)
             .set(bookAffiliation.reservationCount, bookAffiliation.reservationCount.subtract(1))
-            .where(bookAffiliation.id.eq(bookAffiliationId))
+            .where(bookAffiliation.id.eq(bookAffiliationId), bookAffiliation.reservationCount.gt(0))
             .execute()
     }
 

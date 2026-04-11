@@ -15,7 +15,7 @@ import plain.bookmaru.domain.inventory.persistent.repository.BookDetailRepositor
 import plain.bookmaru.domain.inventory.port.out.BookDetailPort
 import plain.bookmaru.domain.inventory.vo.RentalStatus
 import plain.bookmaru.domain.lending.model.Rental
-import plain.bookmaru.domain.manager.port.out.resullt.RentalBookStatusCheckResult
+import plain.bookmaru.domain.manager.port.out.result.RentalBookStatusCheckResult
 import plain.bookmaru.domain.member.persistent.entity.QMemberEntity
 import plain.bookmaru.global.config.DbProtection
 import java.time.LocalDate

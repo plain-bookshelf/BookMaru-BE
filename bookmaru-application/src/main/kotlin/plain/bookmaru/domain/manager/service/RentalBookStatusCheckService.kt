@@ -7,7 +7,7 @@ import plain.bookmaru.domain.inventory.port.out.BookDetailPort
 import plain.bookmaru.domain.manager.port.`in`.RentalBookStatusCheckSearchMemberUseCase
 import plain.bookmaru.domain.manager.port.`in`.RentalBookStatusCheckUseCase
 import plain.bookmaru.domain.manager.port.`in`.command.RentalBookStatusCheckCommand
-import plain.bookmaru.domain.manager.port.out.resullt.RentalBookStatusCheckResult
+import plain.bookmaru.domain.manager.port.out.result.RentalBookStatusCheckResult
 
 private val log = KotlinLogging.logger {}
 

@@ -52,7 +52,7 @@ class BookDetailEntity(
     override val id: Long? = null
 
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
+    @JoinColumn(name = "member_id")
     var memberEntity: MemberEntity? = null
 
     @Column(nullable = false)

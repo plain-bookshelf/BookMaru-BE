@@ -1,4 +1,4 @@
-package plain.bookmaru.domain.manager.port.out.resullt
+package plain.bookmaru.domain.manager.port.out.result
 
 import java.time.LocalDate
 

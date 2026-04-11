@@ -27,8 +27,7 @@ class ManagerApiAdapter(
         @PathVariable bookDetailId: Long
     ) : ResponseEntity<SuccessResponse> {
         val command = ReturnCommand(
-            bookDetailId = bookDetailId,
-            affiliationId = principal.affiliationId
+            bookDetailId = bookDetailId
         )
 
         returnUseCase.execute(command)

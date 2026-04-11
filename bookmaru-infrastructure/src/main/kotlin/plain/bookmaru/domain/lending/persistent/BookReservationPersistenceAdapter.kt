@@ -40,7 +40,7 @@ class BookReservationPersistenceAdapter(
             .selectFrom(bookReservation)
             .where(bookReservation.id.bookAffiliationId.eq(affiliationId))
             .orderBy(bookReservation.waitingRank.asc())
-            .fetchOne() ?: return@withReadOnly null
+            .fetchFirst() ?: return@withReadOnly null
 
         val member = memberMapper.toDomain(memberRepository.getReferenceById(reservationEntity.memberEntity.id!!))
 

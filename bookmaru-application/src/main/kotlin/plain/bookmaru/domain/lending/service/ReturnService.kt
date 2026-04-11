@@ -26,14 +26,13 @@ class ReturnService(
 ): ReturnUseCase {
     override suspend fun execute(command: ReturnCommand) {
         log.info { "책 반납 로직 시작" }
-        val affiliationId = command.affiliationId
 
         val bookDetail = bookDetailPort.findRentalBookByBookDetailId(command.bookDetailId)
             ?: throw NotFoundBookDetailException("책 상세 정보를 찾지 못 했습니다.")
 
         bookRentalRecordPort.update(bookDetail)
 
-        val reservation = bookReservationPort.findFirstReservationByAffiliationId(affiliationId)
+        val reservation = bookReservationPort.findFirstReservationByAffiliationId(bookDetail.bookAffiliationId)
 
         if (reservation == null) return
 

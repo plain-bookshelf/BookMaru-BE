@@ -4,7 +4,7 @@ import plain.bookmaru.common.command.PageCommand
 import plain.bookmaru.common.result.PageResult
 import plain.bookmaru.domain.inventory.model.BookDetail
 import plain.bookmaru.domain.lending.model.Rental
-import plain.bookmaru.domain.manager.port.out.resullt.RentalBookStatusCheckResult
+import plain.bookmaru.domain.manager.port.out.result.RentalBookStatusCheckResult
 import java.time.LocalDate
 
 interface BookDetailPort {

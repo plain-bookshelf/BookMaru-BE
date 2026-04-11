@@ -45,7 +45,7 @@ class BookRentalRecordPersistenceAdapter(
         bookRentalRecordRepository.save(rentalEntity)
     }
 
-    override suspend fun update(domain: BookDetail) = dbProtection.withReadOnly {
+    override suspend fun update(domain: BookDetail) = dbProtection.withTransaction {
         val now = LocalDate.now()
 
         val recordEntity = queryFactory
