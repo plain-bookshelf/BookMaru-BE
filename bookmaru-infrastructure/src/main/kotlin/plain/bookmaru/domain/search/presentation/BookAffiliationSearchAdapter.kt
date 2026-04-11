@@ -1,7 +1,6 @@
 package plain.bookmaru.domain.search.presentation
 
 import org.springframework.data.domain.Pageable
-import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -31,7 +30,7 @@ class BookAffiliationSearchAdapter(
     suspend fun search(
         @RequestParam platformType: String,
         @RequestParam keyword: String,
-        @PageableDefault(size = 12) pageable: Pageable,
+        @RequestParam pageable: Pageable,
         @AuthenticationPrincipal principal: CustomUserDetails
     ): ResponseEntity<SuccessResponse> {
         val command = BookAffiliationSearchCommand(

@@ -30,7 +30,7 @@ class ViewMainPageBookService(
 
         return SliceResult(
             content = emptyList(),
-            isLastPage = true
+            isLastPage = true,
         )
     }
 
