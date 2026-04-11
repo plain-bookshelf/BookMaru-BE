@@ -2,11 +2,14 @@ package plain.bookmaru.domain.lending.persistent
 
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Component
+import plain.bookmaru.domain.inventory.persistent.entity.QBookDetailEntity
 import plain.bookmaru.domain.lending.model.Reservation
 import plain.bookmaru.domain.lending.persistent.entity.QBookReservationEntity
+import plain.bookmaru.domain.lending.persistent.entity.embedded.BookReservationEmbeddedId
 import plain.bookmaru.domain.lending.persistent.mapper.ReservationMapper
 import plain.bookmaru.domain.lending.persistent.repository.BookReservationRepository
 import plain.bookmaru.domain.lending.port.out.BookReservationPort
+import plain.bookmaru.domain.member.persistent.mapper.MemberMapper
 import plain.bookmaru.domain.member.persistent.repository.MemberRepository
 import plain.bookmaru.global.config.DbProtection
 
@@ -15,10 +18,12 @@ class BookReservationPersistenceAdapter(
     private val bookReservationRepository: BookReservationRepository,
     private val queryFactory: JPAQueryFactory,
     private val reservationMapper: ReservationMapper,
+    private val memberMapper: MemberMapper,
     private val memberRepository: MemberRepository,
     private val dbProtection: DbProtection
 ) : BookReservationPort {
     private val bookReservation = QBookReservationEntity.bookReservationEntity
+    private val bookDetail = QBookDetailEntity.bookDetailEntity
 
     override suspend fun waiting(bookAffiliationId: Long): Int = dbProtection.withReadOnly {
         val waitingRank = queryFactory
@@ -30,11 +35,32 @@ class BookReservationPersistenceAdapter(
         return@withReadOnly (waitingRank ?: 0) + 1
     }
 
+    override suspend fun findFirstReservationByAffiliationId(affiliationId: Long): Reservation? = dbProtection.withReadOnly {
+        val reservationEntity =  queryFactory
+            .selectFrom(bookReservation)
+            .where(bookReservation.id.bookAffiliationId.eq(affiliationId))
+            .orderBy(bookReservation.waitingRank.asc())
+            .fetchOne() ?: return@withReadOnly null
+
+        val member = memberMapper.toDomain(memberRepository.getReferenceById(reservationEntity.memberEntity.id!!))
+
+        return@withReadOnly reservationEntity.let { reservationMapper.toDomain(it, member) }
+    }
+
     override fun save(reservation: Reservation) {
         val memberProxy = memberRepository.getReferenceById(reservation.member.id!!)
 
         val entity = reservationMapper.toEntity(reservation, memberProxy)
 
         bookReservationRepository.save(entity)
+    }
+
+    override fun deleteReservation(memberId: Long, affiliationId: Long) {
+        val embeddedId = BookReservationEmbeddedId(
+            memberId = memberId,
+            bookAffiliationId = affiliationId
+        )
+
+        bookReservationRepository.deleteById(embeddedId)
     }
 }

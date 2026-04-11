@@ -38,10 +38,6 @@ import java.time.LocalDate
 )
 class BookDetailEntity(
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    val memberEntity: MemberEntity,
-
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "book_affiliation_id", nullable = false)
     val bookAffiliationEntity: BookAffiliationEntity,
 
@@ -54,6 +50,10 @@ class BookDetailEntity(
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bookDetail_seq_generator")
     @Column(nullable = false, unique = true)
     override val id: Long? = null
+
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    var memberEntity: MemberEntity? = null
 
     @Column(nullable = false)
     var rentalStatus : RentalStatus = RentalStatus.RETURN

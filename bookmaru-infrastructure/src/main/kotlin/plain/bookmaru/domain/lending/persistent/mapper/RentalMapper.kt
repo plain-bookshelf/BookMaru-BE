@@ -14,7 +14,7 @@ class RentalMapper {
 
     fun toDomain(entity: BookDetailEntity, rentalDate: LocalDateTime) : Rental {
         return Rental(
-            memberId = entity.memberEntity.id!!,
+            memberId = entity.memberEntity?.id!!,
             bookDetailId = entity.id!!,
             bookRecord = BookRecord(
                 rentalDate = rentalDate,

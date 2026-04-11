@@ -268,6 +268,13 @@ class BookAffiliationPersistenceAdapter(
             .execute()
     }
 
+    override fun decrementReservationCount(bookAffiliationId: Long) {
+        queryFactory.update(bookAffiliation)
+            .set(bookAffiliation.reservationCount, bookAffiliation.reservationCount.subtract(1))
+            .where(bookAffiliation.id.eq(bookAffiliationId))
+            .execute()
+    }
+
     private fun sliceResult(entities: List<BookAffiliationEntity>, requestSize: Int, offset: Long): SliceResult<BookAffiliation> {
         val hasNext = entities.size > requestSize
         val content = if (hasNext) entities.dropLast(1) else entities

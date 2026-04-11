@@ -1,4 +1,4 @@
-package plain.bookmaru.domain.manager.port.out.result
+package plain.bookmaru.domain.lending.port.out.result
 
 data class RentalRequestCheckResult(
     val memberId: Long,
