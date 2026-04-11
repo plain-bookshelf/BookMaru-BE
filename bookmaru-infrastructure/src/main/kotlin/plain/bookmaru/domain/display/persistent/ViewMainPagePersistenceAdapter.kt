@@ -21,7 +21,6 @@ import plain.bookmaru.domain.display.port.out.result.PopularBookSortResult
 import plain.bookmaru.domain.display.port.out.result.RecentBookSortResult
 import plain.bookmaru.domain.display.service.PaginateProfessor
 import java.time.Duration
-import kotlin.math.ceil
 
 private const val EVENT_KEY = "cache:display:main:event"
 private const val POPULAR_BOOK_KEY = "cache:display:main:popular"
