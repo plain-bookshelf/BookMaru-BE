@@ -2,31 +2,31 @@ services:
   app:
     build: .
     env_file:
-      - .env
+      - deploy.env
     ports:
       - "8080:8080"
     depends_on:
-      db:
-        condition: service_healthy
+#      db:
+#        condition: service_healthy
       redis:
         condition: service_started
       elasticsearch:
         condition: service_healthy
-  db:
-    image: pgvector/pgvector:pg17
-    environment:
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-    ports:
-      - "5434:5432"
-    volumes:
-      - ./postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+#  db:
+#    image: pgvector/pgvector:pg17
+#    environment:
+#      POSTGRES_USER: ${DB_USERNAME}
+#      POSTGRES_PASSWORD: ${DB_PASSWORD}
+#      POSTGRES_DB: ${DB_NAME}
+#    ports:
+#      - "5434:5432"
+#    volumes:
+#      - ./postgres_data:/var/lib/postgresql/data
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 5
 
   redis:
     image: redis:7-alpine
@@ -51,5 +51,5 @@ services:
       retries: 5
 
 volumes:
-  postgres_data:
+#  postgres_data:
   es_data:
