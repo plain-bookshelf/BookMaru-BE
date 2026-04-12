@@ -25,7 +25,6 @@ class BookAffiliationSearchAdapter(
     private val appBookAffiliationSearchUseCase: AppBookAffiliationSearchUseCase,
     private val webBookAffiliationSearchUseCase: WebBookAffiliationSearchUseCase
 ) {
-
     @GetMapping
     @LogExecution
     suspend fun search(
