@@ -75,6 +75,6 @@ class BookCommentAdapter(
         bookCommentDeleteUseCase.execute(command)
 
         return ResponseEntity.status(HttpStatus.OK)
-            .body(SuccessResponse.success(CustomHttpStatus.OK, "댓글 정보가 성공적으로 삭제 되었습니다."))
+            .body(SuccessResponse.success(CustomHttpStatus.OK, "댓글 정보가 성공적으로 삭제 되었습니다.", ""))
     }
 }
