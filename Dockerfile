@@ -9,7 +9,7 @@ RUN ./gradlew clean build -x test
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-ARG JAR_FILE=bookmaru-infrastructure/build/libs/*.jar
+ARG JAR_FILE=/app/bookmaru-infrastructure/build/libs/*.jar
 COPY --from=builder ${JAR_FILE} app.jar
 
 ENTRYPOINT ["java", "-jar", "/app.jar"]
