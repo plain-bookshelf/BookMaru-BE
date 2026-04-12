@@ -49,7 +49,6 @@ class BookAffiliationSearchAdapter(
             PlatformType.WEB -> webBookAffiliationSearchUseCase.webExecute(command)
             PlatformType.ANDROID, PlatformType.IOS -> appBookAffiliationSearchUseCase.appExecute(command)
         }
-
         return ResponseEntity.status(HttpStatus.OK)
             .body(SuccessResponse.success(CustomHttpStatus.OK, "검색하는데 성공했습니다.", result))
     }
