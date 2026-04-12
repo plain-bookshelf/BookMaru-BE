@@ -54,6 +54,8 @@ spring:
 
   elasticsearch:
     uris: ${ELASTICSEARCH_URIS}
+    username: ${ELASTICSEARCH_USERNAME}
+    password: ${ELASTICSEARCH_PASSWORD}
 
   security:
     oauth2:
