@@ -6,12 +6,9 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-#      db:
-#        condition: service_healthy
       redis:
         condition: service_started
-      elasticsearch:
-        condition: service_healthy
+
 #  db:
 #    image: pgvector/pgvector:pg17
 #    environment:
@@ -21,7 +18,7 @@ services:
 #    ports:
 #      - "5434:5432"
 #    volumes:
-#      - ./postgres_data:/var/lib/postgresql/data
+#      - postgres_data:/var/lib/postgresql/data
 #    healthcheck:
 #      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME}"]
 #      interval: 5s
@@ -34,22 +31,23 @@ services:
     ports:
       - "6381:6379"
 
-  elasticsearch:
-    build: ./elasticsearch
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ports:
-      - "9200:9200"
-    volumes:
-      - ./es_data:/usr/share/elasticsearch/data
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+#  opensearch:
+#    # Optional local fallback. AWS remote OpenSearch is the default path.
+#    build: ./opensearch
+#    environment:
+#      - discovery.type=single-node
+#      - DISABLE_SECURITY_PLUGIN=true
+#      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+#    ports:
+#      - "9200:9200"
+#    volumes:
+#      - opensearch_data:/usr/share/opensearch/data
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
 
-volumes:
+#volumes:
 #  postgres_data:
-  es_data:
+#  opensearch_data:

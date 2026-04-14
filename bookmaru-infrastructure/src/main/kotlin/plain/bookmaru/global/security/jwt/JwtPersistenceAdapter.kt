@@ -123,6 +123,7 @@ class JwtPersistenceAdapter(
     override suspend fun responseToken(
         id: Long,
         username: String,
+        nickname: String,
         platformType: PlatformType,
         authority: Authority,
         affiliationId: Long,
@@ -142,6 +143,7 @@ class JwtPersistenceAdapter(
 
         return TokenResult(
             username = username,
+            nickname = nickname,
             accessToken = accessToken,
             accessTokenExpAt = now + jwtProperties.accessExp.toMillis(),
             refreshToken = refreshToken,

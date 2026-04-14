@@ -41,3 +41,5 @@ out/
 
 deploy.env
 local.env
+bookmaru-infrastructure/src/main/resources/deploy.env
+bookmaru-infrastructure/src/main/resources/local.env

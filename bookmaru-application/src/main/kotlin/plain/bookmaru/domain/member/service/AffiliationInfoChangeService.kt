@@ -45,6 +45,7 @@ class AffiliationInfoChangeService(
         return jwtPort.responseToken(
             id = savedMember.id!!,
             username = savedMember.accountInfo!!.username,
+            nickname = savedMember.profile.nickname,
             platformType = command.platformType,
             authority = savedMember.authority,
             affiliationId = savedMember.affiliationId!!,

@@ -2,11 +2,21 @@ dependencies {
     implementation(project(":bookmaru-application"))
 
     // persistence
-    implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
+//    implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
     implementation("org.postgresql:postgresql:42.7.3")
     runtimeOnly("org.postgresql:postgresql")
+
+    // open search
+    implementation("org.opensearch.client:spring-data-opensearch:1.8.0")
+    implementation("org.opensearch.client:opensearch-java:2.14.0")
+    implementation("org.apache.httpcomponents.client5:httpclient5")
+
+    // aws
+    implementation("software.amazon.awssdk:auth:2.20.162")
+    implementation("software.amazon.awssdk:regions:2.20.162")
+    implementation("software.amazon.awssdk:apache-client:2.20.162")
 
     // jpa
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -39,13 +49,15 @@ dependencies {
     // coroutine
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
+    // json
+    implementation("jakarta.json:jakarta.json-api")
+
     // config
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     // test
     testImplementation("org.springframework.security:spring-security-test")
-    implementation("org.springframework.security:spring-security-test")
-    implementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 val generated = file("src/main/generated")

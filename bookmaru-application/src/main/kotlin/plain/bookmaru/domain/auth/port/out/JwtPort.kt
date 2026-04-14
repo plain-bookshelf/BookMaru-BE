@@ -21,6 +21,7 @@ interface JwtPort {
     suspend fun responseToken(
         id: Long,
         username: String,
+        nickname: String,
         platformType: PlatformType,
         authority: Authority,
         affiliationId: Long,

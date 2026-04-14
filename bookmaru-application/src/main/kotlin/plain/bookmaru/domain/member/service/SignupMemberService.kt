@@ -136,6 +136,7 @@ class SignupMemberService(
         return jwtPort.responseToken(
             id = savedMember.id!!,
             username = savedMember.accountInfo!!.username,
+            nickname = savedMember.profile.nickname,
             platformType = platformType,
             authority = savedMember.authority,
             affiliationId = affiliation.id!!,

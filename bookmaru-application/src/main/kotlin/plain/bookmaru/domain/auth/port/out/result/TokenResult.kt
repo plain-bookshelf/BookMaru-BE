@@ -6,6 +6,7 @@ import plain.bookmaru.domain.auth.vo.PlatformType
 
 data class TokenResult(
     val username: String,
+    val nickname: String,
     val accessToken: String,
     val accessTokenExpAt: Long,
     val refreshToken: String,

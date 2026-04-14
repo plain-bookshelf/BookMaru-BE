@@ -49,6 +49,7 @@ class CustomOAuth2Service(
             val tokens = jwtPort.responseToken(
                 id = member.id!!,
                 username = member.accountInfo!!.username,
+                nickname = member.profile.nickname,
                 platformType = command.platformType,
                 authority = member.authority,
                 affiliationId = member.affiliationId!!,
@@ -112,6 +113,7 @@ class CustomOAuth2Service(
         return jwtPort.responseToken(
             id = savedMember.id!!,
             username = savedMember.accountInfo!!.username,
+            nickname = savedMember.profile.nickname,
             platformType = pendingUser.platformType,
             authority = savedMember.authority,
             affiliationId = savedMember.affiliationId!!,

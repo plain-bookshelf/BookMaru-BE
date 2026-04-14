@@ -3,6 +3,16 @@ server:
   shutdown: graceful
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchClientAutoConfiguration
+      - org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration
+
   lifecycle:
     timeout-per-shutdown-phase: 60s
 
@@ -52,10 +62,11 @@ spring:
   jackson:
     property-naming-strategy: SNAKE_CASE
 
-  elasticsearch:
-    uris: ${ELASTICSEARCH_URIS}
-    username: ${ELASTICSEARCH_USERNAME}
-    password: ${ELASTICSEARCH_PASSWORD}
+  opensearch:
+    port: ${OPENSEARCH_PORT}
+    host: ${OPENSEARCH_HOST}
+    username: ${OPENSEARCH_USERNAME}
+    password: ${OPENSEARCH_PASSWORD}
 
   security:
     oauth2:
