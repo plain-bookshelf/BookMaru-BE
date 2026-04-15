@@ -31,23 +31,5 @@ services:
     ports:
       - "6381:6379"
 
-#  opensearch:
-#    # Optional local fallback. AWS remote OpenSearch is the default path.
-#    build: ./opensearch
-#    environment:
-#      - discovery.type=single-node
-#      - DISABLE_SECURITY_PLUGIN=true
-#      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
-#    ports:
-#      - "9200:9200"
-#    volumes:
-#      - opensearch_data:/usr/share/opensearch/data
-#    healthcheck:
-#      test: ["CMD", "curl", "-f", "http://localhost:9200"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 5
-
 #volumes:
 #  postgres_data:
-#  opensearch_data:
