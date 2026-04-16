@@ -31,16 +31,8 @@ class EventDetailPersistenceAdapter(
                 )
             )
             .from(eventDetail)
-            .join(eventDetail.event, event).fetchJoin()
+            .join(eventDetail.event, event)
             .where(eventDetail.event.id.eq(eventId))
-            .groupBy(
-                event.title,
-                event.status,
-                event.imageUrl,
-                event.startAt,
-                event.endAt,
-                eventDetail.content
-            )
             .fetchOne()
     }
 }

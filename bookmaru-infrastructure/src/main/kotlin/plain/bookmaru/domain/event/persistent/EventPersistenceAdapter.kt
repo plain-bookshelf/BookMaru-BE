@@ -47,19 +47,11 @@ class EventPersistenceAdapter(
     }
 
     override suspend fun deleteById(eventId: Long): Unit = dbProtection.withTransaction {
-        eventRepository.deleteById(eventId)
         eventDetailRepository.deleteById(eventId)
+        eventRepository.deleteById(eventId)
     }
 
-    override suspend fun create(event: Event) {
-        eventSave(event)
-    }
-
-    /*
-    private helper method
-     */
-
-    private suspend fun eventSave(event: Event): Unit = dbProtection.withTransaction {
+    override suspend fun save(event: Event): Unit = dbProtection.withTransaction {
         val member = memberRepository.getReferenceById(event.memberId)
         val eventEntity = eventMapper.toEntity(event, member)
         val event = eventEntity.first

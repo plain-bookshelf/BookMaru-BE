@@ -48,23 +48,24 @@ class EventService(
             )
         )
 
-        eventPort.create(event)
+        eventPort.save(event)
     }
 
     override suspend fun execute(command: EventChangeCommand) {
         val event = eventPort.findById(command.eventId)
+            ?: throw NotFoundEventException("eventId: ${command.eventId} 이벤트 정보를 찾지 못 했습니다.")
 
         val memberId = command.memberId
         val startAt = command.startAt
         val endAt = command.endAt
         val now = LocalDateTime.now()
 
-        if (event!!.memberId != memberId)
+        if (event.memberId != memberId)
             throw NotEventCreateUserException("memberId: $memberId 유저는 이 이벤트를 수정할 권한이 없습니다.")
 
         val status = if (now < startAt) {
             EventType.NOT_STARTED
-        } else if (now > startAt) {
+        } else if (now > endAt) {
             EventType.DONE
         } else {
             EventType.IN_PROGRESS
@@ -80,6 +81,8 @@ class EventService(
             ),
             EventContent(command.content)
         )
+
+        eventPort.save(event)
     }
 
     override suspend fun execute(command: EventDeleteCommand) {
