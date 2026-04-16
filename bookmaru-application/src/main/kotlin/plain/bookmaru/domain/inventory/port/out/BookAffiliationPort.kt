@@ -2,6 +2,7 @@ package plain.bookmaru.domain.inventory.port.out
 
 import plain.bookmaru.common.command.PageCommand
 import plain.bookmaru.common.result.SliceResult
+import plain.bookmaru.domain.display.port.out.result.ViewMyPageLikeBookResult
 import plain.bookmaru.domain.inventory.model.BookAffiliation
 import plain.bookmaru.domain.inventory.port.out.result.BookDetailInfoResult
 
