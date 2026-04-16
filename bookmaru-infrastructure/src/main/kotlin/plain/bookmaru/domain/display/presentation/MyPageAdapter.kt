@@ -10,16 +10,19 @@ import plain.bookmaru.common.annotation.LogExecution
 import plain.bookmaru.common.error.CustomHttpStatus
 import plain.bookmaru.common.success.SuccessResponse
 import plain.bookmaru.domain.display.port.`in`.ViewMyPageLendingInfoUseCase
+import plain.bookmaru.domain.display.port.`in`.ViewMyPageLikeBookUseCase
 import plain.bookmaru.domain.display.port.`in`.ViewMyPageUseCase
 import plain.bookmaru.domain.display.port.`in`.command.ViewMyPageCommand
 import plain.bookmaru.domain.display.port.`in`.command.ViewMyPageLendingInfoCommand
+import plain.bookmaru.domain.display.port.`in`.command.ViewMyPageLikeBookCommand
 import plain.bookmaru.global.security.userdetails.CustomUserDetails
 
 @RestController
 @RequestMapping("/myPage")
 class MyPageAdapter(
     private val viewMyPageUseCase: ViewMyPageUseCase,
-    private val viewMyPageLendingInfoUseCase: ViewMyPageLendingInfoUseCase
+    private val viewMyPageLendingInfoUseCase: ViewMyPageLendingInfoUseCase,
+    private val viewMyPageLikeBookUseCase: ViewMyPageLikeBookUseCase
 ) {
 
     @GetMapping()
@@ -50,5 +53,20 @@ class MyPageAdapter(
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(SuccessResponse.success(CustomHttpStatus.OK, "마이페이지의 유저 책 관련 정보들을 가져오는데 성공했습니다.", result))
+    }
+
+    @GetMapping("/like-book")
+    @LogExecution
+    suspend fun getLikeBook(
+        @AuthenticationPrincipal principal: CustomUserDetails
+    ): ResponseEntity<SuccessResponse> {
+        val command = ViewMyPageLikeBookCommand(
+            memberId = principal.id
+        )
+
+        val result = viewMyPageLikeBookUseCase.execute(command)
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(SuccessResponse.success(CustomHttpStatus.OK, "마이페이지 좋아요 누른 책 확인 완료", result))
     }
 }

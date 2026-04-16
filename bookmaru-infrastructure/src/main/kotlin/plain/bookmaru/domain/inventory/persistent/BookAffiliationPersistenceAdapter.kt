@@ -20,6 +20,7 @@ import plain.bookmaru.domain.book.persistent.entity.QBookGenreEntity
 import plain.bookmaru.domain.book.persistent.entity.QGenreEntity
 import plain.bookmaru.domain.book.vo.BookInfo
 import plain.bookmaru.domain.community.persistent.entity.QBookLikeEntity
+import plain.bookmaru.domain.display.port.out.result.ViewMyPageLikeBookResult
 import plain.bookmaru.domain.inventory.model.BookAffiliation
 import plain.bookmaru.domain.inventory.persistent.entity.BookAffiliationEntity
 import plain.bookmaru.domain.inventory.persistent.entity.QBookAffiliationEntity
@@ -205,7 +206,6 @@ class BookAffiliationPersistenceAdapter(
             .from(bookAffiliation)
             .distinct()
             .innerJoin(bookAffiliation.bookEntity, book)
-
             .innerJoin(bookAffiliation.affiliationEntity, affiliation)
             .leftJoin(book.bookGenreEntities, bookGenre)
             .leftJoin(bookGenre.genreEntity, genre)

@@ -1,11 +1,15 @@
 package plain.bookmaru.domain.display.persistent
 
+import com.querydsl.core.group.GroupBy.groupBy
+import com.querydsl.core.types.Projections
 import com.querydsl.jpa.JPAExpressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.book.persistent.entity.QBookEntity
+import plain.bookmaru.domain.community.persistent.entity.QBookLikeEntity
 import plain.bookmaru.domain.display.port.out.MyPagePort
 import plain.bookmaru.domain.display.port.out.result.LendingBookListResult
+import plain.bookmaru.domain.display.port.out.result.ViewMyPageLikeBookResult
 import plain.bookmaru.domain.display.port.out.result.ViewMyPageResult
 import plain.bookmaru.domain.inventory.persistent.entity.QBookAffiliationEntity
 import plain.bookmaru.domain.inventory.persistent.entity.QBookDetailEntity
@@ -25,6 +29,7 @@ class ViewMyPagePersistenceAdapter(
     private val bookAffiliation = QBookAffiliationEntity.bookAffiliationEntity
     private val bookDetail = QBookDetailEntity.bookDetailEntity
     private val book = QBookEntity.bookEntity
+    private val bookLike = QBookLikeEntity.bookLikeEntity
     private val member = QMemberEntity.memberEntity
     private val bookReservation = QBookReservationEntity.bookReservationEntity
 
@@ -180,5 +185,26 @@ class ViewMyPagePersistenceAdapter(
             reservationBookInfo = reservationBookList,
             overDueBookInfo = overdueBookList
         )
+    }
+
+    override suspend fun findLikeBookByMemberId(memberId: Long): List<ViewMyPageLikeBookResult> = dbProtection.withReadOnly {
+        return@withReadOnly queryFactory
+            .from(bookLike)
+            .join(bookLike.bookAffiliationEntity, bookAffiliation)
+            .join(bookAffiliation.bookEntity, book)
+            .join(bookLike.memberEntity, member)
+            .where(
+                member.id.eq(memberId)
+            )
+            .transform(
+                groupBy(member.id).list(
+                    Projections.constructor(
+                        ViewMyPageLikeBookResult::class.java,
+                        bookAffiliation.id,
+                        book.title,
+                        book.bookImage
+                    )
+                )
+            )
     }
 }
