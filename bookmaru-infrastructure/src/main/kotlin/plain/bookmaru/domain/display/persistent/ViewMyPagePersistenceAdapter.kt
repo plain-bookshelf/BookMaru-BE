@@ -191,6 +191,7 @@ class ViewMyPagePersistenceAdapter(
         return@withReadOnly queryFactory
             .from(bookLike)
             .join(bookLike.bookAffiliationEntity, bookAffiliation)
+            .join(bookAffiliation.bookEntity, book)
             .join(bookLike.memberEntity, member)
             .where(
                 member.id.eq(memberId)
