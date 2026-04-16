@@ -7,6 +7,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import plain.bookmaru.domain.display.scope.CacheCoroutineScope
 import plain.bookmaru.domain.verification.scope.MailCoroutineScope
 import java.util.concurrent.Executors
 
@@ -20,5 +21,11 @@ class CoroutineConfig {
     fun mailCoroutineScope() : MailCoroutineScope {
         val originalScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
         return MailCoroutineScope(originalScope)
+    }
+
+    @Bean
+    fun cacheCoroutineScope(): CacheCoroutineScope {
+        val originalScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        return CacheCoroutineScope(originalScope)
     }
 }
