@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.persistent.entity.QAffiliationEntity
 import plain.bookmaru.domain.affiliation.persistent.repository.AffiliationRepository
 import plain.bookmaru.domain.display.port.out.result.UserRankInfoResult
+import plain.bookmaru.domain.member.exception.AlreadyUsedNicknameException
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.persistent.entity.QMemberEntity
@@ -77,6 +78,19 @@ class MemberPersistenceAdapter(
                 affiliationName = entity.get(affiliation.affiliationName)!!
             )
         }
+    }
+
+    override suspend fun validateNickname(nickname: String): Boolean = dbProtection.withReadOnly {
+        val memberEntity = queryFactory
+            .selectFrom(member)
+            .where(member.nickname.eq(nickname))
+
+        if (memberEntity != null) {
+            throw AlreadyUsedNicknameException("$nickname 닉네임은 이미 기존에 사용되던 닉네임입니다.")
+            return@withReadOnly false
+        }
+
+        return@withReadOnly true
     }
 
     override suspend fun delete(member: Member) = dbProtection.withTransaction {

@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -21,11 +22,13 @@ import plain.bookmaru.domain.member.port.`in`.AffiliationInfoChangeUseCase
 import plain.bookmaru.domain.member.port.`in`.ChangePasswordUseCase
 import plain.bookmaru.domain.member.port.`in`.DeleteMemberUseCase
 import plain.bookmaru.domain.member.port.`in`.NicknameChangeUseCase
+import plain.bookmaru.domain.member.port.`in`.NicknameValidUseCase
 import plain.bookmaru.domain.member.port.`in`.OftenReadBookTimeSetUseCase
 import plain.bookmaru.domain.member.port.`in`.ProfileImageChangeUseCase
 import plain.bookmaru.domain.member.port.`in`.SignupMemberUseCase
 import plain.bookmaru.domain.member.port.`in`.SignupOfficialUseCase
 import plain.bookmaru.domain.member.port.`in`.command.DeleteMemberCommand
+import plain.bookmaru.domain.member.port.`in`.command.NicknameValidCommand
 import plain.bookmaru.domain.member.presentation.dto.request.AffiliationInfoChangeRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.NicknameChangeRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SocialSignupRequestDto
@@ -47,6 +50,7 @@ class MemberAdapter(
     private val affiliationInfoChangeUseCase: AffiliationInfoChangeUseCase,
     private val nicknameChangeUseCase: NicknameChangeUseCase,
     private val profileImageChangeUseCase: ProfileImageChangeUseCase,
+    private val nicknameValidUseCase: NicknameValidUseCase,
 
     private val webOrAppResponseUtil: WebOrAppResponseUtil
 ) {
@@ -179,5 +183,18 @@ class MemberAdapter(
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(SuccessResponse.success(CustomHttpStatus.OK, "프로필 정보를 수정하는데 성공하였습니다.", ""))
+    }
+
+    @GetMapping("/valid-nickname")
+    @LogExecution
+    suspend fun validNickname(
+        @RequestParam nickname: String
+    ): ResponseEntity<SuccessResponse> {
+        val command = NicknameValidCommand(nickname)
+
+        val result = nicknameValidUseCase.execute(command)
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(SuccessResponse.success(CustomHttpStatus.OK, "닉네임 검증에 성공했습니다.", result))
     }
 }
