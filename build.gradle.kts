@@ -5,6 +5,7 @@ plugins {
     kotlin("plugin.spring") version "2.0.21" apply false
     kotlin("plugin.jpa") version "2.0.21" apply false
     kotlin("kapt") version "2.0.21" apply false
+    kotlin("plugin.serialization") version "2.0.21" apply false
 }
 
 allprojects {
@@ -24,6 +25,7 @@ subprojects {
     apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "org.jetbrains.kotlin.kapt")
+    apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
 
     configure<JavaPluginExtension> {
         toolchain {
@@ -37,7 +39,7 @@ subprojects {
         "implementation"("org.jetbrains.kotlin:kotlin-reflect")
         "implementation"("com.fasterxml.jackson.module:jackson-module-kotlin")
         "implementation"("io.github.oshai:kotlin-logging-jvm:5.1.0")
-        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.6.0")
+        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.6.3")
     }
 
     tasks.withType<Test> {

@@ -34,6 +34,7 @@ class RankingPageCacheScheduler(
 
     @Scheduled(cron = "0 0 0/1 * * *")
     suspend fun upRankingData() {
+        log.info { "[Cache] ranking 적재 시도" }
         val affiliationList = affiliationPort.findAll()
 
         affiliationList

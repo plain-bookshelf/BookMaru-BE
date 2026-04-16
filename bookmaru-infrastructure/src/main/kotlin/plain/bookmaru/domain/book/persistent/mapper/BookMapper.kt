@@ -29,10 +29,10 @@ class BookMapper(
         val bookEntity = BookEntity(
             title = domain.bookInfo.title,
             author = domain.bookInfo.author,
-            publicationDate = domain.bookInfo.publicationDate,
-            bookImage = domain.bookInfo.bookImage,
+            publicationDate = domain.bookInfo.publicationDate ?: "",
+            bookImage = domain.bookInfo.bookImage ?: "",
             publisher = domain.bookInfo.publisher,
-            introduction = domain.bookInfo.introduction,
+            introduction = domain.bookInfo.introduction ?: "",
             bookGenreEntities = mutableListOf()
         )
 

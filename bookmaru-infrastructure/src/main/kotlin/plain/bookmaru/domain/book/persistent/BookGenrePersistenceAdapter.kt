@@ -20,7 +20,7 @@ class BookGenrePersistenceAdapter(
 
     override suspend fun loadBookGenre(ids: List<Long>): Map<Long, List<Genre>> = dbProtection.withReadOnly{
         val bookGenres = queryFactory
-            .select(bookGenre)
+            .selectFrom(bookGenre)
             .join(bookGenre.genreEntity, genreEntity).fetchJoin()
             .where(bookGenre.id.bookId.`in`(ids))
             .fetch()

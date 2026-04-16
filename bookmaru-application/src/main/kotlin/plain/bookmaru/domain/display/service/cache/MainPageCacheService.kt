@@ -77,7 +77,7 @@ class MainPageCacheService(
             PopularBookSortResult(
                 rank = index + 1, // 통째로 가져오므로 단순히 index + 1
                 id = ba.id!!,
-                bookImage = ba.book.bookInfo.bookImage
+                bookImage = ba.book.bookInfo.bookImage ?: ""
             )
         }
     }
@@ -86,7 +86,7 @@ class MainPageCacheService(
         return content.map {
             RecentBookSortResult(
                 id = it.id!!,
-                bookImage = it.book.bookInfo.bookImage
+                bookImage = it.book.bookInfo.bookImage ?: ""
             )
         }
     }
@@ -105,7 +105,7 @@ class MainPageCacheService(
             PopularBookSortResult(
                 rank = index + 1,
                 id = ba.id!!,
-                bookImage = ba.book.bookInfo.bookImage,
+                bookImage = ba.book.bookInfo.bookImage ?: "",
                 title = ba.book.bookInfo.title,
                 author = ba.book.bookInfo.author,
                 genreList = bookGenre[ba.book.id!!]?.map { genre ->
@@ -124,7 +124,7 @@ class MainPageCacheService(
         return content.map {
             RecentBookSortResult(
                 id = it.id!!,
-                bookImage = it.book.bookInfo.bookImage,
+                bookImage = it.book.bookInfo.bookImage ?: "",
                 title = it.book.bookInfo.title,
                 author = it.book.bookInfo.author,
                 genreList = bookGenre[it.book.id!!]?.map { genre ->
