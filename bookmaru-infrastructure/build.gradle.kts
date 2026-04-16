@@ -37,6 +37,7 @@ dependencies {
 
     // coroutine
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
     // config
     kapt("org.springframework.boot:spring-boot-configuration-processor")
