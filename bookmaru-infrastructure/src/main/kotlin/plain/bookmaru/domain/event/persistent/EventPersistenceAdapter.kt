@@ -46,6 +46,11 @@ class EventPersistenceAdapter(
         return@withReadOnly event
     }
 
+    override suspend fun deleteById(eventId: Long): Unit = dbProtection.withTransaction {
+        eventRepository.deleteById(eventId)
+        eventDetailRepository.deleteById(eventId)
+    }
+
     override suspend fun create(event: Event) {
         eventSave(event)
     }

@@ -2,11 +2,14 @@ package plain.bookmaru.domain.event.service
 
 import plain.bookmaru.common.annotation.Service
 import plain.bookmaru.domain.event.exception.NotEventCreateUserException
+import plain.bookmaru.domain.event.exception.NotFoundEventException
 import plain.bookmaru.domain.event.model.Event
 import plain.bookmaru.domain.event.port.`in`.EventChangeUseCase
 import plain.bookmaru.domain.event.port.`in`.EventCreateUseCase
+import plain.bookmaru.domain.event.port.`in`.EventDeleteUseCase
 import plain.bookmaru.domain.event.port.`in`.command.EventChangeCommand
 import plain.bookmaru.domain.event.port.`in`.command.EventCreateCommand
+import plain.bookmaru.domain.event.port.`in`.command.EventDeleteCommand
 import plain.bookmaru.domain.event.port.out.EventPort
 import plain.bookmaru.domain.event.vo.EventContent
 import plain.bookmaru.domain.event.vo.EventInfo
@@ -16,7 +19,7 @@ import java.time.LocalDateTime
 @Service
 class EventService(
     private val eventPort: EventPort
-) : EventCreateUseCase, EventChangeUseCase {
+) : EventCreateUseCase, EventChangeUseCase, EventDeleteUseCase {
     override suspend fun execute(command: EventCreateCommand) {
         val memberId = command.memberId
         val startAt = command.startAt
@@ -77,5 +80,18 @@ class EventService(
             ),
             EventContent(command.content)
         )
+    }
+
+    override suspend fun execute(command: EventDeleteCommand) {
+        val eventId = command.eventId
+        val memberId = command.memberId
+
+        val event = eventPort.findById(eventId)
+            ?: throw NotFoundEventException("eventId: $eventId 이벤트 정보를 찾지 못 했습니다.")
+
+        if (event.memberId != memberId)
+            throw NotEventCreateUserException("memberId: $memberId 유저는 이 이벤트를 수정할 권한이 없습니다.")
+
+        eventPort.deleteById(eventId)
     }
 }

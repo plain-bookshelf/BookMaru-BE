@@ -3,6 +3,7 @@ package plain.bookmaru.domain.event.presentation
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -14,6 +15,8 @@ import plain.bookmaru.common.error.CustomHttpStatus
 import plain.bookmaru.common.success.SuccessResponse
 import plain.bookmaru.domain.event.port.`in`.EventChangeUseCase
 import plain.bookmaru.domain.event.port.`in`.EventCreateUseCase
+import plain.bookmaru.domain.event.port.`in`.EventDeleteUseCase
+import plain.bookmaru.domain.event.port.`in`.command.EventDeleteCommand
 import plain.bookmaru.domain.event.presentation.dto.request.EventWriteRequestDto
 import plain.bookmaru.global.security.userdetails.CustomUserDetails
 
@@ -22,6 +25,7 @@ import plain.bookmaru.global.security.userdetails.CustomUserDetails
 class EventAdapter(
     private val eventCreateUseCase: EventCreateUseCase,
     private val eventChangeUseCase: EventChangeUseCase,
+    private val eventDeleteUseCase: EventDeleteUseCase
 ) {
 
     @PostMapping("/create")
@@ -51,5 +55,19 @@ class EventAdapter(
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(SuccessResponse.success(CustomHttpStatus.OK, "이벤트 수정을 성공했습니다.", ""))
+    }
+
+    @DeleteMapping("/{eventId}/delete")
+    @LogExecution
+    suspend fun delete(
+        @AuthenticationPrincipal principal: CustomUserDetails,
+        @PathVariable eventId: Long
+    ): ResponseEntity<SuccessResponse> {
+        val command = EventDeleteCommand(principal.id, eventId)
+
+        eventDeleteUseCase.execute(command)
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(SuccessResponse.success(CustomHttpStatus.OK, "이벤트를 삭제하는데 성공했습니다.", ""))
     }
 }

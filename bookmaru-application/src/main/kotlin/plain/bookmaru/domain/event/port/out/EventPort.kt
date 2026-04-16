@@ -6,5 +6,7 @@ interface EventPort {
     suspend fun findAll(): List<Event>?
     suspend fun findById(eventId: Long): Event?
 
+    suspend fun deleteById(eventId: Long)
+
     suspend fun create(event: Event)
 }
