@@ -4,4 +4,6 @@ import plain.bookmaru.domain.event.model.Event
 
 interface EventPort {
     suspend fun findAll(): List<Event>?
+
+    suspend fun create(event: Event)
 }
