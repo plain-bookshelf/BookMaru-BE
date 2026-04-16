@@ -35,6 +35,9 @@ dependencies {
     // aop
     implementation("org.springframework.boot:spring-boot-starter-aop")
 
+    // coroutine
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+
     // config
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 
