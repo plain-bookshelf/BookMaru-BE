@@ -8,17 +8,6 @@ import plain.bookmaru.domain.event.vo.EventInfo
 class Event(
     val id: Long? = null,
     val memberId: Long,
-    eventInfo: EventInfo,
-    eventContent: EventContent
-) {
-    var eventInfo = eventInfo
-        private set
-
-    var eventContent = eventContent
-        private set
-
-    fun updateEventInfo(eventInfo: EventInfo, content: EventContent) {
-        this.eventInfo = eventInfo
-        this.eventContent = content
-    }
-}
+    val eventInfo: EventInfo,
+    val eventContent: EventContent? = null
+)

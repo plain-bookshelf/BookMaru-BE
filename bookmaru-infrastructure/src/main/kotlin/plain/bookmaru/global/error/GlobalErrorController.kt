@@ -27,7 +27,7 @@ class GlobalErrorController : ErrorController {
         if (status == HttpStatus.FORBIDDEN.value()) {
             return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
-                .body(ErrorResponse("FORBIDDEN", "이 리소스에 접근할 권한이 부족합니다", HttpStatus.FORBIDDEN.value(), request.requestURI))
+                .body(ErrorResponse("FORBIDDEN", "이 리소스에 접근할 권한이 부족합니다", HttpStatus.FORBIDDEN.value(), request.requestURI, ))
         }
 
         if (status == HttpStatus.NOT_FOUND.value()) {

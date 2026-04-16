@@ -115,10 +115,6 @@ class SecurityConfig(
                 ).hasAnyRole("MANAGER", "LIBRARIAN", "ADMIN")
 
                 it.requestMatchers(
-                    "/api/event/**"
-                ).hasAnyRole("LIBRARIAN", "ADMIN")
-
-                it.requestMatchers(
                     /*
                     verification
                      */
