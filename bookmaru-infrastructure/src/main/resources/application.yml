@@ -2,6 +2,20 @@ server:
   port: 8080
   shutdown: graceful
 
+firebase:
+  json-content:
+    type: ${FIREBASE_TYPE}
+    project-id: ${FIREBASE_PROJECT_ID}
+    key-id: ${FIREBASE_KEY_ID}
+    key: ${FIREBASE_KEY}
+    client-email: ${FIREBASE_CLIENT_EMAIL}
+    client-id: ${FIREBASE_CLIENT_ID}
+    auth-uri: ${FIREBASE_AUTH_URI}
+    token-uri: ${FIREBASE_TOKEN_URI}
+    auth-provider: ${FIREBASE_AUTH_PROVIDER}
+    client: ${FIREBASE_CLIENT}
+    universe-domain: ${FIREBASE_UNIVERSE_DOMAIN}
+
 spring:
   main:
     allow-bean-definition-overriding: true

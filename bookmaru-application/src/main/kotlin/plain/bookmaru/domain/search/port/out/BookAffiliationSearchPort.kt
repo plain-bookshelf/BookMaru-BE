@@ -7,8 +7,6 @@ import plain.bookmaru.domain.search.port.out.result.AppBookAffiliationSearchResu
 import plain.bookmaru.domain.search.port.out.result.WebBookAffiliationSearchResult
 
 interface BookAffiliationSearchPort {
-    suspend fun saveAll(bookAffiliations: List<BookAffiliation>)
-
     suspend fun appSearchBookAffiliation(keyword: String, pageCommand: PageCommand, affiliationId: Long): SliceResult<AppBookAffiliationSearchResult>
     suspend fun webSearchBookAffiliation(keyword: String, pageCommand: PageCommand, affiliationId: Long): SliceResult<WebBookAffiliationSearchResult>
 }
