@@ -24,8 +24,6 @@ class BookAffiliationSearchPersistenceAdapter(
     private val bookAffiliation = QBookAffiliationEntity.bookAffiliationEntity
     private val book = QBookEntity.bookEntity
 
-    override suspend fun saveAll(bookAffiliations: List<BookAffiliation>) = Unit
-
     override suspend fun appSearchBookAffiliation(
         keyword: String,
         pageCommand: PageCommand,
