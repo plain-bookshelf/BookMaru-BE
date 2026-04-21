@@ -39,9 +39,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
-    // firebase
-    implementation("com.google.firebase:firebase-admin:9.4.0")
-
     // config
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 
