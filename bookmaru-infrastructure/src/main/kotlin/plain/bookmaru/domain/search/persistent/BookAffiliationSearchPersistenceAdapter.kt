@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component
 import plain.bookmaru.common.command.PageCommand
 import plain.bookmaru.common.result.SliceResult
 import plain.bookmaru.domain.book.persistent.entity.QBookEntity
-import plain.bookmaru.domain.inventory.model.BookAffiliation
 import plain.bookmaru.domain.inventory.persistent.entity.QBookAffiliationEntity
 import plain.bookmaru.domain.search.port.out.BookAffiliationSearchPort
 import plain.bookmaru.domain.search.port.out.result.AppBookAffiliationSearchResult
