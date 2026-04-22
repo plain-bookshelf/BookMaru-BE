@@ -29,10 +29,6 @@ class RankingPageAdapter(
         @PageableDefault(size = 20) pageable: Pageable
     ): ResponseEntity<SuccessResponse> {
         val command = ViewRankingPageCommand(
-            pageCommand = PageCommand(
-                page = pageable.pageNumber,
-                size = pageable.pageSize
-            ),
             affiliationId = principal.affiliationId
         )
 

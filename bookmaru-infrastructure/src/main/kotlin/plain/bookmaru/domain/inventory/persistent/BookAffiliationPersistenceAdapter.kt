@@ -196,7 +196,7 @@ class BookAffiliationPersistenceAdapter(
                 Genre::class.java,
                 genre.id,
                 genre.genreName
-            )
+            ).skipNulls()
         ).skipNulls()
     )
 
