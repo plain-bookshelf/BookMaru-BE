@@ -47,7 +47,8 @@ subprojects {
     }
 
     configurations.all {
-        // Firebase나 MockServer가 데려온 '가짜 로거'를 명시적으로 제거
         exclude(group = "org.slf4j", module = "slf4j-nop")
+
+        exclude(group = "org.mock-server", module = "mockserver-junit-rule-no-dependencies")
     }
 }
