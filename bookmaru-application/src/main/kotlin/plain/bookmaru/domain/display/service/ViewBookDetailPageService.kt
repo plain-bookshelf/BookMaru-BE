@@ -22,7 +22,7 @@ class ViewBookDetailPageService(
         val bookInfo = bookAffiliationPort.findBookInfoByBookId(command.bookAffiliationId, command.affiliationId, command.memberId)
             ?: throw NotFoundBookException("${command.bookAffiliationId} 아이디를 가진 책 정보를 찾지 못 했습니다.")
 
-        val bookDetailInfo = bookInfo.book.bookInfo
+        val bookDetailInfo = bookInfo.bookAffiliation.book.bookInfo
 
         return BookDetailPageResult(
             affiliationName = bookInfo.affiliationName,
@@ -34,7 +34,7 @@ class ViewBookDetailPageService(
                 bookImage = bookDetailInfo.bookImage,
                 publisher = bookDetailInfo.publisher,
             ),
-            genres = bookInfo.book.genres,
+            genres = bookInfo.bookAffiliation.book.genres,
             isEnableRental = bookInfo.availableCount != 0,
             isLiked = bookInfo.isBookLiked
         )

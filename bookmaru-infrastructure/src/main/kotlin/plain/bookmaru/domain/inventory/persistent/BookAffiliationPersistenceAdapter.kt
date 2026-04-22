@@ -100,64 +100,12 @@ class BookAffiliationPersistenceAdapter(
     }
 
     override suspend fun findBookInfoByBookId(bookId: Long, affiliationId: Long, memberId: Long): BookDetailInfoResult? = dbProtection.withReadOnly {
-        val result = queryFactory
-            .select(
-                Projections.constructor(
-                    BookDetailInfoResult::class.java,
-
-                    Projections.constructor(
-                        Book::class.java,
-                        book.id,
-                        Projections.constructor(
-                            BookInfo::class.java,
-                            book.title,
-                            book.author,
-                            book.publicationDate,
-                            book.introduction,
-                            book.bookImage,
-                            book.publisher
-                        )
-                    ),
-
-                    Projections.constructor(
-                        BookAffiliation::class.java,
-                        bookAffiliation.id,
-                        Projections.constructor(
-                            Book::class.java,
-                            book.id,
-                            Projections.constructor(
-                                BookInfo::class.java,
-                                book.title,
-                                book.author,
-                                book.publicationDate,
-                                book.introduction,
-                                book.bookImage,
-                                book.publisher
-                            )
-                        ),
-                        bookAffiliation.affiliationEntity.id,
-                        bookAffiliation.rentalCount,
-                        bookAffiliation.reservationCount,
-                        bookAffiliation.likeCount,
-                        bookAffiliation.similarityToken
-                    ),
-
-                    affiliation.affiliationName,
-                    ExpressionUtils.`as`(
-                        JPAExpressions.select(bookDetail.id.countDistinct())
-                            .from(bookDetail)
-                            .where(
-                                bookDetail.bookAffiliationEntity.id.eq(bookAffiliation.id),
-                                bookDetail.rentalStatus.eq(RentalStatus.RETURN)
-                            ),
-                        "availableCount"
-                    ),
-                    bookLike.id.isNotNull
-                )
-            )
+        val results = queryFactory
             .from(bookAffiliation)
             .innerJoin(bookAffiliation.bookEntity, book)
             .innerJoin(bookAffiliation.affiliationEntity, affiliation)
+            .leftJoin(book.bookGenreEntities, bookGenre)
+            .leftJoin(bookGenre.genreEntity, genre)
             .leftJoin(bookLike).on(
                 bookLike.id.bookAffiliationId.eq(bookAffiliation.id)
                     .and(bookLike.id.memberId.eq(memberId))
@@ -166,9 +114,29 @@ class BookAffiliationPersistenceAdapter(
                 book.id.eq(bookId),
                 affiliation.id.eq(affiliationId)
             )
-            .fetchOne()
+            .transform(
+                groupBy(bookAffiliation.id).list(
+                    Projections.constructor(
+                        BookDetailInfoResult::class.java,
 
-        return@withReadOnly result
+                        bookAffiliationProjection(),
+
+                        affiliation.affiliationName,
+                        ExpressionUtils.`as`(
+                            JPAExpressions.select(bookDetail.id.countDistinct())
+                                .from(bookDetail)
+                                .where(
+                                    bookDetail.bookAffiliationEntity.id.eq(bookAffiliation.id),
+                                    bookDetail.rentalStatus.eq(RentalStatus.RETURN)
+                                ),
+                            "availableCount"
+                        ),
+                        bookLike.id.isNotNull
+                    )
+                )
+            )
+
+        return@withReadOnly results.firstOrNull()
     }
 
     override suspend fun findAllWithBookAndGenresAndAffiliation(): List<BookAffiliation> = dbProtection.withReadOnly {
@@ -181,39 +149,7 @@ class BookAffiliationPersistenceAdapter(
             .leftJoin(bookGenre.genreEntity, genre)
             .transform(
                 groupBy(bookAffiliation.id).list(
-                    Projections.constructor(
-                        BookAffiliation::class.java,
-                        bookAffiliation.id,
-                        Projections.constructor(
-                            Book::class.java,
-                            book.id,
-                            Projections.constructor(
-                                BookInfo::class.java,
-                                book.title,
-                                book.author,
-                                book.publicationDate,
-                                book.introduction,
-                                book.bookImage,
-                                book.publisher
-                            ),
-                            list(
-                                Projections.constructor(
-                                    BookGenre::class.java,
-                                    bookGenre.id,
-                                    Projections.constructor(
-                                        Genre::class.java,
-                                        genre.id,
-                                        genre.genreName
-                                    )
-                                ).skipNulls()
-                            )
-                        ),
-                        affiliation.id,
-                        bookAffiliation.rentalCount,
-                        bookAffiliation.reservationCount,
-                        bookAffiliation.likeCount,
-                        bookAffiliation.similarityToken
-                    )
+                    bookAffiliationProjection()
                 )
             )
 
@@ -244,4 +180,55 @@ class BookAffiliationPersistenceAdapter(
             .where(bookAffiliation.id.eq(bookAffiliationId), bookAffiliation.reservationCount.gt(0))
             .execute()
     }
+
+    /*
+    private helper method
+     */
+
+    /*
+     * Genre -> BookGenre Projection
+     */
+    private fun bookGenreListProjection() = list(
+        Projections.constructor(
+            BookGenre::class.java,
+            bookGenre.id,
+            Projections.constructor(
+                Genre::class.java,
+                genre.id,
+                genre.genreName
+            )
+        ).skipNulls()
+    )
+
+    /**
+     * BookInfo -> Book Projection (장르 리스트 포함)
+     */
+    private fun bookProjection() = Projections.constructor(
+        Book::class.java,
+        book.id,
+        Projections.constructor(
+            BookInfo::class.java,
+            book.title,
+            book.author,
+            book.publicationDate,
+            book.introduction,
+            book.bookImage,
+            book.publisher
+        ),
+        bookGenreListProjection()
+    )
+
+    /**
+     * BookAffiliation Projection
+     */
+    private fun bookAffiliationProjection() = Projections.constructor(
+        BookAffiliation::class.java,
+        bookAffiliation.id,
+        bookProjection(),
+        affiliation.id,
+        bookAffiliation.rentalCount,
+        bookAffiliation.reservationCount,
+        bookAffiliation.likeCount,
+        bookAffiliation.similarityToken
+    )
 }
