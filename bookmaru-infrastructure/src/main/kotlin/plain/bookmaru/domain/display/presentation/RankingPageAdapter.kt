@@ -1,7 +1,5 @@
 package plain.bookmaru.domain.display.presentation
 
-import org.springframework.data.domain.Pageable
-import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -24,8 +22,7 @@ class RankingPageAdapter(
     @GetMapping
     @LogExecution
     suspend fun getRankingPage(
-        @AuthenticationPrincipal principal: CustomUserDetails,
-        @PageableDefault(size = 20) pageable: Pageable
+        @AuthenticationPrincipal principal: CustomUserDetails
     ): ResponseEntity<SuccessResponse> {
         val command = ViewRankingPageCommand(
             affiliationId = principal.affiliationId

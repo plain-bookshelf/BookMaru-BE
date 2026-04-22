@@ -191,7 +191,7 @@ class BookAffiliationPersistenceAdapter(
     private fun bookGenreListProjection() = list(
         Projections.constructor(
             BookGenre::class.java,
-            bookGenre.id,
+            bookGenre.id.genreId,
             Projections.constructor(
                 Genre::class.java,
                 genre.id,
