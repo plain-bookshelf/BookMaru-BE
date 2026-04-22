@@ -100,21 +100,28 @@ class BookAffiliationSearchPersistenceAdapter(
         return@withReadOnly sliceResult(results, pageCommand.size)
     }
 
+    private fun toPrefixQuery(keyword: String): String {
+        return keyword.trim()
+            .split("\\s+".toRegex()) // 공백으로 단어 분리
+            .filter { it.isNotBlank() }
+            .joinToString(" & ") { "$it:*" } // 각 단어 뒤에 :* 추가
+    }
+
     private fun rankExpression(keyword: String): NumberExpression<Double> {
         return Expressions.numberTemplate(
             Double::class.javaObjectType,
-            "function('ts_rank', {0}, function('websearch_to_tsquery', 'simple', {1}))",
+            "function('ts_rank', {0}, function('to_tsquery', 'simple', {1}))",
             bookAffiliation.similarityToken,
-            keyword
+            toPrefixQuery(keyword)
         )
     }
 
     private fun matchesKeyword(keyword: String): BooleanExpression {
         return Expressions.numberTemplate(
             Double::class.javaObjectType,
-            "function('ts_rank', {0}, function('websearch_to_tsquery', 'simple', {1}))",
+            "function('ts_rank', {0}, function('to_tsquery', 'simple', {1}))",
             bookAffiliation.similarityToken,
-            keyword
+            toPrefixQuery(keyword)
         ).gt(0.0)
     }
 
