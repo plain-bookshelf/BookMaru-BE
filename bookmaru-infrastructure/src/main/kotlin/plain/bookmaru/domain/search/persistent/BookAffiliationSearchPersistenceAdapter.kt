@@ -103,18 +103,19 @@ class BookAffiliationSearchPersistenceAdapter(
     private fun rankExpression(keyword: String): NumberExpression<Double> {
         return Expressions.numberTemplate(
             Double::class.javaObjectType,
-            "ts_rank({0}, websearch_to_tsquery('simple', {1}))",
+            "function('ts_rank', {0}, function('websearch_to_tsquery', 'simple', {1}))",
             bookAffiliation.similarityToken,
             keyword
         )
     }
 
     private fun matchesKeyword(keyword: String): BooleanExpression {
-        return Expressions.booleanTemplate(
-            "{0} @@ websearch_to_tsquery('simple', {1})",
+        return Expressions.numberTemplate(
+            Double::class.javaObjectType,
+            "function('ts_rank', {0}, function('websearch_to_tsquery', 'simple', {1}))",
             bookAffiliation.similarityToken,
             keyword
-        )
+        ).gt(0.0)
     }
 
     private fun affiliationPredicate(affiliationId: Long): BooleanExpression {
