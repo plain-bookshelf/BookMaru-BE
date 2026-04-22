@@ -9,12 +9,9 @@ import kotlinx.serialization.protobuf.ProtoBuf
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Component
-import plain.bookmaru.common.command.PageCommand
-import plain.bookmaru.common.result.SliceResult
 import plain.bookmaru.domain.display.persistent.wrapper.RankingListWrapper
 import plain.bookmaru.domain.display.port.out.RankingPagePort
 import plain.bookmaru.domain.display.port.out.result.UserRankInfoResult
-import plain.bookmaru.domain.display.service.PaginateProfessor
 import java.time.Duration
 
 private const val RANKING_KEY = "cache:display:ranking"
@@ -26,8 +23,7 @@ class ViewRankingPagePersistenceAdapter(
     @Qualifier("virtualDispatcher")
     private val virtualDispatcher: CoroutineDispatcher,
     @Qualifier("cacheRedisTemplate")
-    private val cacheRedisTemplate: RedisTemplate<String, ByteArray>,
-    private val paginateProfessor: PaginateProfessor
+    private val cacheRedisTemplate: RedisTemplate<String, ByteArray>
 ): RankingPagePort {
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -43,7 +39,7 @@ class ViewRankingPagePersistenceAdapter(
     }
 
     @OptIn(ExperimentalSerializationApi::class)
-    override suspend fun loadRankingPage(command: PageCommand, affiliationId: Long): SliceResult<UserRankInfoResult>? = withContext(virtualDispatcher) {
+    override suspend fun loadRankingPage(affiliationId: Long): List<UserRankInfoResult>? = withContext(virtualDispatcher) {
         val key = "$RANKING_KEY:affiliationId:$affiliationId"
 
         val byteArray = cacheRedisTemplate.opsForValue().get(key) ?: return@withContext null
@@ -54,6 +50,6 @@ class ViewRankingPagePersistenceAdapter(
             return@withContext null
         }
 
-        return@withContext paginateProfessor.paginate(ranking, command)
+        return@withContext ranking
     }
 }
