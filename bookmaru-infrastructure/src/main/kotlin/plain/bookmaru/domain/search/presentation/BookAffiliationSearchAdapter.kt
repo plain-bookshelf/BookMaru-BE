@@ -36,7 +36,7 @@ class BookAffiliationSearchAdapter(
         val command = BookAffiliationSearchCommand(
             pageCommand = PageCommand(
                 page = pageable.pageNumber,
-                size = pageable.pageNumber
+                size = pageable.pageSize
             ),
             affiliationId = principal.affiliationId,
             keyword = keyword

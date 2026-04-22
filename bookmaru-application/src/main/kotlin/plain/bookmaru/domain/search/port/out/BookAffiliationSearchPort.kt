@@ -2,7 +2,6 @@ package plain.bookmaru.domain.search.port.out
 
 import plain.bookmaru.common.command.PageCommand
 import plain.bookmaru.common.result.SliceResult
-import plain.bookmaru.domain.inventory.model.BookAffiliation
 import plain.bookmaru.domain.search.port.out.result.AppBookAffiliationSearchResult
 import plain.bookmaru.domain.search.port.out.result.WebBookAffiliationSearchResult
 
