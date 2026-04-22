@@ -1,9 +1,8 @@
 package plain.bookmaru.domain.display.port.`in`
 
-import plain.bookmaru.common.result.SliceResult
 import plain.bookmaru.domain.display.port.`in`.command.ViewMainPageBookCommand
-import plain.bookmaru.domain.display.port.out.result.PopularBookSortResult
+import plain.bookmaru.domain.display.port.out.result.BookSortResult
 
 interface ViewMainPagePopularBookUseCase {
-    suspend fun popularBookExecute(command: ViewMainPageBookCommand): SliceResult<PopularBookSortResult>
+    suspend fun popularBookExecute(command: ViewMainPageBookCommand): List<BookSortResult>
 }

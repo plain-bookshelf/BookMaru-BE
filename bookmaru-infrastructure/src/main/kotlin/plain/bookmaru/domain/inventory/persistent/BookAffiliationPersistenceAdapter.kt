@@ -9,8 +9,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
-import plain.bookmaru.common.command.PageCommand
-import plain.bookmaru.common.result.SliceResult
 import plain.bookmaru.domain.affiliation.persistent.entity.QAffiliationEntity
 import plain.bookmaru.domain.book.model.Book
 import plain.bookmaru.domain.book.model.BookGenre
@@ -20,9 +18,7 @@ import plain.bookmaru.domain.book.persistent.entity.QBookGenreEntity
 import plain.bookmaru.domain.book.persistent.entity.QGenreEntity
 import plain.bookmaru.domain.book.vo.BookInfo
 import plain.bookmaru.domain.community.persistent.entity.QBookLikeEntity
-import plain.bookmaru.domain.display.port.out.result.ViewMyPageLikeBookResult
 import plain.bookmaru.domain.inventory.model.BookAffiliation
-import plain.bookmaru.domain.inventory.persistent.entity.BookAffiliationEntity
 import plain.bookmaru.domain.inventory.persistent.entity.QBookAffiliationEntity
 import plain.bookmaru.domain.inventory.persistent.entity.QBookDetailEntity
 import plain.bookmaru.domain.inventory.persistent.mapper.BookAffiliationMapper
@@ -55,25 +51,13 @@ class BookAffiliationPersistenceAdapter(
     find
      */
 
-    override suspend fun findPopularSort(command: PageCommand, affiliationId: Long): SliceResult<BookAffiliation> = dbProtection.withReadOnly {
-        val offset = command.offset
-        val size = command.size
-
-        if (offset >= MAX_BOOKS_SIZE) {
-            return@withReadOnly SliceResult(
-                content = emptyList(),
-                isLastPage = true
-            )
-        }
-
+    override suspend fun findPopularSort(affiliationId: Long): List<BookAffiliation> = dbProtection.withReadOnly {
         val popularScore = bookAffiliation.rentalCount.multiply(2).add(bookAffiliation.likeCount)
-
-        val limit = minOf(size.toLong(), MAX_BOOKS_SIZE - offset) + 1L
 
         val bookAffiliations =  queryFactory
             .selectFrom(bookAffiliation)
-            .innerJoin(bookAffiliation.bookEntity, book).fetchJoin() // Fetch Join to solve N+1
-            .innerJoin(bookAffiliation.affiliationEntity, affiliation).fetchJoin() // Join with Affiliation
+            .innerJoin(bookAffiliation.bookEntity, book).fetchJoin()
+            .innerJoin(bookAffiliation.affiliationEntity, affiliation).fetchJoin()
             .orderBy(
                 popularScore.desc(),
                 book.title.desc()
@@ -81,28 +65,15 @@ class BookAffiliationPersistenceAdapter(
             .where(
                 bookAffiliation.affiliationEntity.id.eq(affiliationId),
                 book.bookImage.isNotNull)
-            .offset(offset)
-            .limit(limit)
+            .limit(MAX_BOOKS_SIZE)
             .fetch()
 
-        log.info { "메인 페이지의 인기순 정렬 책 정보를 $offset 부터 ~ $limit 까지 가져오는데 성공했습니다." }
+        log.info { "메인 페이지의 인기순 정렬 책 정보를 가져오는데 성공했습니다." }
 
-        return@withReadOnly sliceResult(bookAffiliations, size, offset)
+        return@withReadOnly bookAffiliationMapper.toDomainList(bookAffiliations)
     }
 
-    override suspend fun findRecentSort(command: PageCommand, affiliationId: Long): SliceResult<BookAffiliation> = dbProtection.withReadOnly {
-        val offset = command.offset
-        val size = command.size
-
-        if (offset >= MAX_BOOKS_SIZE) {
-            return@withReadOnly SliceResult(
-                content = emptyList(),
-                isLastPage = true
-            )
-        }
-
-        val limit = minOf(size.toLong(), MAX_BOOKS_SIZE - offset) + 1L
-
+    override suspend fun findRecentSort(affiliationId: Long): List<BookAffiliation> = dbProtection.withReadOnly {
         val bookAffiliations =  queryFactory
             .selectFrom(bookAffiliation)
             .innerJoin(bookAffiliation.bookEntity, book).fetchJoin() // Fetch Join to solve N+1
@@ -114,13 +85,12 @@ class BookAffiliationPersistenceAdapter(
             .where(
                 bookAffiliation.affiliationEntity.id.eq(affiliationId),
                 book.bookImage.isNotNull)
-            .offset(offset)
-            .limit(limit)
+            .limit(MAX_BOOKS_SIZE)
             .fetch()
 
-        log.info { "메인 페이지의 최신순 정렬 책 정보를 $offset 부터 ~ $limit 까지 가져오는데 성공했습니다." }
+        log.info { "메인 페이지의 최신순 정렬 책 정보를 가져오는데 성공했습니다." }
 
-        return@withReadOnly sliceResult(bookAffiliations, size, offset)
+        return@withReadOnly bookAffiliationMapper.toDomainList(bookAffiliations)
     }
 
     override suspend fun findById(id: Long): BookAffiliation? = dbProtection.withReadOnly {
@@ -273,18 +243,5 @@ class BookAffiliationPersistenceAdapter(
             .set(bookAffiliation.reservationCount, bookAffiliation.reservationCount.subtract(1))
             .where(bookAffiliation.id.eq(bookAffiliationId), bookAffiliation.reservationCount.gt(0))
             .execute()
-    }
-
-    private fun sliceResult(entities: List<BookAffiliationEntity>, requestSize: Int, offset: Long): SliceResult<BookAffiliation> {
-        val hasNext = entities.size > requestSize
-        val content = if (hasNext) entities.dropLast(1) else entities
-        val isLastPage = !hasNext || (offset + requestSize >= MAX_BOOKS_SIZE)
-
-        val domains = bookAffiliationMapper.toDomainList(content)
-
-        return SliceResult(
-            content = domains,
-            isLastPage = isLastPage
-        )
     }
 }

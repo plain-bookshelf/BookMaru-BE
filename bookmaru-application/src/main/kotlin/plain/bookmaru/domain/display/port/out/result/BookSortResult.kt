@@ -3,7 +3,7 @@ package plain.bookmaru.domain.display.port.out.result
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RecentBookSortResult(
+data class BookSortResult(
     val id: Long,
     val bookImage: String,
     val title: String? = null,

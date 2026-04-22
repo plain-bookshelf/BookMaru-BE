@@ -9,17 +9,12 @@ import kotlinx.serialization.protobuf.ProtoBuf
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Component
-import plain.bookmaru.common.command.PageCommand
-import plain.bookmaru.common.result.SliceResult
 import plain.bookmaru.domain.auth.vo.PlatformType
 import plain.bookmaru.domain.display.persistent.wrapper.EventListWrapper
-import plain.bookmaru.domain.display.persistent.wrapper.PopularBookListWrapper
-import plain.bookmaru.domain.display.persistent.wrapper.RecentBookListWrapper
+import plain.bookmaru.domain.display.persistent.wrapper.BookListWrapper
 import plain.bookmaru.domain.display.port.out.MainPagePort
 import plain.bookmaru.domain.display.port.out.result.EventInfoResult
-import plain.bookmaru.domain.display.port.out.result.PopularBookSortResult
-import plain.bookmaru.domain.display.port.out.result.RecentBookSortResult
-import plain.bookmaru.domain.display.service.PaginateProfessor
+import plain.bookmaru.domain.display.port.out.result.BookSortResult
 import java.time.Duration
 
 private const val EVENT_KEY = "cache:display:main:event"
@@ -35,28 +30,27 @@ class ViewMainPagePersistenceAdapter(
     @Qualifier("cacheRedisTemplate")
     private val cacheRedisTemplate: RedisTemplate<String, ByteArray>,
     @Qualifier("virtualDispatcher")
-    private val virtualDispatcher: CoroutineDispatcher,
-    private val paginateProfessor: PaginateProfessor
+    private val virtualDispatcher: CoroutineDispatcher
 ) : MainPagePort {
     /*
     SAVE
      */
 
     @OptIn(ExperimentalSerializationApi::class)
-    override suspend fun savePopularBooks(books: List<PopularBookSortResult>, platformType: PlatformType, affiliationId: Long): Unit = withContext(virtualDispatcher) {
+    override suspend fun savePopularBooks(books: List<BookSortResult>, platformType: PlatformType, affiliationId: Long): Unit = withContext(virtualDispatcher) {
             val key = "$POPULAR_BOOK_KEY:$platformType:affiliationId$affiliationId"
             if (validIsNotEmptyBook(books, key)) return@withContext
 
-            val byteArray = ProtoBuf.encodeToByteArray(PopularBookListWrapper(books))
+            val byteArray = ProtoBuf.encodeToByteArray(BookListWrapper(books))
             cacheRedisTemplate.opsForValue().set(key, byteArray, POPULAR_BOOK_TTL)
         }
 
     @OptIn(ExperimentalSerializationApi::class)
-    override suspend fun saveRecentBooks(books: List<RecentBookSortResult>, platformType: PlatformType, affiliationId: Long): Unit = withContext(virtualDispatcher) {
+    override suspend fun saveRecentBooks(books: List<BookSortResult>, platformType: PlatformType, affiliationId: Long): Unit = withContext(virtualDispatcher) {
         val key = "$RECENT_BOOK_KEY:$platformType:affiliationId$affiliationId"
         if (validIsNotEmptyBook(books, key)) return@withContext
 
-        val byteArray = ProtoBuf.encodeToByteArray(RecentBookListWrapper(books))
+        val byteArray = ProtoBuf.encodeToByteArray(BookListWrapper(books))
         cacheRedisTemplate.opsForValue().set(key, byteArray, RECENT_BOOK_TTL)
     }
 
@@ -75,23 +69,23 @@ class ViewMainPagePersistenceAdapter(
      */
 
     @OptIn(ExperimentalSerializationApi::class)
-    override suspend fun loadPopularBooks(command: PageCommand, platformType: PlatformType, affiliationId: Long): SliceResult<PopularBookSortResult>? = withContext(virtualDispatcher) {
+    override suspend fun loadPopularBooks(platformType: PlatformType, affiliationId: Long): List<BookSortResult>? = withContext(virtualDispatcher) {
         val key = "$POPULAR_BOOK_KEY:$platformType:affiliationId$affiliationId"
 
         val byteArray = cacheRedisTemplate.opsForValue().get(key) ?: return@withContext null
 
-        val allBooks = ProtoBuf.decodeFromByteArray<PopularBookListWrapper>(byteArray).books
-        return@withContext paginateProfessor.paginate(allBooks, command)
+        val allBooks = ProtoBuf.decodeFromByteArray<BookListWrapper>(byteArray).books
+        return@withContext allBooks
     }
 
     @OptIn(ExperimentalSerializationApi::class)
-    override suspend fun loadRecentBooks(command: PageCommand, platformType: PlatformType, affiliationId: Long): SliceResult<RecentBookSortResult>? = withContext(virtualDispatcher) {
+    override suspend fun loadRecentBooks(platformType: PlatformType, affiliationId: Long): List<BookSortResult>? = withContext(virtualDispatcher) {
         val key = "$RECENT_BOOK_KEY:$platformType:affiliationId$affiliationId"
 
         val byteArray = cacheRedisTemplate.opsForValue().get(key) ?: return@withContext null
 
-        val allBooks = ProtoBuf.decodeFromByteArray<RecentBookListWrapper>(byteArray).books
-        return@withContext paginateProfessor.paginate(allBooks, command)
+        val allBooks = ProtoBuf.decodeFromByteArray<BookListWrapper>(byteArray).books
+        return@withContext allBooks
     }
 
     @OptIn(ExperimentalSerializationApi::class)

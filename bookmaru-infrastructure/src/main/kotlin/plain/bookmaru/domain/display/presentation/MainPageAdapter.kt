@@ -1,7 +1,5 @@
 package plain.bookmaru.domain.display.presentation
 
-import org.springframework.data.domain.Pageable
-import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -10,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import plain.bookmaru.common.annotation.LogExecution
-import plain.bookmaru.common.command.PageCommand
 import plain.bookmaru.common.error.CustomHttpStatus
 import plain.bookmaru.common.success.SuccessResponse
 import plain.bookmaru.domain.auth.vo.PlatformType
@@ -19,6 +16,7 @@ import plain.bookmaru.domain.display.port.`in`.ViewMainPagePopularBookUseCase
 import plain.bookmaru.domain.display.port.`in`.ViewMainPageRecentBookUseCase
 import plain.bookmaru.domain.display.port.`in`.command.ViewMainPageBookCommand
 import plain.bookmaru.domain.display.port.`in`.command.ViewMainPageEventCommand
+import plain.bookmaru.domain.display.presentation.dto.response.ViewMainPageWebBookResponseDto
 import plain.bookmaru.domain.display.vo.BookFindType
 import plain.bookmaru.global.security.userdetails.CustomUserDetails
 
@@ -49,27 +47,30 @@ class MainPageAdapter(
     @LogExecution
     suspend fun viewMainPagePopularBook(
         @AuthenticationPrincipal principal: CustomUserDetails,
-        @PageableDefault(size = 20) pageable: Pageable,
         @RequestParam bookFindType: String,
         @RequestParam platformType: String
     ) : ResponseEntity<SuccessResponse>{
         val bookFindType = BookFindType.valueOf(bookFindType)
 
         val command = ViewMainPageBookCommand(
-            pageCommand = PageCommand(
-                size = pageable.pageSize,
-                page = pageable.pageNumber
-            ),
             affiliationId = principal.affiliationId,
             platformType = PlatformType.valueOf(platformType)
         )
+
+        val enumPlatformType = PlatformType.valueOf(platformType)
 
         val result = when (bookFindType) {
             BookFindType.POPULAR -> viewMainPagePopularBookUseCase.popularBookExecute(command)
             BookFindType.RECENT -> viewMainPageRecentBookUseCase.recentBookExecute(command)
         }
 
+        val response = if (enumPlatformType == PlatformType.WEB) {
+            ViewMainPageWebBookResponseDto.from(result)
+        } else {
+            ViewMainPageWebBookResponseDto.from(result)
+        }
+
         return ResponseEntity.status(HttpStatus.OK)
-            .body(SuccessResponse.success(CustomHttpStatus.OK, "인기 책 조회에 성공했습니다.", result))
+            .body(SuccessResponse.success(CustomHttpStatus.OK, "인기 책 조회에 성공했습니다.", response))
     }
 }
