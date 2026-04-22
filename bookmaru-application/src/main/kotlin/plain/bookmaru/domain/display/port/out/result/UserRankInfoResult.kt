@@ -8,5 +8,6 @@ data class UserRankInfoResult(
     val rank: Int,
     val nickName: String,
     val oneMonthStatistics: Int,
+    val profileImage: String,
     val affiliationName: String
 )

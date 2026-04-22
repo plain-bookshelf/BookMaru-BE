@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component
 import plain.bookmaru.domain.display.persistent.wrapper.RankingListWrapper
 import plain.bookmaru.domain.display.port.out.RankingPagePort
 import plain.bookmaru.domain.display.port.out.result.UserRankInfoResult
-import plain.bookmaru.domain.display.service.PaginateProfessor
 import java.time.Duration
 
 private const val RANKING_KEY = "cache:display:ranking"

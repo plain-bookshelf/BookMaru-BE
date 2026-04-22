@@ -75,7 +75,8 @@ class MemberPersistenceAdapter(
                 rank = index + 1,
                 nickName = entity.get(member.nickname)!!,
                 oneMonthStatistics = entity.get(member.oneMonthStatistics)!!,
-                affiliationName = entity.get(affiliation.affiliationName)!!
+                affiliationName = entity.get(affiliation.affiliationName)!!,
+                profileImage = entity.get(member.profileImage)!!
             )
         }
     }
