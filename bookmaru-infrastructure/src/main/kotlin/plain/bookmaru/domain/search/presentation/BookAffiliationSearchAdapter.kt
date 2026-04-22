@@ -28,7 +28,6 @@ class BookAffiliationSearchAdapter(
     @GetMapping
     @LogExecution
     suspend fun search(
-
         @RequestParam platformType: String,
         @RequestParam keyword: String,
         @PageableDefault(size = 12) pageable: Pageable,

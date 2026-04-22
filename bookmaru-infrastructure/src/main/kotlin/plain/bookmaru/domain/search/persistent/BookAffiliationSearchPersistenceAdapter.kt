@@ -46,7 +46,7 @@ class BookAffiliationSearchPersistenceAdapter(
             .innerJoin(bookAffiliation.bookEntity, book)
             .where(
                 affiliationPredicate(affiliationId),
-                matchesKeyword(rank)
+                matchesKeyword(normalizedKeyword)
             )
             .orderBy(
                 rank.desc(),
@@ -87,7 +87,7 @@ class BookAffiliationSearchPersistenceAdapter(
             .innerJoin(bookAffiliation.bookEntity, book)
             .where(
                 affiliationPredicate(affiliationId),
-                matchesKeyword(rank)
+                matchesKeyword(normalizedKeyword)
             )
             .orderBy(
                 rank.desc(),
@@ -103,14 +103,18 @@ class BookAffiliationSearchPersistenceAdapter(
     private fun rankExpression(keyword: String): NumberExpression<Double> {
         return Expressions.numberTemplate(
             Double::class.javaObjectType,
-            "function('ts_rank', {0}, function('websearch_to_tsquery', 'simple', {1}))",
+            "ts_rank({0}, websearch_to_tsquery('simple', {1}))",
             bookAffiliation.similarityToken,
             keyword
         )
     }
 
-    private fun matchesKeyword(rank: NumberExpression<Double>): BooleanExpression {
-        return rank.gt(0.0)
+    private fun matchesKeyword(keyword: String): BooleanExpression {
+        return Expressions.booleanTemplate(
+            "{0} @@ websearch_to_tsquery('simple', {1})",
+            bookAffiliation.similarityToken,
+            keyword
+        )
     }
 
     private fun affiliationPredicate(affiliationId: Long): BooleanExpression {
