@@ -235,7 +235,7 @@ class BookAffiliationPersistenceAdapter(
                                         genre.id,
                                         genre.genreName
                                     )
-                                )
+                                ).skipNulls()
                             )
                         ),
                         affiliation.id,

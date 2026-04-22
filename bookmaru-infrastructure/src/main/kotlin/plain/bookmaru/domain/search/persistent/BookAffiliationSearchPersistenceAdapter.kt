@@ -102,7 +102,7 @@ class BookAffiliationSearchPersistenceAdapter(
 
     private fun rankExpression(keyword: String): NumberExpression<Double> {
         return Expressions.numberTemplate(
-            Double::class.java,
+            Double::class.javaObjectType,
             "function('ts_rank', {0}, function('websearch_to_tsquery', 'simple', {1}))",
             bookAffiliation.similarityToken,
             keyword
