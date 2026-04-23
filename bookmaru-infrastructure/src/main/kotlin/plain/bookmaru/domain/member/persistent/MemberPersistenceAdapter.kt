@@ -55,6 +55,7 @@ class MemberPersistenceAdapter(
                 member.id!!,
                 member.nickname,
                 member.oneMonthStatistics,
+                member.profileImage,
                 affiliation.affiliationName
             )
             .from(member)
@@ -76,7 +77,7 @@ class MemberPersistenceAdapter(
                 nickName = entity.get(member.nickname)!!,
                 oneMonthStatistics = entity.get(member.oneMonthStatistics)!!,
                 affiliationName = entity.get(affiliation.affiliationName)!!,
-                profileImage = entity.get(member.profileImage)!!
+                profileImage = entity.get(member.profileImage) ?: ""
             )
         }
     }
