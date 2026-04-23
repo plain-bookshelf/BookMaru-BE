@@ -22,6 +22,10 @@ class LogInterceptor : AsyncHandlerInterceptor {
         val end = System.currentTimeMillis()
         val duration = end - start
 
+        val exception = ex
+            ?: request.getAttribute("interceptedException") as? Throwable
+            ?: request.getAttribute("jakarta.servlet.error.exception") as? Throwable
+
         var handlerInfo = request.requestURI
         if (handler is HandlerMethod) {
             val className = handler.beanType.simpleName
@@ -30,10 +34,10 @@ class LogInterceptor : AsyncHandlerInterceptor {
         }
 
         val status = response.status
-        val cause = ex?.cause
-        val message = ex?.message
 
         if (ex != null || status >= 400) {
+            val cause = exception?.cause ?: "No cause"
+            val message = exception?.message ?: "No error message"
             log.error { "[FAIL] $handlerInfo - Status: $status - Cause: $cause - Message: $message (소요 시간: $duration ms)" }
         } else {
             log.info { "[SUCCESS] $handlerInfo - Status: $status (소요 시간: $duration ms)" }

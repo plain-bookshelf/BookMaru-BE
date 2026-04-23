@@ -1,6 +1,7 @@
 package plain.bookmaru.global.error
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -16,8 +17,14 @@ private val log = KotlinLogging.logger {}
 @RestControllerAdvice
 class GlobalExceptionHandler {
 
+    private fun storeException(e: Exception, request: HttpServletRequest) {
+        request.setAttribute("interceptedException", e)
+    }
+
     @ExceptionHandler(BaseException::class)
-    fun handlerBaseException(e: BaseException): ResponseEntity<ErrorResponse> {
+    fun handlerBaseException(e: BaseException, request: HttpServletRequest): ResponseEntity<ErrorResponse> {
+        storeException(e, request)
+
         val baseErrorCode : BaseErrorCode = e.baseErrorCode
 
         log.error {"Error Code: [${baseErrorCode.code}], Error Message: [{${baseErrorCode.message}}], Details: [${e.details}]"}
@@ -29,7 +36,8 @@ class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handlerMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
+    fun handlerMethodArgumentNotValidException(e: MethodArgumentNotValidException, request: HttpServletRequest): ResponseEntity<ErrorResponse> {
+        storeException(e, request)
         log.error { "MethodArgumentNotValidException: ${e.message}, Cause: ${e.cause}" }
 
         return ResponseEntity
@@ -39,7 +47,8 @@ class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException::class)
-    fun handlerIllegalArgumentException(e: IllegalArgumentException): ResponseEntity<ErrorResponse> {
+    fun handlerIllegalArgumentException(e: IllegalArgumentException, request: HttpServletRequest): ResponseEntity<ErrorResponse> {
+        storeException(e, request)
         log.error { "IllegalArgumentException: ${e.message}, Cause: ${e.cause}" }
 
         return ResponseEntity
@@ -49,7 +58,8 @@ class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalStateException::class)
-    fun handlerIllegalStateException(e: IllegalStateException): ResponseEntity<ErrorResponse> {
+    fun handlerIllegalStateException(e: IllegalStateException, request: HttpServletRequest): ResponseEntity<ErrorResponse> {
+        storeException(e, request)
         log.error { "IllegalStateException: ${e.message}, Cause: ${e.cause}" }
 
         return ResponseEntity
@@ -59,7 +69,8 @@ class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception::class)
-    fun handlerException(e: Exception): ResponseEntity<ErrorResponse> {
+    fun handlerException(e: Exception, request: HttpServletRequest): ResponseEntity<ErrorResponse> {
+        storeException(e, request)
         log.error { "InternalServerException: ${e.message}, Cause: ${e.cause}" }
 
         return ResponseEntity
