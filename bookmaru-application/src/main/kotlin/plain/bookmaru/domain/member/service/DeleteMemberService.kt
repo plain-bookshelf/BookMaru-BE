@@ -26,10 +26,11 @@ class DeleteMemberService(
             ?: throw NotFoundMemberException("$username 아이디를 사용하는 유저 정보를 찾지 못 했습니다.")
 
         val uuid = UUID.randomUUID().toString()
+        val suffix = "$${uuid.take(8)}"
         member.deleteStatus()
-        member.modifyNickname("delete_user:" + member.profile.nickname + "UUID:" + uuid)
-        member.modifyEmail("deleted+$uuid@bookmaru.invalid")
-        member.modifyUsername("delete_user:" + member.accountInfo?.username + "UUID:" + uuid)
+        member.modifyNickname("delete_user:" + member.profile.nickname + "UUID:" + suffix)
+        member.modifyEmail("deleted+$suffix@bookmaru.invalid")
+        member.modifyUsername("delete_user:" + member.accountInfo?.username + "UUID:" + suffix)
 
         memberPort.delete(member)
         log.info { "$username 아이디를 사용하는 유저 정보를 삭제하는데 성공했습니다." }
