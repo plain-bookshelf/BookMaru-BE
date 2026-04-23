@@ -8,7 +8,6 @@ interface BookAffiliationPort {
     suspend fun findRecentSort(affiliationId: Long) : List<BookAffiliation>
     suspend fun findById(id: Long): BookAffiliation?
     suspend fun findBookInfoByBookId(bookAffiliationId: Long, affiliationId: Long, memberId: Long): BookDetailInfoResult?
-    suspend fun findAllWithBookAndGenresAndAffiliation(): List<BookAffiliation>
 
     fun incrementLikeCount(bookAffiliationId: Long)
     fun decrementLikeCount(bookAffiliationId: Long)

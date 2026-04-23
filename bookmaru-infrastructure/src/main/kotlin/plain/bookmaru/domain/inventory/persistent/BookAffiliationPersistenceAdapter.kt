@@ -1,9 +1,7 @@
 package plain.bookmaru.domain.inventory.persistent
 
-import com.querydsl.core.group.GroupBy.groupBy
 import com.querydsl.core.group.GroupBy.list
 import com.querydsl.core.types.Projections
-import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
@@ -53,7 +51,7 @@ class BookAffiliationPersistenceAdapter(
     override suspend fun findPopularSort(affiliationId: Long): List<BookAffiliation> = dbProtection.withReadOnly {
         val popularScore = bookAffiliation.rentalCount.multiply(2).add(bookAffiliation.likeCount)
 
-        val bookAffiliations =  queryFactory
+        val bookAffiliations = queryFactory
             .selectFrom(bookAffiliation)
             .innerJoin(bookAffiliation.bookEntity, book).fetchJoin()
             .innerJoin(bookAffiliation.affiliationEntity, affiliation).fetchJoin()
@@ -63,27 +61,29 @@ class BookAffiliationPersistenceAdapter(
             )
             .where(
                 bookAffiliation.affiliationEntity.id.eq(affiliationId),
-                book.bookImage.isNotNull)
+                book.bookImage.isNotNull
+            )
             .limit(MAX_BOOKS_SIZE)
             .fetch()
 
-        log.info { "메인 페이지의 인기순 정렬 책 정보를 가져오는데 성공했습니다." }
+        log.info { "\"메인 페이지의 인기순 정렬 책 정보를 가져오는데 성공했습니다." }
 
         return@withReadOnly bookAffiliationMapper.toDomainList(bookAffiliations)
     }
 
     override suspend fun findRecentSort(affiliationId: Long): List<BookAffiliation> = dbProtection.withReadOnly {
-        val bookAffiliations =  queryFactory
+        val bookAffiliations = queryFactory
             .selectFrom(bookAffiliation)
-            .innerJoin(bookAffiliation.bookEntity, book).fetchJoin() // Fetch Join to solve N+1
-            .innerJoin(bookAffiliation.affiliationEntity, affiliation).fetchJoin() // Join with Affiliation
+            .innerJoin(bookAffiliation.bookEntity, book).fetchJoin()
+            .innerJoin(bookAffiliation.affiliationEntity, affiliation).fetchJoin()
             .orderBy(
                 book.publicationDate.desc(),
                 book.title.desc()
             )
             .where(
                 bookAffiliation.affiliationEntity.id.eq(affiliationId),
-                book.bookImage.isNotNull)
+                book.bookImage.isNotNull
+            )
             .limit(MAX_BOOKS_SIZE)
             .fetch()
 
@@ -100,19 +100,20 @@ class BookAffiliationPersistenceAdapter(
 
     override suspend fun findBookInfoByBookId(bookId: Long, affiliationId: Long, memberId: Long): BookDetailInfoResult? = dbProtection.withReadOnly {
         val bookAffiliationResult = queryFactory
-            .from(bookAffiliation)
-            .innerJoin(bookAffiliation.bookEntity, book)
-            .innerJoin(bookAffiliation.affiliationEntity, affiliation)
-            .leftJoin(book.bookGenreEntities, bookGenre)
-            .leftJoin(bookGenre.genreEntity, genre)
+            .selectFrom(bookAffiliation)
+            .innerJoin(bookAffiliation.bookEntity, book).fetchJoin()
+            .innerJoin(bookAffiliation.affiliationEntity, affiliation).fetchJoin()
+            .leftJoin(book.bookGenreEntities, bookGenre).fetchJoin()
+            .leftJoin(bookGenre.genreEntity, genre).fetchJoin()
             .where(
                 book.id.eq(bookId),
                 affiliation.id.eq(affiliationId)
             )
-            .transform (
-                groupBy(bookAffiliation.id).list(bookAffiliationProjection())
-            )
-            .firstOrNull() ?: return@withReadOnly null
+            .distinct()
+            .fetch()
+            .firstOrNull()
+            ?.let(bookAffiliationMapper::toDomain)
+            ?: return@withReadOnly null
 
         val affiliationName = queryFactory
             .select(affiliation.affiliationName)
@@ -143,23 +144,6 @@ class BookAffiliationPersistenceAdapter(
             isBookLiked = isBookLiked,
             availableCount = availableCount
         )
-    }
-
-    override suspend fun findAllWithBookAndGenresAndAffiliation(): List<BookAffiliation> = dbProtection.withReadOnly {
-        val bookAffiliation = queryFactory
-            .from(bookAffiliation)
-            .distinct()
-            .innerJoin(bookAffiliation.bookEntity, book)
-            .innerJoin(bookAffiliation.affiliationEntity, affiliation)
-            .leftJoin(book.bookGenreEntities, bookGenre)
-            .leftJoin(bookGenre.genreEntity, genre)
-            .transform(
-                groupBy(bookAffiliation.id).list(
-                    bookAffiliationProjection()
-                )
-            )
-
-        return@withReadOnly bookAffiliation
     }
 
     /*
