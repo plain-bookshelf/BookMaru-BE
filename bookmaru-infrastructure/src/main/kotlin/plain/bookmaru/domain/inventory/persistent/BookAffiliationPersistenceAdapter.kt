@@ -1,19 +1,13 @@
 package plain.bookmaru.domain.inventory.persistent
 
-import com.querydsl.core.group.GroupBy.list
-import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.persistent.entity.QAffiliationEntity
-import plain.bookmaru.domain.book.model.Book
-import plain.bookmaru.domain.book.model.BookGenre
-import plain.bookmaru.domain.book.model.Genre
 import plain.bookmaru.domain.book.persistent.entity.QBookEntity
 import plain.bookmaru.domain.book.persistent.entity.QBookGenreEntity
 import plain.bookmaru.domain.book.persistent.entity.QGenreEntity
-import plain.bookmaru.domain.book.vo.BookInfo
 import plain.bookmaru.domain.community.persistent.entity.QBookLikeEntity
 import plain.bookmaru.domain.inventory.model.BookAffiliation
 import plain.bookmaru.domain.inventory.persistent.entity.QBookAffiliationEntity
@@ -170,55 +164,4 @@ class BookAffiliationPersistenceAdapter(
             .where(bookAffiliation.id.eq(bookAffiliationId), bookAffiliation.reservationCount.gt(0))
             .execute()
     }
-
-    /*
-    private helper method
-     */
-
-    /*
-     * Genre -> BookGenre Projection
-     */
-    private fun bookGenreListProjection() = list(
-        Projections.constructor(
-            BookGenre::class.java,
-            bookGenre.id.bookId,
-            Projections.constructor(
-                Genre::class.java,
-                genre.id,
-                genre.genreName
-            ).skipNulls()
-        ).skipNulls()
-    )
-
-    /**
-     * BookInfo -> Book Projection (장르 리스트 포함)
-     */
-    private fun bookProjection() = Projections.constructor(
-        Book::class.java,
-        book.id,
-        Projections.constructor(
-            BookInfo::class.java,
-            book.title,
-            book.author,
-            book.publicationDate,
-            book.introduction,
-            book.bookImage,
-            book.publisher
-        ),
-        bookGenreListProjection()
-    )
-
-    /**
-     * BookAffiliation Projection
-     */
-    private fun bookAffiliationProjection() = Projections.constructor(
-        BookAffiliation::class.java,
-        bookAffiliation.id,
-        bookProjection(),
-        affiliation.id,
-        bookAffiliation.rentalCount,
-        bookAffiliation.reservationCount,
-        bookAffiliation.likeCount,
-        bookAffiliation.similarityToken
-    )
 }
