@@ -3,7 +3,6 @@ package plain.bookmaru.domain.inventory.persistent
 import com.querydsl.core.group.GroupBy.groupBy
 import com.querydsl.core.group.GroupBy.list
 import com.querydsl.core.types.Projections
-import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
@@ -140,9 +139,9 @@ class BookAffiliationPersistenceAdapter(
                         bookLike.id.isNotNull,
                     )
                 )
-            ).firstOrNull()
+            )
 
-        return@withReadOnly result?.copy(availableCount = availableCount)
+        return@withReadOnly result.firstOrNull()?.copy(availableCount = availableCount)
     }
 
     override suspend fun findAllWithBookAndGenresAndAffiliation(): List<BookAffiliation> = dbProtection.withReadOnly {
