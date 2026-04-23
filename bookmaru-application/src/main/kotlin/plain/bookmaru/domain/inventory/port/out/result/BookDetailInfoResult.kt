@@ -5,6 +5,6 @@ import plain.bookmaru.domain.inventory.model.BookAffiliation
 data class BookDetailInfoResult(
     val bookAffiliation: BookAffiliation,
     val affiliationName: String,
-    val availableCount: Int,
+    val availableCount: Long,
     val isBookLiked: Boolean
 )
