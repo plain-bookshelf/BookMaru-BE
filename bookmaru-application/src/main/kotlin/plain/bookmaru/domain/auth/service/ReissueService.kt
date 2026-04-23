@@ -36,7 +36,10 @@ class ReissueService(
             ?: throw NotFoundAffiliationException("소속 정보를 찾지 못 했습니다.")
 
         val member = memberPort.findByUsername(authentication.username)
-            ?: throw NotFoundMemberException("$authentication.username")
+            ?: throw NotFoundMemberException("${authentication.username} 유저 정보를 찾지 못 했습니다.")
+
+        if (member.deleteStatus == true)
+            throw NotFoundMemberException("${authentication.username} 유저 정보를 찾지 못 했습니다.")
 
         log.info { "토큰 재발급 완료" }
 
