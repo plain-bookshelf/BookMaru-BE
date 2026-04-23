@@ -99,51 +99,51 @@ class BookAffiliationPersistenceAdapter(
     }
 
     override suspend fun findBookInfoByBookId(bookId: Long, affiliationId: Long, memberId: Long): BookDetailInfoResult? = dbProtection.withReadOnly {
-        val targetBookAffiliationId = queryFactory
-            .select(bookAffiliation.id)
-            .from(bookAffiliation)
-            .where(
-                bookAffiliation.bookEntity.id.eq(bookId),
-                bookAffiliation.affiliationEntity.id.eq(affiliationId)
+        val bookAffiliationResult = queryFactory
+            .select(
+                bookAffiliationProjection()
             )
-            .fetchOne() ?: return@withReadOnly null
-
-        val availableCount = queryFactory
-            .select(bookDetail.id.countDistinct().intValue())
-            .from(bookDetail)
-            .where(
-                bookDetail.bookAffiliationEntity.id.eq(targetBookAffiliationId),
-                bookDetail.rentalStatus.eq(RentalStatus.RETURN)
-            )
-            .fetchOne() ?: 0
-
-        val result = queryFactory
             .from(bookAffiliation)
             .innerJoin(bookAffiliation.bookEntity, book)
             .innerJoin(bookAffiliation.affiliationEntity, affiliation)
             .leftJoin(book.bookGenreEntities, bookGenre)
             .leftJoin(bookGenre.genreEntity, genre)
-            .leftJoin(bookLike).on(
-                bookLike.id.bookAffiliationId.eq(bookAffiliation.id)
-                    .and(bookLike.id.memberId.eq(memberId))
-            )
             .where(
                 book.id.eq(bookId),
                 affiliation.id.eq(affiliationId)
             )
-            .transform(
-                groupBy(bookAffiliation.id).list(
-                    Projections.constructor(
-                        BookDetailInfoResult::class.java,
-                        bookAffiliationProjection(),
-                        affiliation.affiliationName,
-                        bookLike.id.isNotNull,
-                        Expressions.asNumber(0).`as`("availableCount")
-                    )
-                )
-            )
+            .distinct()
+            .fetchOne() ?: return@withReadOnly null
 
-        return@withReadOnly result.firstOrNull()?.copy(availableCount = availableCount)
+        val affiliationName = queryFactory
+            .select(affiliation.affiliationName)
+            .from(affiliation)
+            .where(affiliation.id.eq(affiliationId))
+            .fetchOne() ?: ""
+
+        val isBookLiked = queryFactory
+            .selectFrom(bookLike)
+            .where(
+                bookLike.id.bookAffiliationId.eq(bookAffiliationResult.id),
+                bookLike.id.memberId.eq(memberId)
+            )
+            .fetchOne() != null
+
+        val availableCount = queryFactory
+            .select(bookDetail.id.countDistinct().intValue())
+            .from(bookDetail)
+            .where(
+                bookDetail.bookAffiliationEntity.id.eq(bookAffiliationResult.id),
+                bookDetail.rentalStatus.eq(RentalStatus.RETURN)
+            )
+            .fetchOne() ?: 0
+
+        return@withReadOnly BookDetailInfoResult(
+            bookAffiliation = bookAffiliationResult,
+            affiliationName = affiliationName,
+            isBookLiked = isBookLiked,
+            availableCount = availableCount
+        )
     }
 
     override suspend fun findAllWithBookAndGenresAndAffiliation(): List<BookAffiliation> = dbProtection.withReadOnly {

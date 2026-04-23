@@ -33,7 +33,7 @@ class MainPageCacheScheduler(
         }
     }
 
-    @Scheduled(cron = "0 0/10 * * * *")
+    @Scheduled(cron = "0 0/30 * * * *")
     suspend fun upPopularBookData() {
         log.debug { "[Cache] upPopularBookData 적재 시도" }
         val affiliationList = affiliationPort.findAll()
