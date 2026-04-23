@@ -123,7 +123,7 @@ class BookAffiliationPersistenceAdapter(
 
                         affiliation.affiliationName,
                         ExpressionUtils.`as`(
-                            JPAExpressions.select(bookDetail.id.countDistinct().intValue())
+                            JPAExpressions.select(bookDetail.id.countDistinct())
                                 .from(bookDetail)
                                 .where(
                                     bookDetail.bookAffiliationEntity.id.eq(bookAffiliation.id),
