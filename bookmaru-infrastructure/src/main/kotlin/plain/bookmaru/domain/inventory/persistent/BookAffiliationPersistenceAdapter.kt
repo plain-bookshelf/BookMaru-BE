@@ -100,9 +100,6 @@ class BookAffiliationPersistenceAdapter(
 
     override suspend fun findBookInfoByBookId(bookId: Long, affiliationId: Long, memberId: Long): BookDetailInfoResult? = dbProtection.withReadOnly {
         val bookAffiliationResult = queryFactory
-            .select(
-                bookAffiliationProjection()
-            )
             .from(bookAffiliation)
             .innerJoin(bookAffiliation.bookEntity, book)
             .innerJoin(bookAffiliation.affiliationEntity, affiliation)
@@ -112,8 +109,10 @@ class BookAffiliationPersistenceAdapter(
                 book.id.eq(bookId),
                 affiliation.id.eq(affiliationId)
             )
-            .distinct()
-            .fetchOne() ?: return@withReadOnly null
+            .transform (
+                groupBy(bookAffiliation.id).list(bookAffiliationProjection())
+            )
+            .firstOrNull() ?: return@withReadOnly null
 
         val affiliationName = queryFactory
             .select(affiliation.affiliationName)
@@ -198,7 +197,7 @@ class BookAffiliationPersistenceAdapter(
     private fun bookGenreListProjection() = list(
         Projections.constructor(
             BookGenre::class.java,
-            bookGenre.id.genreId,
+            bookGenre.id.bookId,
             Projections.constructor(
                 Genre::class.java,
                 genre.id,
