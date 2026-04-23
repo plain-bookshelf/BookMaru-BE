@@ -46,7 +46,7 @@ class MemberEntity(
     @Column(nullable = false, length = 45)
     var nickname: String,
 
-    @Column(unique = true,length = 45)
+    @Column(unique = true,length = 100)
     var email: String,
 
     @Enumerated(EnumType.STRING)

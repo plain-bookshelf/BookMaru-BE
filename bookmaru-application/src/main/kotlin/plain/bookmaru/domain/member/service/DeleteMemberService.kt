@@ -28,7 +28,7 @@ class DeleteMemberService(
         val uuid = UUID.randomUUID().toString()
         member.deleteStatus()
         member.modifyNickname("delete_user:" + member.profile.nickname + "UUID:" + uuid)
-        member.modifyEmail("deleteEmail$uuid")
+        member.modifyEmail("deleteEmail:$uuid")
         member.modifyUsername("delete_user:" + member.accountInfo?.username + "UUID:" + uuid)
 
         memberPort.delete(member)
