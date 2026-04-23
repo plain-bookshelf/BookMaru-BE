@@ -6,5 +6,5 @@ data class BookDetailInfoResult(
     val bookAffiliation: BookAffiliation,
     val affiliationName: String,
     val isBookLiked: Boolean,
-    val availableCount: Int?
+    val availableCount: Int
 )
