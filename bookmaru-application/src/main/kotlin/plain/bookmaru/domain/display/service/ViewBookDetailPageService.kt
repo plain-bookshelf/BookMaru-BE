@@ -35,7 +35,7 @@ class ViewBookDetailPageService(
                 publisher = bookDetailInfo.publisher,
             ),
             genres = bookInfo.bookAffiliation.book.genres,
-            isEnableRental = bookInfo.availableCount != 0L,
+            isEnableRental = bookInfo.availableCount != 0,
             isLiked = bookInfo.isBookLiked
         )
     }

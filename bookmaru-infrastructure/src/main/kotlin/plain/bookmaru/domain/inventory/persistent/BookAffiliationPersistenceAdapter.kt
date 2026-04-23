@@ -2,9 +2,8 @@ package plain.bookmaru.domain.inventory.persistent
 
 import com.querydsl.core.group.GroupBy.groupBy
 import com.querydsl.core.group.GroupBy.list
-import com.querydsl.core.types.ExpressionUtils
 import com.querydsl.core.types.Projections
-import com.querydsl.jpa.JPAExpressions
+import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
@@ -100,6 +99,24 @@ class BookAffiliationPersistenceAdapter(
     }
 
     override suspend fun findBookInfoByBookId(bookId: Long, affiliationId: Long, memberId: Long): BookDetailInfoResult? = dbProtection.withReadOnly {
+        val targetBookAffiliationId = queryFactory
+            .select(bookAffiliation.id)
+            .from(bookAffiliation)
+            .where(
+                bookAffiliation.bookEntity.id.eq(bookId),
+                bookAffiliation.affiliationEntity.id.eq(affiliationId)
+            )
+            .fetchOne() ?: return@withReadOnly null
+
+        val availableCount = queryFactory
+            .select(bookDetail.id.countDistinct().intValue())
+            .from(bookDetail)
+            .where(
+                bookDetail.bookAffiliationEntity.id.eq(targetBookAffiliationId),
+                bookDetail.rentalStatus.eq(RentalStatus.RETURN)
+            )
+            .fetchOne() ?: 0
+
         val results = queryFactory
             .from(bookAffiliation)
             .innerJoin(bookAffiliation.bookEntity, book)
@@ -122,15 +139,7 @@ class BookAffiliationPersistenceAdapter(
                         bookAffiliationProjection(),
 
                         affiliation.affiliationName,
-                        ExpressionUtils.`as`(
-                            JPAExpressions.select(bookDetail.id.countDistinct())
-                                .from(bookDetail)
-                                .where(
-                                    bookDetail.bookAffiliationEntity.id.eq(bookAffiliation.id),
-                                    bookDetail.rentalStatus.eq(RentalStatus.RETURN)
-                                ),
-                            "availableCount"
-                        ),
+                        Expressions.constant(availableCount),
                         bookLike.id.isNotNull
                     )
                 )
