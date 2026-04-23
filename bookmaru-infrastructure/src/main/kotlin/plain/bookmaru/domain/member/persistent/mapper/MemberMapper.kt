@@ -26,7 +26,8 @@ class MemberMapper{
             ),
             authority = entity.role,
             email = Email(email = entity.email),
-            lendingBook = LendingBook(entity.rentalCount, entity.reservationCount)
+            lendingBook = LendingBook(entity.rentalCount, entity.reservationCount),
+            deleteStatus = entity.deleteStatus
         )
     }
 
@@ -37,15 +38,8 @@ class MemberMapper{
             nickname = domain.profile.nickname,
             email = domain.email.email,
             role = domain.authority,
-        ).apply {
-            this.password = domain.accountInfo?.password ?: ""
-            this.profileImage = domain.profile.profileImage ?: ""
-            this.oftenBookReadTime = domain.profile.oftenBookReadTime
-            this.overdueTerm = domain.profile.overdueTerm
-            this.oneMonthStatistics = domain.profile.oneMonthStatistics ?: 0
-            this.rentalCount = domain.lendingBook.rentalCount
-            this.reservationCount = domain.lendingBook.reservationCount
-        }
+            deleteStatus = domain.deleteStatus
+        )
     }
 
     fun updateEntity(domain: Member, entity: MemberEntity, affiliationProxy: AffiliationEntity) {
@@ -59,5 +53,6 @@ class MemberMapper{
         entity.oftenBookReadTime = domain.profile.oftenBookReadTime
         entity.rentalCount = domain.lendingBook.rentalCount
         entity.reservationCount = domain.lendingBook.reservationCount
+        entity.deleteStatus = domain.deleteStatus
     }
 }

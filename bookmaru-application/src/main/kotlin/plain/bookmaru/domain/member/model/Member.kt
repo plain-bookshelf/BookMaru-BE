@@ -17,9 +17,10 @@ class Member(
     profile: Profile,
     val authority: Authority,
     accountInfo: AccountInfo? = null,
-    val email: Email,
+    email: Email,
     lendingBook: LendingBook,
-    oAuthInfo: OAuthInfo? = null
+    deleteStatus: Boolean = false,
+    oAuthInfo: OAuthInfo? = null,
 ) {
     var accountInfo: AccountInfo? = accountInfo
         private set
@@ -34,6 +35,12 @@ class Member(
         private set
 
     var lendingBook: LendingBook = lendingBook
+        private set
+
+    var deleteStatus: Boolean = deleteStatus
+        private set
+
+    var email: Email = email
         private set
 
     fun linkOAuthAccount(provider: OAuthProvider, providerId: String) {
@@ -95,6 +102,14 @@ class Member(
         this.affiliationId = affiliationId
     }
 
+    fun modifyUsername(newUsername: String) {
+        this.accountInfo = accountInfo?.copy(username = newUsername)
+    }
+
+    fun modifyEmail(newEmail: String) {
+        this.email = Email(newEmail)
+    }
+
     fun modifyNickname(newNickname: String) {
         this.profile = profile.copy(nickname = newNickname)
     }
@@ -109,5 +124,9 @@ class Member(
 
     fun incrementReservationCount() {
         this.lendingBook = lendingBook.copy(reservationCount = this.lendingBook.reservationCount + 1)
+    }
+
+    fun deleteStatus() {
+        this.deleteStatus = true
     }
 }

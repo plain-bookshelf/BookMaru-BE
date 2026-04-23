@@ -46,6 +46,9 @@ class LoginMemberService(
         affiliationPort.findById(member.affiliationId!!)
             ?: throw NotFoundAffiliationException("소속 정보를 찾지 못 했습니다.")
 
+        if (member.deleteStatus == true)
+            throw NotFoundMemberException("유저 정보를 찾지 못 했습니다.")
+
         log.info { "로그인 성공" }
 
         return jwtPort.responseToken(

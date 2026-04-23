@@ -61,7 +61,8 @@ class MemberPersistenceAdapter(
             .from(member)
             .join(member.affiliationEntity, affiliation)
             .where(
-                member.affiliationEntity.id.eq(affiliationId)
+                member.affiliationEntity.id.eq(affiliationId),
+                member.deleteStatus.eq(false)
             )
             .orderBy(
                 member.oneMonthStatistics.desc(),
@@ -95,10 +96,14 @@ class MemberPersistenceAdapter(
         return@withReadOnly true
     }
 
-    override suspend fun delete(member: Member) = dbProtection.withTransaction {
+    override suspend fun delete(member: Member): Unit = dbProtection.withTransaction {
         val affiliationProxy = affiliationRepository.getReferenceById(member.affiliationId!!)
 
-        memberRepository.delete(memberMapper.toEntity(member, affiliationProxy))
+        val memberEntity = memberRepository.findById(member.id!!)
+            .orElseThrow { throw NotFoundMemberException("존재하지 않는 유저입니다.") }
+
+        memberMapper.updateEntity(member, memberEntity, affiliationProxy)
+        memberRepository.save(memberEntity)
     }
 
     override suspend fun findByUsername(username: String): Member? = dbProtection.withReadOnly {

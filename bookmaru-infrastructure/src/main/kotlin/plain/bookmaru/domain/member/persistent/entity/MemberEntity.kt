@@ -53,6 +53,9 @@ class MemberEntity(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     var role: Authority,
+
+    @Column(nullable = false)
+    var deleteStatus: Boolean = false
 ) : BaseEntity() {
 
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq_generator")
@@ -61,9 +64,6 @@ class MemberEntity(
 
     @OneToMany(mappedBy = "memberEntity", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     val notificationEntities: MutableList<NotificationEntity> = mutableListOf()
-
-    @OneToMany(mappedBy = "memberEntity", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    val bookReservationEntities: MutableList<BookReservationEntity> = mutableListOf()
 
     @Column(nullable = true, length = 100)
     var password: String? = null
