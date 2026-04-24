@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import plain.bookmaru.common.annotation.Service
 import plain.bookmaru.domain.auth.port.out.RefreshTokenPort
 import plain.bookmaru.domain.auth.service.BlackListProfessor
+import plain.bookmaru.domain.display.service.cache.RankingPageCacheService
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.port.`in`.DeleteMemberUseCase
 import plain.bookmaru.domain.member.port.`in`.command.DeleteMemberCommand
@@ -16,6 +17,7 @@ private val log = KotlinLogging.logger {}
 class DeleteMemberService(
     private val memberPort: MemberPort,
     private val refreshTokenPort: RefreshTokenPort,
+    private val rankingPageCacheService: RankingPageCacheService,
     private val blackListProfessor: BlackListProfessor
 ) : DeleteMemberUseCase {
     override suspend fun deleteMember(command: DeleteMemberCommand) {
@@ -29,7 +31,7 @@ class DeleteMemberService(
         val suffix = "$${uuid.take(8)}"
         member.deleteStatus()
         member.modifyNickname("delete_user:" + member.profile.nickname + "UUID:" + suffix)
-        member.modifyEmail("deleted${suffix}@bookmaru.invalid")
+        member.modifyEmail("deleted_${suffix}@bookmaru.invalid")
         member.modifyUsername("delete_user:" + member.accountInfo?.username + "UUID:" + suffix)
 
         memberPort.delete(member)
@@ -37,6 +39,7 @@ class DeleteMemberService(
 
         blackListProfessor.execute(accessToken)
         refreshTokenPort.deleteByUsername(username)
+        rankingPageCacheService.upRanking(member.affiliationId!!)
         log.info { "$username 을 사용하는 refreshToken 정보를 지우는데 성공했습니다." }
     }
 
