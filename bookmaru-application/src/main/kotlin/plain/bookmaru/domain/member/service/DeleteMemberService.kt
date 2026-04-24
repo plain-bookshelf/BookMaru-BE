@@ -20,6 +20,7 @@ class DeleteMemberService(
     private val rankingPageCacheService: RankingPageCacheService,
     private val blackListProfessor: BlackListProfessor
 ) : DeleteMemberUseCase {
+
     override suspend fun deleteMember(command: DeleteMemberCommand) {
         val username = command.username
         val accessToken = resolveToken(command.accessToken)
