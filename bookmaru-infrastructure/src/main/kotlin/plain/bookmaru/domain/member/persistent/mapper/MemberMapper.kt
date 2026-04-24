@@ -44,6 +44,7 @@ class MemberMapper{
 
     fun updateEntity(domain: Member, entity: MemberEntity, affiliationProxy: AffiliationEntity) {
         entity.affiliationEntity = affiliationProxy
+        entity.username = domain.accountInfo?.username ?: entity.username
         entity.password = domain.accountInfo?.password ?: entity.password
         entity.email = domain.email.email
         entity.nickname = domain.profile.nickname

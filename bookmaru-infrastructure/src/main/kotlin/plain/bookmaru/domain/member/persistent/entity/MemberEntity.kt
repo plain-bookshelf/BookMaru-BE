@@ -41,7 +41,7 @@ class MemberEntity(
     var affiliationEntity: AffiliationEntity,
 
     @Column(nullable = true, length = 100)
-    val username: String,
+    var username: String,
 
     @Column(nullable = false, length = 100)
     var nickname: String,
