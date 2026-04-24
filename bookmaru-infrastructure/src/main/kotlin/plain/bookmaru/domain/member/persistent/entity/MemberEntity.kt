@@ -40,10 +40,10 @@ class MemberEntity(
     @JoinColumn(name = "affiliation_id", nullable = false )
     var affiliationEntity: AffiliationEntity,
 
-    @Column(nullable = true, length = 45)
+    @Column(nullable = true, length = 100)
     val username: String,
 
-    @Column(nullable = false, length = 45)
+    @Column(nullable = false, length = 100)
     var nickname: String,
 
     @Column(unique = true,length = 100)
