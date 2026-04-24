@@ -14,4 +14,5 @@ interface BookDetailPort {
     suspend fun findRentalBookByBookDetailId(bookDetailId: Long): BookDetail?
 
     fun updateRental(rental: Rental, returnDate: LocalDate)
+    fun assignReturnedRental(bookDetailId: Long, memberId: Long, returnDate: LocalDate)
 }

@@ -158,6 +158,13 @@ class BookAffiliationPersistenceAdapter(
             .execute()
     }
 
+    override fun incrementReservationCount(bookAffiliationId: Long) {
+        queryFactory.update(bookAffiliation)
+            .set(bookAffiliation.reservationCount, bookAffiliation.reservationCount.add(1))
+            .where(bookAffiliation.id.eq(bookAffiliationId))
+            .execute()
+    }
+
     override fun decrementReservationCount(bookAffiliationId: Long) {
         queryFactory.update(bookAffiliation)
             .set(bookAffiliation.reservationCount, bookAffiliation.reservationCount.subtract(1))

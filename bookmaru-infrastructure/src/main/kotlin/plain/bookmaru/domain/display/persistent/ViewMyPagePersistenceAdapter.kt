@@ -32,6 +32,7 @@ class ViewMyPagePersistenceAdapter(
     private val bookLike = QBookLikeEntity.bookLikeEntity
     private val member = QMemberEntity.memberEntity
     private val bookReservation = QBookReservationEntity.bookReservationEntity
+    private val reservationRankSource = QBookReservationEntity("reservationRankSource")
 
     override suspend fun findUserInfoByUsername(username: String): ViewMyPageResult = dbProtection.withReadOnly {
         val today = LocalDate.now()
@@ -90,6 +91,13 @@ class ViewMyPagePersistenceAdapter(
 
     override suspend fun findUserLendingInfoByMemberId(memberId: Long): LendingBookListResult = dbProtection.withReadOnly {
         val today = LocalDate.now()
+        val reservationDisplayRank = JPAExpressions
+            .select(reservationRankSource.id.count().intValue())
+            .from(reservationRankSource)
+            .where(
+                reservationRankSource.id.bookAffiliationId.eq(bookReservation.id.bookAffiliationId),
+                reservationRankSource.waitingRank.loe(bookReservation.waitingRank)
+            )
 
         queryFactory
             .selectOne()
@@ -131,7 +139,7 @@ class ViewMyPagePersistenceAdapter(
                 bookAffiliation.id,
                 book.bookImage,
                 book.title,
-                bookReservation.waitingRank
+                reservationDisplayRank
             )
             .from(bookReservation)
             .innerJoin(bookAffiliation)
@@ -147,7 +155,7 @@ class ViewMyPagePersistenceAdapter(
                     bookAffiliationId = it.get(bookAffiliation.id) ?: 0L,
                     bookImage = it.get(book.bookImage) ?: "",
                     title = it.get(book.title) ?: "",
-                    rank = it.get(bookReservation.waitingRank) ?: 0
+                    rank = it.get(reservationDisplayRank) ?: 0
                 )
             }
 

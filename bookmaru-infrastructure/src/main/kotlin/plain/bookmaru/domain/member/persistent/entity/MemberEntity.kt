@@ -43,6 +43,9 @@ class MemberEntity(
     @Column(nullable = true, length = 100)
     var username: String,
 
+    @Column(nullable = true, length = 100)
+    var password: String? = null,
+
     @Column(nullable = false, length = 100)
     var nickname: String,
 
@@ -63,9 +66,6 @@ class MemberEntity(
 
     @OneToMany(mappedBy = "memberEntity", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     val notificationEntities: MutableList<NotificationEntity> = mutableListOf()
-
-    @Column(nullable = true, length = 100)
-    var password: String? = null
 
     @Column(nullable = true, length = 100)
     var profileImage: String? = null

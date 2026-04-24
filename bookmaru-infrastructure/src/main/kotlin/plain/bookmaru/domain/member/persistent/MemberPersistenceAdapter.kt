@@ -1,6 +1,7 @@
 package plain.bookmaru.domain.member.persistent
 
 import com.querydsl.jpa.impl.JPAQueryFactory
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.persistent.entity.QAffiliationEntity
 import plain.bookmaru.domain.affiliation.persistent.repository.AffiliationRepository
@@ -24,6 +25,11 @@ class MemberPersistenceAdapter(
 ) : MemberPort {
     private val member = QMemberEntity.memberEntity
     private val affiliation = QAffiliationEntity.affiliationEntity
+
+    override suspend fun findById(memberId: Long): Member? = dbProtection.withReadOnly {
+        memberRepository.findByIdOrNull(memberId)
+            ?.let(memberMapper::toDomain)
+    }
 
     override fun save(member: Member) : Member {
         val affiliationProxy = affiliationRepository.getReferenceById(member.affiliationId!!)

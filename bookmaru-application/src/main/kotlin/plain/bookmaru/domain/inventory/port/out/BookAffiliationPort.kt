@@ -11,5 +11,6 @@ interface BookAffiliationPort {
 
     fun incrementLikeCount(bookAffiliationId: Long)
     fun decrementLikeCount(bookAffiliationId: Long)
+    fun incrementReservationCount(bookAffiliationId: Long)
     fun decrementReservationCount(bookAffiliationId: Long)
 }

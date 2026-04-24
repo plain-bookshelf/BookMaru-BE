@@ -156,6 +156,18 @@ class BookDetailPersistenceAdapter(
             .execute()
     }
 
+    override fun assignReturnedRental(bookDetailId: Long, memberId: Long, returnDate: LocalDate) {
+        queryFactory.update(bookDetail)
+            .set(bookDetail.rentalStatus, RentalStatus.RENTAL)
+            .set(bookDetail.memberEntity.id, memberId)
+            .set(bookDetail.returnDate, returnDate)
+            .where(
+                bookDetail.id.eq(bookDetailId),
+                bookDetail.rentalStatus.eq(RentalStatus.RETURN)
+            )
+            .execute()
+    }
+
     /*
     private helper method
      */

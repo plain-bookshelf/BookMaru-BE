@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.persistent.entity.QAffiliationEntity
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.book.persistent.entity.QBookEntity
-import plain.bookmaru.domain.inventory.model.BookDetail
 import plain.bookmaru.domain.inventory.persistent.entity.QBookAffiliationEntity
 import plain.bookmaru.domain.inventory.persistent.entity.QBookDetailEntity.bookDetailEntity
 import plain.bookmaru.domain.inventory.persistent.repository.BookDetailRepository
@@ -48,7 +47,7 @@ class BookRentalRecordPersistenceAdapter(
         bookRentalRecordRepository.save(rentalEntity)
     }
 
-    override suspend fun update(domain: BookDetail) = dbProtection.withTransaction {
+    override fun completeReturn(bookDetailId: Long) {
         val now = LocalDate.now()
         val currentDateTime = LocalDateTime.now()
 
@@ -57,30 +56,32 @@ class BookRentalRecordPersistenceAdapter(
             .join(bookRentalRecord.bookDetail, bookDetail).fetchJoin()
             .join(bookDetail.memberEntity, member).fetchJoin()
             .where(
-                bookRentalRecord.bookDetail.id.eq(domain.id),
+                bookRentalRecord.bookDetail.id.eq(bookDetailId),
                 bookRentalRecord.returnDate.isNull
             )
             .fetchOne() ?: throw NotFoundRentalRecordException("해당 책의 진행 중인 대여 기록을 찾지 못했습니다.")
 
         val detailEntity = recordEntity.bookDetail
         val memberEntity = detailEntity.memberEntity
-
         val expectedReturnDate = detailEntity.returnDate
 
         if (expectedReturnDate != null && now.isAfter(expectedReturnDate)) {
-            val overdueDays: Long = ChronoUnit.DAYS.between(expectedReturnDate, now)
+            val overdueDays = ChronoUnit.DAYS.between(expectedReturnDate, now)
 
             memberEntity?.let {
                 it.role = Authority.ROLE_OVERDUE
 
                 val existingOverdueTerm = it.overdueTerm
-
                 if (existingOverdueTerm != null && existingOverdueTerm.isAfter(currentDateTime)) {
                     it.overdueTerm = existingOverdueTerm.plusDays(overdueDays)
                 } else {
                     it.overdueTerm = currentDateTime.plusDays(overdueDays)
                 }
             }
+        }
+
+        memberEntity?.let {
+            it.rentalCount = (it.rentalCount - 1).coerceAtLeast(0)
         }
 
         recordEntity.returnDate = now
@@ -111,9 +112,7 @@ class BookRentalRecordPersistenceAdapter(
                 bookDetail.rentalStatus.eq(RentalStatus.RENTAL_REQUEST),
                 affiliation.id.eq(affiliationId)
             )
-            .orderBy(
-                book.id.desc()
-            )
+            .orderBy(book.id.desc())
             .fetch()
     }
 }

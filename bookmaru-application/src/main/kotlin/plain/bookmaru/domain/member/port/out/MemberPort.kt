@@ -4,6 +4,7 @@ import plain.bookmaru.domain.display.port.out.result.UserRankInfoResult
 import plain.bookmaru.domain.member.model.Member
 
 interface MemberPort {
+    suspend fun findById(memberId: Long) : Member?
     suspend fun findByUsername(username: String) : Member?
     suspend fun findByEmail(email: String) : Member?
     suspend fun findUserRanking(affiliationId: Long): List<UserRankInfoResult>
