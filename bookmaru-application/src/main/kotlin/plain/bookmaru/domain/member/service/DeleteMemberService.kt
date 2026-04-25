@@ -8,6 +8,7 @@ import plain.bookmaru.domain.display.service.cache.RankingPageCacheService
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.port.`in`.DeleteMemberUseCase
 import plain.bookmaru.domain.member.port.`in`.command.DeleteMemberCommand
+import plain.bookmaru.domain.member.port.out.MemberDevicePort
 import plain.bookmaru.domain.member.port.out.MemberPort
 import java.util.UUID
 
@@ -16,6 +17,7 @@ private val log = KotlinLogging.logger {}
 @Service
 class DeleteMemberService(
     private val memberPort: MemberPort,
+    private val memberDevicePort: MemberDevicePort,
     private val refreshTokenPort: RefreshTokenPort,
     private val rankingPageCacheService: RankingPageCacheService,
     private val blackListProfessor: BlackListProfessor
@@ -39,6 +41,7 @@ class DeleteMemberService(
         log.info { "$username 아이디를 사용하는 유저 정보를 삭제하는데 성공했습니다." }
 
         blackListProfessor.execute(accessToken)
+        memberDevicePort.deleteAllByMemberId(member.id!!)
         refreshTokenPort.deleteByUsername(username)
         rankingPageCacheService.upRanking(member.affiliationId!!)
         log.info { "$username 을 사용하는 refreshToken 정보를 지우는데 성공했습니다." }

@@ -68,7 +68,7 @@ class RentalService(
             }
 
             val rental = Rental(
-                memberId = member.id!!,
+                memberId = member.id,
                 bookDetailId = bookDetail.id!!,
                 bookRecord = BookRecord(
                     rentalDate = LocalDateTime.now()

@@ -7,9 +7,11 @@ import org.springframework.data.redis.core.index.Indexed
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.auth.vo.PlatformType
 
-@RedisHash
+@RedisHash("refresh_token")
 class RefreshTokenEntity(
     @Id
+    val sessionKey: String,
+    @Indexed
     val username: String,
     @Indexed
     val token: String,
@@ -17,7 +19,8 @@ class RefreshTokenEntity(
     @Indexed
     val platformType: PlatformType,
     val affiliationId: Long,
+    @Indexed
+    val deviceToken: String? = null,
     @TimeToLive
     val tokenExpire: Long
-) {
-}
+)

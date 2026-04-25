@@ -34,10 +34,10 @@ class FirebaseConfig {
         } catch (e: Exception) {
             log.error(e) { "FCM 앱이 초기화 중 에러가 발생했습니다." }
         }
+    }
 
-        @Bean
-        fun firebaseMessaging(): FirebaseMessaging {
-            return FirebaseMessaging.getInstance()
-        }
+    @Bean
+    fun firebaseMessaging(): FirebaseMessaging {
+        return FirebaseMessaging.getInstance()
     }
 }

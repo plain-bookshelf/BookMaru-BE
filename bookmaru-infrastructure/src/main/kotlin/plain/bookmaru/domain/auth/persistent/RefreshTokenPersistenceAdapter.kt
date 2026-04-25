@@ -1,7 +1,6 @@
 package plain.bookmaru.domain.auth.persistent
 
 import org.springframework.stereotype.Component
-import plain.bookmaru.domain.auth.model.JwtRefreshToken
 import plain.bookmaru.domain.auth.persistent.mapper.RefreshTokenMapper
 import plain.bookmaru.domain.auth.persistent.repository.RefreshTokenRepository
 import plain.bookmaru.domain.auth.port.out.RefreshTokenPort
@@ -17,13 +16,21 @@ class RefreshTokenPersistenceAdapter(
     override suspend fun findByTokenAndPlatformType(
         token: String,
         platformType: PlatformType
-    ) : JwtRefreshToken? = dbProtection.withReadOnly {
+    ) = dbProtection.withReadOnly {
         refreshTokenRepository.findByTokenAndPlatformType(token, platformType)?.let {
             refreshTokenMapper.toDomain(it)
         }
     }
 
     override suspend fun deleteByUsername(username: String) = dbProtection.withTransaction {
-        refreshTokenRepository.deleteByUsername(username)
+        val sessions = refreshTokenRepository.findAllByUsername(username)
+        if (sessions.isNotEmpty()) {
+            refreshTokenRepository.deleteAll(sessions)
+        }
     }
+
+    override suspend fun deleteCurrentSession(username: String, platformType: PlatformType, deviceToken: String?) =
+        dbProtection.withTransaction {
+            refreshTokenRepository.deleteById(RefreshTokenSessionKey.of(username, platformType, deviceToken))
+        }
 }

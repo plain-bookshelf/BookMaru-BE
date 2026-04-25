@@ -6,7 +6,7 @@ import plain.bookmaru.domain.member.persistent.entity.embedded.FavoriteGenreEmbe
 import plain.bookmaru.global.entity.BaseEntity
 
 @Entity
-class FavoriteGenre(
+class FavoriteGenreEntity(
     @EmbeddedId
     override val id: FavoriteGenreEmbeddedId
 ) : BaseEntity()
