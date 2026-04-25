@@ -29,10 +29,10 @@ class LoginMemberService(
 ) : LoginUseCase {
 
     override suspend fun execute(command: LoginMemberCommand): TokenResult {
-        log.info { "${command.accountInfo.username} ??濡쒓렇?몄쓣 ?쒕룄 ?덉뒿?덈떎." }
+        log.info { "${command.accountInfo.username} 유저 로그인 시도." }
 
         val member = memberPort.findByEmail(command.accountInfo.username)
-            ?: throw NotFoundMemberException("${command.accountInfo.username} ?대찓?쇱쓣 媛吏??좎?媛 ?놁뒿?덈떎.")
+            ?: throw NotFoundMemberException("${command.accountInfo.username} 유저 정보를 찾지 못 했습니다.")
 
         return validationAndResponse(command, member, command.platformType)
     }
@@ -43,22 +43,22 @@ class LoginMemberService(
         platformType: PlatformType
     ): TokenResult {
 
-        log.info { "${command.accountInfo.username} 瑜?李얜뒗???깃났?덉뒿?덈떎." }
+        log.info { "${command.accountInfo.username} 로그인을 할 수 있는 유저인지 검증 시작." }
 
         if (!securityPort.isPasswordMatch(command.accountInfo.password!!, member.accountInfo?.password
-                ?: throw NotFoundMemberException("$member ??鍮꾨?踰덊샇 ?뺣낫瑜?李얠? 紐삵뻽?듬땲??"))
+                ?: throw NotFoundMemberException("$member 유저 정보를 찾지 못 했습니다."))
         ) {
-            throw PasswordNotMatchException("${command.accountInfo.password} 鍮꾨?踰덊샇媛 ?쇱튂?섏? ?딆뒿?덈떎.")
+            throw PasswordNotMatchException("${command.accountInfo.password} 아이디나 비밀번호 정보가 일치하지 않습니다.")
         }
 
         affiliationPort.findById(member.affiliationId!!)
-            ?: throw NotFoundAffiliationException("?뚯냽 ?뺣낫瑜?李얠? 紐??덉뒿?덈떎.")
+            ?: throw NotFoundAffiliationException("소속 정보를 찾지 못 했습니다.")
 
         if (member.deleteStatus == true) {
-            throw NotFoundMemberException("?좎? ?뺣낫瑜?李얠? 紐??덉뒿?덈떎.")
+            throw NotFoundMemberException("유저 정보를 찾지 못 했습니다..")
         }
 
-        log.info { "濡쒓렇???깃났" }
+        log.info { "로그인 완료" }
 
         return jwtPort.responseToken(
             id = member.id!!,
