@@ -13,7 +13,7 @@ class NotificationMapper {
     fun toDomain(entity: NotificationEntity) : Notification {
         return Notification(
             id = entity.id,
-            memberId = entity.memberEntity.id,
+            memberId = entity.memberEntity.id!!,
             targetInfo = TargetInfo(
                 targetId = entity.targetId,
                 notificationType = entity.targetType,
@@ -40,5 +40,9 @@ class NotificationMapper {
         ).apply {
             this.isRead = domain.isRead
         }
+    }
+
+    fun toDomainList(entities: List<NotificationEntity>) : List<Notification> {
+        return entities.map { toDomain(it) }
     }
 }

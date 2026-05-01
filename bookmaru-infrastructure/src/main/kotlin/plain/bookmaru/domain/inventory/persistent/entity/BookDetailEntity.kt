@@ -29,7 +29,8 @@ import java.time.LocalDate
     name = "book_detail",
     indexes = [
         Index(name = "idx_book_detail_book_affiliation_id", columnList = "book_affiliation_id"),
-        Index(name = "idx_book_detail_member_id", columnList = "member_id")
+        Index(name = "idx_book_detail_member_id", columnList = "member_id"),
+        Index(name = "idx_book_detail_affiliation_status_return", columnList = "book_affiliation_id, rental_status, return_date")
     ],
     uniqueConstraints = [
         UniqueConstraint(

@@ -1,9 +1,9 @@
 package plain.bookmaru.global.security.jwt
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.exception.NotFoundAffiliationException
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
 import plain.bookmaru.domain.auth.persistent.RefreshTokenSessionKey
@@ -16,9 +16,10 @@ import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.auth.vo.JwtType
 import plain.bookmaru.domain.auth.vo.OAuthProvider
 import plain.bookmaru.domain.auth.vo.PlatformType
-import org.springframework.stereotype.Component
 import java.nio.charset.StandardCharsets
 import java.util.Date
+
+private val jwtLog = KotlinLogging.logger {}
 
 @Component
 class JwtPersistenceAdapter(
@@ -54,8 +55,7 @@ class JwtPersistenceAdapter(
         affiliationId: Long,
         oAuthProvider: OAuthProvider,
         deviceToken: String? = null
-    ): String = withContext(Dispatchers.IO) {
-
+    ): String {
         val token = generateToken(
             id,
             username,
@@ -92,7 +92,8 @@ class JwtPersistenceAdapter(
                 )
             )
         }
-        return@withContext token
+
+        return token
     }
 
     override suspend fun generateToken(
@@ -105,8 +106,7 @@ class JwtPersistenceAdapter(
         affiliationId: Long,
         oAuthProvider: OAuthProvider
     ): String {
-
-        log.info { "토큰 발급 시도" }
+        jwtLog.info { "JWT 토큰 발급을 시작합니다." }
 
         val now = System.currentTimeMillis()
         val key = Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray(StandardCharsets.UTF_8))
@@ -135,14 +135,21 @@ class JwtPersistenceAdapter(
         profileImage: String,
         deviceToken: String?
     ): TokenResult {
-
         val accessToken = generateAccessToken(id, username, authority, platformType, affiliationId, oAuthProvider)
-        log.info { "AccessToken 발급에 성공했습니다." }
-        val refreshToken = generateRefreshToken(id, username, authority, platformType, affiliationId, oAuthProvider, deviceToken)
-        log.info { "RefreshToken 발급에 성공했습니다." }
+        jwtLog.info { "액세스 토큰 발급을 완료했습니다." }
+        val refreshToken = generateRefreshToken(
+            id,
+            username,
+            authority,
+            platformType,
+            affiliationId,
+            oAuthProvider,
+            deviceToken
+        )
+        jwtLog.info { "리프레시 토큰 발급을 완료했습니다." }
 
         val affiliation = affiliationPort.findById(affiliationId)
-            ?: throw NotFoundAffiliationException("소속 정보를 찾지 못 했습니다.")
+            ?: throw NotFoundAffiliationException("소속 정보를 찾을 수 없습니다.")
 
         val now = System.currentTimeMillis()
 

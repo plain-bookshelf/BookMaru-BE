@@ -9,6 +9,7 @@ import plain.bookmaru.domain.inventory.exception.NotFoundBookDetailException
 import plain.bookmaru.domain.inventory.port.out.BookAffiliationPort
 import plain.bookmaru.domain.inventory.port.out.BookDetailPort
 import plain.bookmaru.domain.lending.model.Rental
+import plain.bookmaru.domain.lending.model.Reservation
 import plain.bookmaru.domain.lending.port.`in`.ReturnUseCase
 import plain.bookmaru.domain.lending.port.`in`.command.ReturnCommand
 import plain.bookmaru.domain.lending.port.out.BookRentalRecordPort
@@ -32,7 +33,7 @@ class ReturnService(
 ) : ReturnUseCase {
     override suspend fun execute(command: ReturnCommand) {
         concurrencyPort.executeWithRetry("return-service") {
-            log.info { "Starting return flow." }
+            log.info { "반납 처리를 시작합니다." }
 
             val bookDetail = bookDetailPort.findRentalBookByBookDetailId(command.bookDetailId)
                 ?: throw NotFoundBookDetailException("책 상세 정보를 찾을 수 없습니다.")
@@ -41,7 +42,7 @@ class ReturnService(
 
             transactionPort.withTransaction {
                 bookRentalRecordPort.completeReturn(command.bookDetailId)
-                log.info { "Completed return record and reset book detail." }
+                log.info { "반납 기록을 완료하고 책 상태를 초기화했습니다." }
 
                 if (reservation != null) {
                     assignReturnedBookToFirstReservation(command.bookDetailId, reservation)
@@ -50,7 +51,10 @@ class ReturnService(
         }
     }
 
-    private fun assignReturnedBookToFirstReservation(bookDetailId: Long, reservation: plain.bookmaru.domain.lending.model.Reservation) {
+    private fun assignReturnedBookToFirstReservation(
+        bookDetailId: Long,
+        reservation: Reservation
+    ) {
         val reservationMember = reservation.member
         val returnDate = calculateReturnDate(reservationMember.authority)
 
@@ -71,7 +75,9 @@ class ReturnService(
         bookDetailPort.assignReturnedRental(bookDetailId, reservationMember.id, returnDate)
         bookRentalRecordPort.save(autoRental)
 
-        log.info { "Assigned returned bookDetailId=$bookDetailId to memberId=${reservationMember.id}" }
+        log.info {
+            "반납된 책을 첫 예약자에게 자동 대여했습니다. bookDetailId=$bookDetailId, memberId=${reservationMember.id}"
+        }
     }
 
     private fun calculateReturnDate(authority: Authority): LocalDate {

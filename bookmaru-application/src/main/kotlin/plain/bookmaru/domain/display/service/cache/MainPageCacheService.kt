@@ -6,8 +6,8 @@ import plain.bookmaru.domain.auth.vo.PlatformType
 import plain.bookmaru.domain.book.port.out.BookGenrePort
 import plain.bookmaru.domain.display.port.out.MainPagePort
 import plain.bookmaru.domain.display.port.out.result.BookGenreResult
-import plain.bookmaru.domain.display.port.out.result.EventInfoResult
 import plain.bookmaru.domain.display.port.out.result.BookSortResult
+import plain.bookmaru.domain.display.port.out.result.EventInfoResult
 import plain.bookmaru.domain.event.port.out.EventPort
 import plain.bookmaru.domain.inventory.model.BookAffiliation
 import plain.bookmaru.domain.inventory.port.out.BookAffiliationPort
@@ -22,7 +22,7 @@ class MainPageCacheService(
     private val bookAffiliationPort: BookAffiliationPort
 ) {
     suspend fun upPopularBooks(platformType: PlatformType, affiliationId: Long) {
-        log.info { "백그라운드 PopularBook Cache 갱신 시작 (platformType=$platformType, affiliationId=$affiliationId)" }
+        log.info { "인기 도서 캐시 갱신을 시작합니다. platformType=$platformType, affiliationId=$affiliationId" }
 
         val sortedPopular = bookAffiliationPort.findPopularSort(affiliationId)
 
@@ -36,7 +36,7 @@ class MainPageCacheService(
     }
 
     suspend fun upRecentBooks(platformType: PlatformType, affiliationId: Long) {
-        log.info { "백그라운드 RecentBook Cache 갱신 시작 (platformType=$platformType, affiliationId=$affiliationId)" }
+        log.info { "최신 도서 캐시 갱신을 시작합니다. platformType=$platformType, affiliationId=$affiliationId" }
 
         val sortedRecent = bookAffiliationPort.findRecentSort(affiliationId)
 
@@ -50,7 +50,7 @@ class MainPageCacheService(
     }
 
     suspend fun upEvent(affiliationId: Long) {
-        log.info { "백그라운드 Event Cache 갱신 시작 (affiliationId=$affiliationId)" }
+        log.info { "이벤트 캐시 갱신을 시작합니다. affiliationId=$affiliationId" }
 
         val events = eventPort.findAll()
 
@@ -63,10 +63,6 @@ class MainPageCacheService(
 
         mainPagePort.saveEvents(eventInfos, affiliationId)
     }
-
-    /*
-    Result App
-     */
 
     private fun popularBookSortAppResult(content: List<BookAffiliation>): List<BookSortResult> {
         return content.map {
@@ -85,10 +81,6 @@ class MainPageCacheService(
             )
         }
     }
-
-    /*
-    Result Web
-     */
 
     private suspend fun bookSortWebResult(content: List<BookAffiliation>): List<BookSortResult> {
         if (content.isEmpty()) return emptyList()

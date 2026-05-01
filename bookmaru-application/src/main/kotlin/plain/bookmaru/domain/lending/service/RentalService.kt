@@ -18,6 +18,7 @@ import plain.bookmaru.domain.lending.port.`in`.command.LendingCommand
 import plain.bookmaru.domain.lending.port.out.BookRentalRecordPort
 import plain.bookmaru.domain.lending.port.out.BookReservationPort
 import plain.bookmaru.domain.lending.vo.BookRecord
+import plain.bookmaru.domain.manager.port.out.RentalRequestRealtimePort
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.port.out.MemberPort
 import java.time.LocalDate
@@ -33,7 +34,8 @@ class RentalService(
     private val memberPort: MemberPort,
     private val bookRentalRecordPort: BookRentalRecordPort,
     private val transactionPort: TransactionPort,
-    private val concurrencyPort: ConcurrencyPort
+    private val concurrencyPort: ConcurrencyPort,
+    private val rentalRequestRealtimePort: RentalRequestRealtimePort
 ) : RentalUseCase {
     override suspend fun execute(command: LendingCommand) {
         concurrencyPort.executeWithRetry("rental-service") {
@@ -61,7 +63,7 @@ class RentalService(
             val firstReservation = validateReservationPriority(bookAffiliationId, member.id!!)
 
             val bookDetail = bookDetailPort.findRentalBookDetailByBookAffiliationId(bookAffiliationId)
-            log.info { "Found available book detail for rental request." }
+            log.info { "대여 가능한 책 상세 정보를 찾았습니다." }
 
             if (bookDetail == null) {
                 throw NotExistBookDetailException("bookAffiliationId: $bookAffiliationId 에서 대여 가능한 책이 없습니다.")
@@ -90,16 +92,20 @@ class RentalService(
                 bookDetailPort.updateRental(rental, returnDate)
                 log.info { "책 대여자 정보와 책 상태 변경에 성공했습니다." }
                 memberPort.save(member)
-                log.info { "유저 대여한 책 권 수 증가 완료." }
+                log.info { "유저 대여 권 수 증가를 완료했습니다." }
                 bookRentalRecordPort.save(rental)
-                log.info { "대여 기록을 남기는데 성공했습니다." }
+                log.info { "대여 기록 저장에 성공했습니다." }
 
                 if (firstReservation != null) {
                     bookReservationPort.deleteReservation(member.id, bookAffiliationId)
                     bookAffiliationPort.decrementReservationCount(bookAffiliationId)
-                    log.info { "첫번쨰 예약자가 아닙니다." }
+                    log.info { "첫 번째 예약자의 예약을 소진했습니다." }
                 }
             }
+
+            val affiliationId = member.affiliationId ?: return@executeWithRetry
+            val updatedRequests = bookRentalRecordPort.findRentalRequestBookByAffiliationId(affiliationId).orEmpty()
+            rentalRequestRealtimePort.send(affiliationId, updatedRequests)
         }
     }
 
@@ -109,7 +115,7 @@ class RentalService(
 
         if (firstReservation.member.id != memberId) {
             throw NotFirstReservationException(
-                "bookAffiliationId: $bookAffiliationId 는 첫 번째 예약자만 대여 요청할 수 있습니다."
+                "bookAffiliationId: $bookAffiliationId 의 첫 번째 예약자만 대여 요청할 수 있습니다."
             )
         }
 

@@ -32,7 +32,9 @@ import java.time.LocalTime
     name = "member",
     indexes = [
         Index(name = "idx_member_username", columnList = "username"),
-        Index(name = "idx_member_email", columnList = "email")
+        Index(name = "idx_member_email", columnList = "email"),
+        Index(name = "idx_member_nickname", columnList = "nickname"),
+        Index(name = "idx_member_affiliation_delete_stats", columnList = "affiliation_id, delete_status, one_month_statistics")
     ]
 )
 class MemberEntity(
