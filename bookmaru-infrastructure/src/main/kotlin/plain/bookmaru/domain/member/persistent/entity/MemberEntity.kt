@@ -1,6 +1,5 @@
 package plain.bookmaru.domain.member.persistent.entity
 
-import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -12,12 +11,10 @@ import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
-import jakarta.persistence.OneToMany
 import jakarta.persistence.SequenceGenerator
 import jakarta.persistence.Table
 import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.auth.vo.Authority
-import plain.bookmaru.domain.notification.persistent.entity.NotificationEntity
 import plain.bookmaru.global.entity.BaseEntity
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -65,9 +62,6 @@ class MemberEntity(
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq_generator")
     @Column(nullable = false, unique = true)
     override val id: Long? = null
-
-    @OneToMany(mappedBy = "memberEntity", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    val notificationEntities: MutableList<NotificationEntity> = mutableListOf()
 
     @Column(nullable = true, length = 100)
     var profileImage: String? = null

@@ -110,7 +110,7 @@ class ReturnService(
         if (bookInfo == null) return null
 
         return Notification(
-            memberId = reservationMember.id!!,
+            memberId = reservationMember.id,
             targetInfo = TargetInfo(
                 targetId = bookDetailId,
                 targetType = TargetType.BOOK
