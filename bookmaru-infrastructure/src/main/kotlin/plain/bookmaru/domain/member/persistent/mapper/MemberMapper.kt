@@ -43,6 +43,10 @@ class MemberMapper{
         )
     }
 
+    fun toDomainList(entities: List<MemberEntity>) : List<Member> {
+        return entities.map { toDomain(it) }
+    }
+
     fun updateEntity(domain: Member, entity: MemberEntity, affiliationProxy: AffiliationEntity) {
         entity.affiliationEntity = affiliationProxy
         entity.username = domain.accountInfo?.username ?: entity.username

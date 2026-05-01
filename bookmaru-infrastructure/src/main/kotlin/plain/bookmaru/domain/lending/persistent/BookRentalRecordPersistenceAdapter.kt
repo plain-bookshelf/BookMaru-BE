@@ -16,6 +16,8 @@ import plain.bookmaru.domain.lending.persistent.entity.QBookRentalRecordEntity
 import plain.bookmaru.domain.lending.persistent.mapper.RentalMapper
 import plain.bookmaru.domain.lending.persistent.repository.BookRentalRecordRepository
 import plain.bookmaru.domain.lending.port.out.BookRentalRecordPort
+import plain.bookmaru.domain.lending.port.out.result.OverdueNotificationTarget
+import plain.bookmaru.domain.lending.port.out.result.RentalRequestApprovalInfo
 import plain.bookmaru.domain.lending.port.out.result.RentalRequestCheckResult
 import plain.bookmaru.domain.member.persistent.entity.QMemberEntity
 import plain.bookmaru.domain.member.persistent.repository.MemberRepository
@@ -96,6 +98,7 @@ class BookRentalRecordPersistenceAdapter(
             .select(
                 Projections.constructor(
                     RentalRequestCheckResult::class.java,
+                    bookDetail.id,
                     member.id,
                     member.nickname,
                     book.title,
@@ -113,6 +116,60 @@ class BookRentalRecordPersistenceAdapter(
                 affiliation.id.eq(affiliationId)
             )
             .orderBy(book.id.desc())
+            .fetch()
+    }
+
+    override suspend fun findRentalRequestApprovalInfo(
+        bookDetailId: Long,
+        affiliationId: Long
+    ): RentalRequestApprovalInfo? = dbProtection.withReadOnly {
+        return@withReadOnly queryFactory
+            .select(
+                Projections.constructor(
+                    RentalRequestApprovalInfo::class.java,
+                    member.id,
+                    bookDetail.id,
+                    bookAffiliation.id,
+                    book.title,
+                    bookDetail.returnDate
+                )
+            )
+            .from(bookRentalRecord)
+            .innerJoin(bookRentalRecord.bookDetail, bookDetail)
+            .innerJoin(bookDetail.bookAffiliationEntity, bookAffiliation)
+            .innerJoin(bookAffiliation.bookEntity, book)
+            .innerJoin(bookAffiliation.affiliationEntity, affiliation)
+            .innerJoin(bookRentalRecord.member, member)
+            .where(
+                bookDetail.id.eq(bookDetailId),
+                bookDetail.rentalStatus.eq(RentalStatus.RENTAL_REQUEST),
+                affiliation.id.eq(affiliationId)
+            )
+            .fetchOne()
+    }
+
+    override suspend fun findOverdueNotificationTargets(today: LocalDate): List<OverdueNotificationTarget> = dbProtection.withReadOnly {
+        return@withReadOnly queryFactory
+            .select(
+                Projections.constructor(
+                    OverdueNotificationTarget::class.java,
+                    member.id,
+                    bookDetail.id,
+                    bookAffiliation.id,
+                    book.title,
+                    bookDetail.returnDate
+                )
+            )
+            .from(bookDetail)
+            .innerJoin(bookDetail.memberEntity, member)
+            .innerJoin(bookDetail.bookAffiliationEntity, bookAffiliation)
+            .innerJoin(bookAffiliation.bookEntity, book)
+            .where(
+                bookDetail.rentalStatus.eq(RentalStatus.RENTAL),
+                bookDetail.returnDate.lt(today),
+                member.deleteStatus.eq(false)
+            )
+            .orderBy(bookDetail.returnDate.asc(), bookDetail.id.asc())
             .fetch()
     }
 }

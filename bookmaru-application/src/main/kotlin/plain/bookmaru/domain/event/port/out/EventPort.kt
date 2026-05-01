@@ -8,5 +8,5 @@ interface EventPort {
 
     suspend fun deleteById(eventId: Long)
 
-    suspend fun save(event: Event)
+    suspend fun save(event: Event): Event
 }

@@ -16,7 +16,7 @@ class NotificationMapper {
             memberId = entity.memberEntity.id!!,
             targetInfo = TargetInfo(
                 targetId = entity.targetId,
-                notificationType = entity.targetType,
+                targetType = entity.targetType,
             ),
             notificationInfo = NotificationInfo(
                 name = entity.name,
@@ -32,7 +32,7 @@ class NotificationMapper {
         return NotificationEntity(
             memberEntity = memberEntity,
             targetId = domain.targetInfo.targetId,
-            targetType = domain.targetInfo.notificationType,
+            targetType = domain.targetInfo.targetType,
             name = domain.notificationInfo.name,
             payload = domain.notificationInfo.payload,
             type = domain.notificationInfo.type,

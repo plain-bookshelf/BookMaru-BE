@@ -38,7 +38,7 @@ class RentalService(
     private val rentalRequestRealtimePort: RentalRequestRealtimePort
 ) : RentalUseCase {
     override suspend fun execute(command: LendingCommand) {
-        concurrencyPort.executeWithRetry("rental-service") {
+        val affiliationId = concurrencyPort.executeWithRetry("rental-service") {
             val bookAffiliationId = command.bookAffiliationId
             val username = command.username
 
@@ -49,25 +49,19 @@ class RentalService(
                 throw OverdueException("연체 상태에서는 대여할 수 없습니다.")
             }
 
-            val count = member.lendingBook.rentalCount
             val availableRentalCount = when (member.authority) {
                 Authority.ROLE_USER -> 3
                 Authority.ROLE_MANAGER -> 10
                 else -> 1000
             }
 
-            if (count >= availableRentalCount) {
+            if (member.lendingBook.rentalCount >= availableRentalCount) {
                 throw NoMoreRentalException("$username 사용자는 더 이상 대여할 수 없습니다.")
             }
 
             val firstReservation = validateReservationPriority(bookAffiliationId, member.id!!)
-
             val bookDetail = bookDetailPort.findRentalBookDetailByBookAffiliationId(bookAffiliationId)
-            log.info { "대여 가능한 책 상세 정보를 찾았습니다." }
-
-            if (bookDetail == null) {
-                throw NotExistBookDetailException("bookAffiliationId: $bookAffiliationId 에서 대여 가능한 책이 없습니다.")
-            }
+                ?: throw NotExistBookDetailException("bookAffiliationId: $bookAffiliationId 에서 대여 가능한 책이 없습니다.")
 
             val rental = Rental(
                 memberId = member.id,
@@ -90,22 +84,25 @@ class RentalService(
 
             transactionPort.withTransaction {
                 bookDetailPort.updateRental(rental, returnDate)
-                log.info { "책 대여자 정보와 책 상태 변경에 성공했습니다." }
                 memberPort.save(member)
-                log.info { "유저 대여 권 수 증가를 완료했습니다." }
                 bookRentalRecordPort.save(rental)
-                log.info { "대여 기록 저장에 성공했습니다." }
 
                 if (firstReservation != null) {
                     bookReservationPort.deleteReservation(member.id, bookAffiliationId)
                     bookAffiliationPort.decrementReservationCount(bookAffiliationId)
-                    log.info { "첫 번째 예약자의 예약을 소진했습니다." }
                 }
             }
 
-            val affiliationId = member.affiliationId ?: return@executeWithRetry
-            val updatedRequests = bookRentalRecordPort.findRentalRequestBookByAffiliationId(affiliationId).orEmpty()
-            rentalRequestRealtimePort.send(affiliationId, updatedRequests)
+            member.affiliationId
+        }
+
+        if (affiliationId != null) {
+            runCatching {
+                val updatedRequests = bookRentalRecordPort.findRentalRequestBookByAffiliationId(affiliationId).orEmpty()
+                rentalRequestRealtimePort.send(affiliationId, updatedRequests)
+            }.onFailure {
+                log.warn(it) { "관리자 대여 요청 SSE 전송에 실패했습니다. affiliationId=$affiliationId" }
+            }
         }
     }
 
