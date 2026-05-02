@@ -26,6 +26,7 @@ import plain.bookmaru.global.entity.BaseEntity
     indexes = [
         Index(name = "idx_book_affiliation_book_id", columnList = "book_id"),
         Index(name = "idx_book_affiliation_affiliation_id", columnList = "affiliation_id"),
+        Index(name = "idx_book_affiliation_affiliation_book", columnList = "affiliation_id, book_id"),
         Index(name = "idx_book_affiliation_similarity", columnList = "similarity_token")
     ]
 )

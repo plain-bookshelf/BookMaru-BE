@@ -4,8 +4,10 @@ import plain.bookmaru.domain.lending.model.Reservation
 
 interface BookReservationPort {
     suspend fun waiting(bookAffiliationId: Long): Int
-    suspend fun findFirstReservationByAffiliationId(affiliationId: Long): Reservation?
+    suspend fun findFirstReservationByBookAffiliationId(bookAffiliationId: Long): Reservation?
+    fun findFirstReservationByBookAffiliationIdForUpdate(bookAffiliationId: Long): Reservation?
+    suspend fun findReservation(bookAffiliationId: Long, memberId: Long): Reservation?
 
     fun save(reservation: Reservation)
-    fun deleteReservation(memberId: Long, affiliationId: Long)
+    fun deleteReservation(memberId: Long, bookAffiliationId: Long)
 }

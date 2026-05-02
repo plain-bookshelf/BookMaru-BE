@@ -51,15 +51,17 @@ class EventPersistenceAdapter(
         eventRepository.deleteById(eventId)
     }
 
-    override suspend fun save(event: Event): Unit = dbProtection.withTransaction {
+    override suspend fun save(event: Event): Event = dbProtection.withTransaction {
         val member = memberRepository.getReferenceById(event.memberId)
         val eventEntity = eventMapper.toEntity(event, member)
-        val event = eventEntity.first
+        val eventRoot = eventEntity.first
 
         val eventDetail = eventEntity.second
             ?: throw NotContainEventContentException()
 
-        eventRepository.save(event)
-        eventDetailRepository.save(eventDetail)
+        val savedEvent = eventRepository.save(eventRoot)
+        val savedDetail = eventDetailRepository.save(eventDetail)
+
+        return@withTransaction eventMapper.toDomain(savedEvent, savedDetail)
     }
 }

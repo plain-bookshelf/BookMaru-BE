@@ -122,8 +122,20 @@ class Member(
         this.lendingBook = lendingBook.copy(rentalCount = this.lendingBook.rentalCount + 1)
     }
 
+    fun decrementRentalCount() {
+        this.lendingBook = lendingBook.copy(
+            rentalCount = (this.lendingBook.rentalCount - 1).coerceAtLeast(0)
+        )
+    }
+
     fun incrementReservationCount() {
         this.lendingBook = lendingBook.copy(reservationCount = this.lendingBook.reservationCount + 1)
+    }
+
+    fun decrementReservationCount() {
+        this.lendingBook = lendingBook.copy(
+            reservationCount = (this.lendingBook.reservationCount - 1).coerceAtLeast(0)
+        )
     }
 
     fun deleteStatus() {

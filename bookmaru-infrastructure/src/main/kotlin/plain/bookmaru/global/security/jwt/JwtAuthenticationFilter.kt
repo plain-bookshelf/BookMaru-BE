@@ -32,7 +32,7 @@ class JwtAuthenticationFilter(
 
                     if (isLogout != null && request.dispatcherType != DispatcherType.ASYNC) {
                         response.sendError(HttpStatus.SC_UNAUTHORIZED, "로그아웃 된 토큰입니다.")
-                        log.info { "로그아웃된 토큰: $token" }
+                        log.info { "로그아웃된 토큰 요청을 차단했습니다." }
                         return
                     }
 

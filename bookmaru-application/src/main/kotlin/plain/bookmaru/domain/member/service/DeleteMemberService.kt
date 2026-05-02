@@ -1,13 +1,16 @@
 package plain.bookmaru.domain.member.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.launch
 import plain.bookmaru.common.annotation.Service
 import plain.bookmaru.domain.auth.port.out.RefreshTokenPort
 import plain.bookmaru.domain.auth.service.BlackListProfessor
+import plain.bookmaru.domain.display.scope.CacheCoroutineScope
 import plain.bookmaru.domain.display.service.cache.RankingPageCacheService
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.port.`in`.DeleteMemberUseCase
 import plain.bookmaru.domain.member.port.`in`.command.DeleteMemberCommand
+import plain.bookmaru.domain.member.port.out.MemberDevicePort
 import plain.bookmaru.domain.member.port.out.MemberPort
 import java.util.UUID
 
@@ -16,8 +19,10 @@ private val log = KotlinLogging.logger {}
 @Service
 class DeleteMemberService(
     private val memberPort: MemberPort,
+    private val memberDevicePort: MemberDevicePort,
     private val refreshTokenPort: RefreshTokenPort,
     private val rankingPageCacheService: RankingPageCacheService,
+    private val cacheCoroutineScope: CacheCoroutineScope,
     private val blackListProfessor: BlackListProfessor
 ) : DeleteMemberUseCase {
 
@@ -26,22 +31,31 @@ class DeleteMemberService(
         val accessToken = resolveToken(command.accessToken)
 
         val member = memberPort.findByUsername(username)
-            ?: throw NotFoundMemberException("$username 아이디를 사용하는 유저 정보를 찾지 못 했습니다.")
+            ?: throw NotFoundMemberException("Member not found for username: $username")
 
         val uuid = UUID.randomUUID().toString()
         val suffix = uuid.take(8)
         member.deleteStatus()
-        member.modifyNickname("delete_user:" + member.profile.nickname + "UUID:" + suffix)
+        member.modifyNickname("delete_user:${member.profile.nickname}:$suffix")
         member.modifyEmail("deleted$suffix@bookmaru.invalid")
-        member.modifyUsername("delete_user:" + member.accountInfo?.username + "UUID:" + suffix)
+        member.modifyUsername("delete_user:${member.accountInfo?.username}:$suffix")
 
         memberPort.delete(member)
-        log.info { "$username 아이디를 사용하는 유저 정보를 삭제하는데 성공했습니다." }
+        log.info { "$username 회원 소프트 삭제를 완료했습니다." }
 
         blackListProfessor.execute(accessToken)
+        memberDevicePort.deleteAllByMemberId(member.id!!)
         refreshTokenPort.deleteByUsername(username)
-        rankingPageCacheService.upRanking(member.affiliationId!!)
-        log.info { "$username 을 사용하는 refreshToken 정보를 지우는데 성공했습니다." }
+
+        cacheCoroutineScope.launch {
+            runCatching {
+                rankingPageCacheService.upRanking(member.affiliationId!!)
+            }.onFailure {
+                log.warn(it) { "$username 회원 삭제 후 랭킹 캐시 갱신에 실패했습니다." }
+            }
+        }
+
+        log.info { "$username 회원의 세션 무효화를 완료했습니다." }
     }
 
     private fun resolveToken(token: String): String = token.substringAfter("Bearer ").trim()

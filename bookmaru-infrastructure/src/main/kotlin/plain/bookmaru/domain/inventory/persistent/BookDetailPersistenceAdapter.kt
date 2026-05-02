@@ -8,6 +8,7 @@ import plain.bookmaru.common.result.PageResult
 import plain.bookmaru.domain.affiliation.persistent.entity.QAffiliationEntity
 import plain.bookmaru.domain.book.persistent.entity.QBookEntity
 import plain.bookmaru.domain.inventory.model.BookDetail
+import plain.bookmaru.domain.inventory.port.out.result.BookNotificationInfo
 import plain.bookmaru.domain.inventory.persistent.entity.QBookAffiliationEntity
 import plain.bookmaru.domain.inventory.persistent.entity.QBookDetailEntity
 import plain.bookmaru.domain.inventory.persistent.mapper.BookDetailMapper
@@ -144,6 +145,22 @@ class BookDetailPersistenceAdapter(
             ?.let { bookDetailMapper.toDomain(it) }
     }
 
+    override suspend fun findBookNotificationInfoByBookDetailId(bookDetailId: Long): BookNotificationInfo? = dbProtection.withReadOnly {
+        return@withReadOnly queryFactory
+            .select(
+                com.querydsl.core.types.Projections.constructor(
+                    BookNotificationInfo::class.java,
+                    bookAffiliation.id,
+                    book.title
+                )
+            )
+            .from(bookDetail)
+            .innerJoin(bookDetail.bookAffiliationEntity, bookAffiliation)
+            .innerJoin(bookAffiliation.bookEntity, book)
+            .where(bookDetail.id.eq(bookDetailId))
+            .fetchOne()
+    }
+
     override fun updateRental(rental: Rental, returnDate: LocalDate) {
         queryFactory.update(bookDetail)
             .set(bookDetail.rentalStatus, RentalStatus.RENTAL_REQUEST)
@@ -151,6 +168,28 @@ class BookDetailPersistenceAdapter(
             .set(bookDetail.returnDate, returnDate)
             .where(
                 bookDetail.id.eq(rental.bookDetailId),
+                bookDetail.rentalStatus.eq(RentalStatus.RETURN)
+            )
+            .execute()
+    }
+
+    override fun approveRentalRequest(bookDetailId: Long): Long {
+        return queryFactory.update(bookDetail)
+            .set(bookDetail.rentalStatus, RentalStatus.RENTAL)
+            .where(
+                bookDetail.id.eq(bookDetailId),
+                bookDetail.rentalStatus.eq(RentalStatus.RENTAL_REQUEST)
+            )
+            .execute()
+    }
+
+    override fun assignReturnedRental(bookDetailId: Long, memberId: Long, returnDate: LocalDate) {
+        queryFactory.update(bookDetail)
+            .set(bookDetail.rentalStatus, RentalStatus.RENTAL)
+            .set(bookDetail.memberEntity.id, memberId)
+            .set(bookDetail.returnDate, returnDate)
+            .where(
+                bookDetail.id.eq(bookDetailId),
                 bookDetail.rentalStatus.eq(RentalStatus.RETURN)
             )
             .execute()

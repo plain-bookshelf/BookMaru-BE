@@ -1,6 +1,9 @@
 package plain.bookmaru.domain.display.persistent.scheduler
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
@@ -22,25 +25,25 @@ class RankingPageCacheScheduler(
     @EventListener(ApplicationReadyEvent::class)
     fun onApplicationReadyEvent() {
         cacheCoroutineScope.launch {
-            log.debug { "[Cache] 서버 기동 직후 캐시 적재 시도" }
+            log.debug { "[캐시] 랭킹 워밍업을 시작합니다." }
             try {
                 upRankingData()
-                log.info { "[Cache] 모든 캐시가 성공적으로 업데이트 완료." }
+                log.info { "[캐시] 랭킹 워밍업을 완료했습니다." }
             } catch (e: Exception) {
-                log.error(e) { "[Cache] 캐시 워밍업 중 오류가 발생." }
+                log.error(e) { "[캐시] 랭킹 워밍업에 실패했습니다." }
             }
         }
     }
 
     @Scheduled(cron = "0 0 0/1 * * *")
     suspend fun upRankingData() {
-        log.info { "[Cache] ranking 적재 시도" }
-        val affiliationList = affiliationPort.findAll()
+        log.info { "[캐시] 랭킹 캐시를 갱신합니다." }
+        val affiliationIds = affiliationPort.findAll().mapNotNull { it.id }
 
-        affiliationList
-            .mapNotNull { it.id }
-            .forEach {
-                rankingPageCacheService.upRanking(it)
-            }
+        coroutineScope {
+            affiliationIds.map { affiliationId ->
+                async { rankingPageCacheService.upRanking(affiliationId) }
+            }.awaitAll()
+        }
     }
 }

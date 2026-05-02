@@ -4,12 +4,15 @@ import plain.bookmaru.domain.display.port.out.result.UserRankInfoResult
 import plain.bookmaru.domain.member.model.Member
 
 interface MemberPort {
+    suspend fun findById(memberId: Long) : Member?
     suspend fun findByUsername(username: String) : Member?
     suspend fun findByEmail(email: String) : Member?
+    suspend fun findAllByAffiliationId(affiliationId: Long): List<Member>
     suspend fun findUserRanking(affiliationId: Long): List<UserRankInfoResult>
     suspend fun validateNickname(nickname: String): Boolean
 
     fun save(member: Member) : Member
+    fun applyOverduePenalty(memberId: Long, overdueDays: Long)
 
     suspend fun delete(member: Member)
 }

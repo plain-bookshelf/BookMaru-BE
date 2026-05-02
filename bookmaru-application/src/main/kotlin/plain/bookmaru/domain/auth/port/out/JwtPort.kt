@@ -26,7 +26,8 @@ interface JwtPort {
         authority: Authority,
         affiliationId: Long,
         oAuthProvider: OAuthProvider,
-        profileImage: String
+        profileImage: String,
+        deviceToken: String? = null
     ): TokenResult
 
 }

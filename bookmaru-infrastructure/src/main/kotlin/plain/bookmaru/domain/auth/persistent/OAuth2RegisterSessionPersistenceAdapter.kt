@@ -2,9 +2,6 @@ package plain.bookmaru.domain.auth.persistent
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.auth.port.`in`.command.CustomOAuth2Command
@@ -19,13 +16,12 @@ private const val OAUTH_TOKEN_KEY = "auth:oauth_token:"
 @Component
 class OAuth2RegisterSessionPersistenceAdapter(
     private val redisTemplate: StringRedisTemplate,
-    private val objectMapper: ObjectMapper,
-    @Qualifier("virtualDispatcher") private val virtualDispatcher: CoroutineDispatcher
+    private val objectMapper: ObjectMapper
 ) : OAuth2RegisterSessionPort {
     override suspend fun save(
         token: String,
         command: CustomOAuth2Command
-    ) = withContext(virtualDispatcher) {
+    ) {
         val jsonData = objectMapper.writeValueAsString(command)
 
         redisTemplate.opsForValue().set(
@@ -34,14 +30,14 @@ class OAuth2RegisterSessionPersistenceAdapter(
             Duration.between(Instant.now(), Instant.now().plusSeconds(60 * 30))
         )
 
-        log.info { "registerToken 정보 저장 완료" }
+        log.info { "OAuth2 회원가입 대기 세션을 저장했습니다." }
     }
 
-    override suspend fun getPendingUser(token: String): CustomOAuth2Command? = withContext(virtualDispatcher) {
-        val jsonData = redisTemplate.opsForValue().get(OAUTH_TOKEN_KEY + token) ?: return@withContext null
+    override suspend fun getPendingUser(token: String): CustomOAuth2Command? {
+        val jsonData = redisTemplate.opsForValue().get(OAUTH_TOKEN_KEY + token) ?: return null
         val codeData = objectMapper.readValue(jsonData, CustomOAuth2Command::class.java)
 
-        return@withContext CustomOAuth2Command(
+        return CustomOAuth2Command(
             oAuthInfo = codeData.oAuthInfo,
             email = codeData.email,
             nickname = codeData.nickname,
@@ -50,9 +46,11 @@ class OAuth2RegisterSessionPersistenceAdapter(
         )
     }
 
-    override suspend fun removePendingUser(token: String) = withContext(virtualDispatcher) {
+    override suspend fun removePendingUser(token: String) {
         val isDeleted = redisTemplate.delete(OAUTH_TOKEN_KEY + token)
 
-        if (!isDeleted) log.warn { "$token 값을 지우지 못 했습니다." }
+        if (!isDeleted) {
+            log.warn { "삭제할 OAuth2 회원가입 대기 세션이 없습니다." }
+        }
     }
 }

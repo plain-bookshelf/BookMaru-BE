@@ -22,13 +22,12 @@ class ConcurrencyManager : ConcurrencyPort {
         while (attempt < maxRetries) {
             try {
                 return block()
-
             } catch (e: ConcurrencyFailureException) {
                 attempt++
-                log.debug { "$operationName $attempt:$maxRetries 시도 중" }
+                log.debug { "$operationName 작업을 재시도합니다. ($attempt/$maxRetries)" }
                 if (attempt >= maxRetries) {
-                    log.error(e) { "[$operationName] 최대 재시도 횟수 초과로 최종 실패했습니다." }
-                    throw IllegalStateException("현재 사용자가 많아 처리가 지연되고 있습니다. 잠시 후 다시 시도해주세요.")
+                    log.error(e) { "$operationName 작업의 재시도 횟수를 초과했습니다." }
+                    throw IllegalStateException("현재 요청이 많습니다. 잠시 후 다시 시도해주세요.")
                 }
                 delay(baseDelay * attempt)
             }
@@ -48,19 +47,18 @@ class ConcurrencyManager : ConcurrencyPort {
         while (attempt < maxRetries) {
             try {
                 return block()
-
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
 
                 if (!shouldRetry(e)) {
-                    log.warn(e) { "[$operationName] 재시도 대상이 아닌 네트워크 예외가 발생하여 즉시 실패 처리합니다. (사유: ${e.javaClass.simpleName})" }
+                    log.warn(e) { "$operationName 작업은 재시도할 수 없는 오류여서 중단합니다. (${e.javaClass.simpleName})" }
                     throw e
                 }
 
                 attempt++
-                log.debug { "$operationName $attempt:$maxRetries 시도 중" }
+                log.debug { "네트워크 작업 $operationName 을 재시도합니다. ($attempt/$maxRetries)" }
                 if (attempt >= maxRetries) {
-                    log.error(e) { "[$operationName] 최대 재시도 횟수 초과로 최종 실패했습니다." }
+                    log.error(e) { "네트워크 작업 $operationName 의 재시도 횟수를 초과했습니다." }
                     throw e
                 }
                 delay(baseDelay * attempt)

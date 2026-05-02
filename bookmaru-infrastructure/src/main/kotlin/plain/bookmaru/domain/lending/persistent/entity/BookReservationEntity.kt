@@ -4,6 +4,7 @@ import jakarta.persistence.Column
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
+import jakarta.persistence.Index
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.MapsId
@@ -16,6 +17,10 @@ import plain.bookmaru.global.entity.BaseEntity
 @Entity
 @Table(
     name = "book_reservation",
+    indexes = [
+        Index(name = "idx_book_reservation_book_affiliation", columnList = "book_affiliation_id"),
+        Index(name = "idx_book_reservation_member", columnList = "member_id")
+    ],
     uniqueConstraints = [
         UniqueConstraint(
             name = "uk_book_affiliation_waiting_rank",

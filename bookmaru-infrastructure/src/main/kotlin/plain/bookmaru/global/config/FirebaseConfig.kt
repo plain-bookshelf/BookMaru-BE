@@ -29,15 +29,15 @@ class FirebaseConfig {
                     .build()
 
                 FirebaseApp.initializeApp(options)
-                log.info { "FCM 앱이 성공적으로 초기화 되었습니다." }
+                log.info { "Firebase 앱 초기화에 성공했습니다." }
             }
         } catch (e: Exception) {
-            log.error(e) { "FCM 앱이 초기화 중 에러가 발생했습니다." }
+            log.error(e) { "Firebase 앱 초기화에 실패했습니다." }
         }
+    }
 
-        @Bean
-        fun firebaseMessaging(): FirebaseMessaging {
-            return FirebaseMessaging.getInstance()
-        }
+    @Bean
+    fun firebaseMessaging(): FirebaseMessaging {
+        return FirebaseMessaging.getInstance()
     }
 }

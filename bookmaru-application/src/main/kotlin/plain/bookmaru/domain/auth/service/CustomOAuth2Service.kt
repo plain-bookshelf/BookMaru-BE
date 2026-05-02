@@ -34,7 +34,7 @@ class CustomOAuth2Service(
     private val transactionPort: TransactionPort
 ) : CustomOAuth2UseCase, SocialSignupUseCase {
 
-    override suspend fun execute(command: CustomOAuth2Command) : LoginResult {
+    override suspend fun execute(command: CustomOAuth2Command): LoginResult {
         val targetEmail = command.email
         var member = memberPort.findByEmail(targetEmail.email)
 
@@ -57,43 +57,39 @@ class CustomOAuth2Service(
                 profileImage = member.profile.profileImage.toString()
             )
 
-            log.info { "${member.accountInfo!!.username} 아이디로 로그인 완료" }
+            log.info { "OAuth 로그인 완료. provider=$provider" }
             return LoginResult.Success(tokens)
-        } else {
-            val registerToken = UUID.randomUUID().toString()
-            val pendingUser = CustomOAuth2Command(
-                platformType = command.platformType,
-                oAuthInfo = command.oAuthInfo,
-                email = targetEmail,
-                nickname = command.nickname,
-                profileImageUrl = command.profileImageUrl
-            )
-
-            oAuth2RegisterSessionPort.save(registerToken, pendingUser)
-            log.info { "$targetEmail 이메일을 사용하여 소셜 로그인 접근" }
-            return LoginResult.NeedMoreInfo(registerToken)
         }
+
+        val registerToken = UUID.randomUUID().toString()
+        val pendingUser = CustomOAuth2Command(
+            platformType = command.platformType,
+            oAuthInfo = command.oAuthInfo,
+            email = targetEmail,
+            nickname = command.nickname,
+            profileImageUrl = command.profileImageUrl
+        )
+
+        oAuth2RegisterSessionPort.save(registerToken, pendingUser)
+        log.info { "추가 회원가입 정보가 필요한 OAuth 로그인입니다. provider=$provider" }
+        return LoginResult.NeedMoreInfo(registerToken)
     }
 
-    override suspend fun execute(command: SocialSignupCommand) : TokenResult {
+    override suspend fun execute(command: SocialSignupCommand): TokenResult {
         val registerToken = command.registerToken
         val affiliationName = command.affiliationName
 
         val pendingUser = oAuth2RegisterSessionPort.getPendingUser(registerToken)
-            ?: throw AuthSessionExpiredException("$registerToken 인증 세션 정보를 찾지 못 했습니다.")
+            ?: throw AuthSessionExpiredException("인증 세션 정보를 찾지 못 했습니다.")
 
         val affiliation = affiliationPort.findByAffiliationName(affiliationName)
-            ?: throw NotFoundAffiliationException("$affiliationName 이름을 가진 소속 정보를 찾지 못 했습니다.")
+            ?: throw NotFoundAffiliationException("소속 정보를 찾지 못 했습니다.")
 
-        if (pendingUser.platformType != PlatformType.valueOf(command.platformType))
-            throw NotMatchPlatformInfoException("${command.platformType} 정보가 registerToken 내에 있는 platform 정보와 일치하지 않습니다.")
+        if (pendingUser.platformType != PlatformType.valueOf(command.platformType)) {
+            throw NotMatchPlatformInfoException("요청 플랫폼 정보가 인증 세션의 플랫폼 정보와 일치하지 않습니다.")
+        }
 
-        log.info { "provider : ${pendingUser.oAuthInfo.provider}" }
-        log.info { "providerId : ${pendingUser.oAuthInfo.providerId}" }
-        log.info { "email : ${pendingUser.email}" }
-        log.info { "nickname : ${pendingUser.nickname}" }
-        log.info { "profileImage Url : ${pendingUser.profileImageUrl}" }
-        log.info { "affiliation_name : ${affiliation.affiliationName}" }
+        log.info { "OAuth 회원가입을 시작합니다. provider=${pendingUser.oAuthInfo.provider}" }
 
         val newMember = Member.createOAuthMember(
             oAuthInfo = pendingUser.oAuthInfo,
@@ -104,7 +100,7 @@ class CustomOAuth2Service(
             lendingBook = LendingBook()
         )
 
-        log.info { "$registerToken 를 통해서 유저 생성에 성공했습니다." }
+        log.info { "OAuth 회원 생성을 완료했습니다." }
 
         val savedMember = memberPort.save(newMember)
 

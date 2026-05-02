@@ -1,9 +1,6 @@
 package plain.bookmaru.domain.verification.persistent
 
 import jakarta.mail.internet.MimeMessage
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Component
@@ -14,13 +11,11 @@ import plain.bookmaru.common.port.EmailSendPort
 @Component
 class SmtpMailPersistenceAdapter(
     private val javaMailSender: JavaMailSender,
-    private val templateEngine: SpringTemplateEngine,
-    @Qualifier("virtualDispatcher") private val virtualDispatcher: CoroutineDispatcher
+    private val templateEngine: SpringTemplateEngine
 ) : EmailSendPort {
 
-    override suspend fun send(email: String, code: String) = withContext(virtualDispatcher) {
-        val message : MimeMessage = javaMailSender.createMimeMessage()
-
+    override suspend fun send(email: String, code: String) {
+        val message: MimeMessage = javaMailSender.createMimeMessage()
         val helper = MimeMessageHelper(message, true, "UTF-8")
 
         val context = Context().apply {
@@ -31,7 +26,7 @@ class SmtpMailPersistenceAdapter(
         val htmlContent = templateEngine.process("EmailVerification", context)
 
         helper.setTo(email)
-        helper.setSubject("[책마루] 인증 번호 안내")
+        helper.setSubject("[BookMaru] Verification code")
         helper.setText(htmlContent, true)
 
         javaMailSender.send(message)

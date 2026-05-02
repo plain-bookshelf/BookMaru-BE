@@ -8,10 +8,11 @@ data class LoginMemberRequestDto(
     val username: String,
     val password: String
 ) {
-    fun toCommand(platformType: String): LoginMemberCommand {
+    fun toCommand(platformType: String, deviceToken: String?): LoginMemberCommand {
         return LoginMemberCommand(
             accountInfo = AccountInfo(username = username, password = password),
-            platformType = runCatching { PlatformType.valueOf(platformType) }.getOrDefault(PlatformType.WEB)
+            platformType = runCatching { PlatformType.valueOf(platformType) }.getOrDefault(PlatformType.WEB),
+            deviceToken = deviceToken?.takeIf { it.isNotBlank() }
         )
     }
 }

@@ -1,6 +1,7 @@
 package plain.bookmaru.domain.lending.port.out.result
 
 data class RentalRequestCheckResult(
+    val bookDetailId: Long,
     val memberId: Long,
     val nickName: String,
     val title: String,

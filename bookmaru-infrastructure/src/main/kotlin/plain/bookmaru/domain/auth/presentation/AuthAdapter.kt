@@ -36,26 +36,32 @@ class AuthAdapter(
     @LogExecution
     suspend fun login(
         @RequestBody request: LoginMemberRequestDto,
-        @RequestParam platformType: String
+        @RequestParam platformType: String,
+        @RequestHeader(name = "X-Device-Token", required = false) deviceToken: String?
     ): ResponseEntity<SuccessResponse> {
 
-        val command = request.toCommand(platformType)
+        val command = request.toCommand(platformType, deviceToken)
         val result = loginUseCase.execute(command)
 
-        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result,  CustomHttpStatus.OK, "로그인에 성공하였습니다.")
+        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, CustomHttpStatus.OK, "濡쒓렇?몄뿉 ?깃났?섏??듬땲??")
     }
 
     @PutMapping("/reissue")
     @LogExecution
     suspend fun reissue(
         @RequestHeader("X-Refresh-Token") token: String,
-        @RequestParam platformType: String
+        @RequestParam platformType: String,
+        @RequestHeader(name = "X-Device-Token", required = false) deviceToken: String?
     ): ResponseEntity<SuccessResponse> {
 
-        val command = ReissueCommand(token, PlatformType.valueOf(platformType))
+        val command = ReissueCommand(
+            refreshToken = token,
+            platformType = PlatformType.valueOf(platformType),
+            deviceToken = deviceToken?.takeIf { it.isNotBlank() }
+        )
         val result = reissueUseCase.execute(command)
 
-        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, CustomHttpStatus.OK, "토큰 재발급에 성공하엿습니다.")
+        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, CustomHttpStatus.OK, "?좏겙 ?щ컻湲됱뿉 ?깃났?섏뿿?듬땲??")
     }
 
     @PostMapping("/logout")
@@ -63,8 +69,15 @@ class AuthAdapter(
     suspend fun logout(
         @AuthenticationPrincipal user: CustomUserDetails,
         @RequestHeader("Authorization") token: String,
+        @RequestParam platformType: String,
+        @RequestHeader(name = "X-Device-Token", required = false) deviceToken: String?
     ): ResponseEntity<SuccessResponse> {
-        val command = LogoutCommand(token, user.username.toString())
+        val command = LogoutCommand(
+            accessToken = token,
+            username = user.username.toString(),
+            platformType = PlatformType.valueOf(platformType),
+            deviceToken = deviceToken?.takeIf { it.isNotBlank() }
+        )
 
         logoutUseCase.execute(command)
 

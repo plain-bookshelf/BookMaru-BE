@@ -50,6 +50,7 @@ dependencies {
     // test
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testRuntimeOnly("com.h2database:h2")
 }
 
 val generated = file("src/main/generated")

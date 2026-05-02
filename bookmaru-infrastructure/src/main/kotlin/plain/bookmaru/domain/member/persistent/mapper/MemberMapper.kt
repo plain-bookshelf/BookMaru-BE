@@ -34,12 +34,17 @@ class MemberMapper{
     fun toEntity(domain: Member, affiliationProxy: AffiliationEntity) : MemberEntity {
         return MemberEntity(
             affiliationEntity = affiliationProxy,
+            password = domain.accountInfo?.password,
             username = domain.accountInfo?.username ?: domain.email.email,
             nickname = domain.profile.nickname,
             email = domain.email.email,
             role = domain.authority,
             deleteStatus = domain.deleteStatus
         )
+    }
+
+    fun toDomainList(entities: List<MemberEntity>) : List<Member> {
+        return entities.map { toDomain(it) }
     }
 
     fun updateEntity(domain: Member, entity: MemberEntity, affiliationProxy: AffiliationEntity) {

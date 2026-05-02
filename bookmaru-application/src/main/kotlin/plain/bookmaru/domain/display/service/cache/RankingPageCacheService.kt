@@ -14,7 +14,7 @@ class RankingPageCacheService(
 ) {
 
     suspend fun upRanking(affiliationId: Long) {
-        log.info { "백그라운드 Ranking Cache 갱신 시작 (affiliationId=$affiliationId)" }
+        log.info { "랭킹 캐시 갱신을 시작합니다. affiliationId=$affiliationId" }
         val ranking = memberPort.findUserRanking(affiliationId)
 
         rankingPagePort.saveRanking(ranking, affiliationId)

@@ -2,6 +2,7 @@ package plain.bookmaru.global.security.jwt
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.UnsupportedJwtException
@@ -48,11 +49,10 @@ class JwtParser(
             getClaims(token)
             return true
         } catch (e: io.jsonwebtoken.security.SecurityException) {
-            throw UnsupportedJwtException("지원하지 않는 토큰 : $token - 사유: ${e.message}")
+            throw UnsupportedJwtException("지원하지 않는 토큰입니다.")
         } catch (e: MalformedJwtException) {
-            throw UnsupportedJwtException("지원하지 않는 토큰 : $token - 사유: ${e.message}")
+            throw UnsupportedJwtException("지원하지 않는 토큰입니다.")
         }
-        return false
     }
 
     fun getClaims(token: String): Claims {
@@ -63,8 +63,8 @@ class JwtParser(
                 .build()
                 .parseSignedClaims(token)
                 .payload
-        } catch (e: ExpiredJwtTokenException) {
-            throw ExpiredJwtTokenException("만료된 토큰 : $token")
+        } catch (e: ExpiredJwtException) {
+            throw ExpiredJwtTokenException("만료된 토큰입니다.")
         } catch (e: Exception) {
             log.error { "회원정보를 받아오는 과정에서 예상치 못한 문제가 발생했습니다. ${e.message}" }
             throw e
