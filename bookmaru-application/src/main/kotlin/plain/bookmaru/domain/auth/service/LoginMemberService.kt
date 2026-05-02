@@ -71,7 +71,7 @@ class LoginMemberService(
             profileImage = member.profile.profileImage.toString(),
             deviceToken = command.deviceToken
         ).also {
-            syncDeviceToken(member.id!!, platformType, command.deviceToken)
+            syncDeviceToken(member.id, platformType, command.deviceToken)
         }
     }
 

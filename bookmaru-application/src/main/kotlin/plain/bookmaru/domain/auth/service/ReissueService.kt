@@ -58,7 +58,7 @@ class ReissueService(
             profileImage = member.profile.profileImage.toString(),
             deviceToken = reissueCommand.deviceToken
         ).also {
-            syncDeviceToken(member.id!!, platformType, reissueCommand.deviceToken)
+            syncDeviceToken(member.id, platformType, reissueCommand.deviceToken)
         }
     }
 
