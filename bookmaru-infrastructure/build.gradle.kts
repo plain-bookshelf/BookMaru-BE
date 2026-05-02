@@ -1,6 +1,11 @@
 dependencies {
     implementation(project(":bookmaru-application"))
 
+    // aws
+    implementation(platform("software.amazon.awssdk:bom:2.42.41"))
+    implementation("software.amazon.awssdk:s3")
+    implementation("software.amazon.awssdk:url-connection-client")
+
     // persistence
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")

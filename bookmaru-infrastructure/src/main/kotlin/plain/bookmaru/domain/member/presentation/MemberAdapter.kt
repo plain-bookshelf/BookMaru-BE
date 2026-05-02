@@ -20,6 +20,7 @@ import plain.bookmaru.domain.auth.port.`in`.SocialSignupUseCase
 import plain.bookmaru.domain.auth.presentation.WebOrAppResponseUtil
 import plain.bookmaru.domain.member.port.`in`.AffiliationInfoChangeUseCase
 import plain.bookmaru.domain.member.port.`in`.ChangePasswordUseCase
+import plain.bookmaru.domain.member.port.`in`.CreateProfileImageUploadUrlUseCase
 import plain.bookmaru.domain.member.port.`in`.DeleteMemberUseCase
 import plain.bookmaru.domain.member.port.`in`.NicknameChangeUseCase
 import plain.bookmaru.domain.member.port.`in`.NicknameValidUseCase
@@ -35,6 +36,7 @@ import plain.bookmaru.domain.member.presentation.dto.request.SocialSignupRequest
 import plain.bookmaru.domain.member.presentation.dto.request.PasswordChangeRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.OftenReadBookTimeRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.ProfileImageChangeRequestDto
+import plain.bookmaru.domain.member.presentation.dto.request.ProfileImageUploadUrlRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SignupMemberRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SignupOfficialRequestDto
 
@@ -50,6 +52,7 @@ class MemberAdapter(
     private val affiliationInfoChangeUseCase: AffiliationInfoChangeUseCase,
     private val nicknameChangeUseCase: NicknameChangeUseCase,
     private val profileImageChangeUseCase: ProfileImageChangeUseCase,
+    private val createProfileImageUploadUrlUseCase: CreateProfileImageUploadUrlUseCase,
     private val nicknameValidUseCase: NicknameValidUseCase,
 
     private val webOrAppResponseUtil: WebOrAppResponseUtil
@@ -183,6 +186,19 @@ class MemberAdapter(
 
         return ResponseEntity.status(HttpStatus.OK)
             .body(SuccessResponse.success(CustomHttpStatus.OK, "프로필 정보를 수정하는데 성공하였습니다.", ""))
+    }
+
+    @PostMapping("/profile-image/url")
+    @LogExecution
+    suspend fun createProfileImageUploadUrl(
+        @AuthenticationPrincipal principal: UserDetails,
+        @RequestBody request: ProfileImageUploadUrlRequestDto
+    ): ResponseEntity<SuccessResponse> {
+        val command = request.toCommand(principal.username)
+        val result = createProfileImageUploadUrlUseCase.execute(command)
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(SuccessResponse.success(CustomHttpStatus.OK, "프로필 이미지 업로드 URL을 발급했습니다.", result))
     }
 
     @GetMapping("/valid-nickname")

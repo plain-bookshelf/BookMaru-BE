@@ -5,6 +5,15 @@ server:
 firebase:
   json-content: ${FIREBASE_JSON_CONTENT}
 
+cloud:
+  aws:
+    region: ${AWS_REGION}
+    s3:
+      profile-image:
+        bucket: ${AWS_S3_BUCKET}
+        public-base-url: ${IMAGE_PUBLIC_BASE_URL}
+        upload-url-ttl: ${PROFILE_IMAGE_UPLOAD_URL_TTL:10m}
+
 spring:
   main:
     allow-bean-definition-overriding: true
