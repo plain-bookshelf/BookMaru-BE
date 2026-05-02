@@ -54,6 +54,9 @@ class BookDetail(
     }
 
     fun returnBook(): BookDetail {
+        require(rentalStatus != RentalStatus.RETURN) {
+            "대여 중인 책만 반납할 수 있습니다."
+        }
         this.rentalStatus = RentalStatus.RETURN
         this.memberId = null
         this.returnDate = null
