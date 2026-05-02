@@ -7,11 +7,11 @@ firebase:
 
 cloud:
   aws:
-    region: ${AWS_REGION}
+    region: ${AWS_REGION:ap-northeast-2}
     s3:
       profile-image:
-        bucket: ${AWS_S3_BUCKET}
-        public-base-url: ${IMAGE_PUBLIC_BASE_URL}
+        bucket: ${AWS_S3_BUCKET:bookmaru-profile-images}
+        public-base-url: ${IMAGE_PUBLIC_BASE_URL:https://bookmaru-profile-images.s3.ap-northeast-2.amazonaws.com}
         upload-url-ttl: ${PROFILE_IMAGE_UPLOAD_URL_TTL:10m}
 
 spring:

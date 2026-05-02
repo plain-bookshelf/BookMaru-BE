@@ -111,8 +111,6 @@ class SecurityConfig(
                      */
                     "/api/verification/officialCode/save"
                 ).hasRole("ADMIN")
-
-                it.anyRequest().permitAll()
             }
         return http.build()
     }

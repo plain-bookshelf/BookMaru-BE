@@ -14,8 +14,8 @@ interface MemberPort {
 
     fun save(member: Member) : Member
     fun applyOverduePenalty(memberId: Long, overdueDays: Long)
-    fun markOverdueMembers(memberIds: Collection<Long>): Long
-    fun releaseExpiredOverduePenalties(now: LocalDateTime, activeOverdueMemberIds: Collection<Long>): Long
+    suspend fun markOverdueMembers(memberIds: Collection<Long>): Long
+    suspend fun releaseExpiredOverduePenalties(now: LocalDateTime, activeOverdueMemberIds: Collection<Long>): Long
 
     suspend fun delete(member: Member)
 }

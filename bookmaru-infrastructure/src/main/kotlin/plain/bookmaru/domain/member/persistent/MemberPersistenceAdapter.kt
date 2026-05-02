@@ -32,7 +32,7 @@ class MemberPersistenceAdapter(
             ?.let(memberMapper::toDomain)
     }
 
-    override fun save(member: Member) : Member {
+    override fun save(member: Member): Member {
         val affiliationProxy = affiliationRepository.getReferenceById(member.affiliationId!!)
 
         if (member.id == null) {
@@ -64,10 +64,10 @@ class MemberPersistenceAdapter(
         }
     }
 
-    override fun markOverdueMembers(memberIds: Collection<Long>): Long {
-        if (memberIds.isEmpty()) return 0
+    override suspend fun markOverdueMembers(memberIds: Collection<Long>): Long = dbProtection.withTransaction {
+        if (memberIds.isEmpty()) return@withTransaction 0
 
-        return queryFactory
+        return@withTransaction queryFactory
             .update(member)
             .set(member.overdueStatus, true)
             .where(
@@ -77,10 +77,10 @@ class MemberPersistenceAdapter(
             .execute()
     }
 
-    override fun releaseExpiredOverduePenalties(
+    override suspend fun releaseExpiredOverduePenalties(
         now: LocalDateTime,
         activeOverdueMemberIds: Collection<Long>
-    ): Long {
+    ): Long = dbProtection.withTransaction {
         val conditions = mutableListOf(
             member.overdueStatus.eq(true),
             member.overdueTerm.isNotNull,
@@ -92,12 +92,13 @@ class MemberPersistenceAdapter(
             conditions += member.id.notIn(activeOverdueMemberIds)
         }
 
-        return queryFactory
+        return@withTransaction queryFactory
             .update(member)
             .set(member.overdueStatus, false)
             .set(member.overdueTerm, null as LocalDateTime?)
             .where(*conditions.toTypedArray())
             .execute()
+
     }
 
     override suspend fun findByEmail(email: String): Member? = dbProtection.withReadOnly {
