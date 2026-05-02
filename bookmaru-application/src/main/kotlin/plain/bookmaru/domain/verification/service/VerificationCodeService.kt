@@ -29,10 +29,9 @@ class VerificationCodeService(
             throw NotMatchVerificationCodeException("인증코드가 틀렸거나 다른 타입의 인증코드를 입력하였습니다.")
         }
 
+        emailVerifiedPort.save(EmailVerified.create(emailVerification.email))
         emailVerificationCodePort.delete(command.email)
 
         log.info { "이메일 인증을 완료했습니다." }
-
-        emailVerifiedPort.save(EmailVerified.create(emailVerification.email))
     }
 }

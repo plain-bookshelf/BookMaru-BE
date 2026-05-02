@@ -49,9 +49,9 @@ class JwtParser(
             getClaims(token)
             return true
         } catch (e: io.jsonwebtoken.security.SecurityException) {
-            throw UnsupportedJwtException("지원하지 않는 토큰입니다. 사유: ${e.message}")
+            throw UnsupportedJwtException("지원하지 않는 토큰입니다.")
         } catch (e: MalformedJwtException) {
-            throw UnsupportedJwtException("지원하지 않는 토큰입니다. 사유: ${e.message}")
+            throw UnsupportedJwtException("지원하지 않는 토큰입니다.")
         }
     }
 

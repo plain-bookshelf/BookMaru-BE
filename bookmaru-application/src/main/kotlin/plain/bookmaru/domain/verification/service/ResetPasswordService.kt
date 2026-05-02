@@ -30,10 +30,10 @@ class ResetPasswordService(
             throw NotMatchVerificationCodeException("비밀번호 재설정 인증 정보가 일치하지 않습니다.")
         }
 
-        findPasswordPort.delete(email)
         passwordUpdateProfessor.updatePassword(member, command.newPassword)
 
         memberDevicePort.deleteAllByMemberId(member.id!!)
         refreshTokenPort.deleteByUsername(email)
+        findPasswordPort.delete(email)
     }
 }
