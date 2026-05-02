@@ -2,6 +2,7 @@ package plain.bookmaru.domain.member.port.out
 
 import plain.bookmaru.domain.display.port.out.result.UserRankInfoResult
 import plain.bookmaru.domain.member.model.Member
+import java.time.LocalDateTime
 
 interface MemberPort {
     suspend fun findById(memberId: Long) : Member?
@@ -13,6 +14,8 @@ interface MemberPort {
 
     fun save(member: Member) : Member
     fun applyOverduePenalty(memberId: Long, overdueDays: Long)
+    fun markOverdueMembers(memberIds: Collection<Long>): Long
+    fun releaseExpiredOverduePenalties(now: LocalDateTime, activeOverdueMemberIds: Collection<Long>): Long
 
     suspend fun delete(member: Member)
 }

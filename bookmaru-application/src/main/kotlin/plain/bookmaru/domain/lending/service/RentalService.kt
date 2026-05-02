@@ -43,9 +43,9 @@ class RentalService(
             val username = command.username
 
             val member = memberPort.findByUsername(username)
-                ?: throw NotFoundMemberException("$username 사용자를 찾을 수 없습니다.")
+                ?: throw NotFoundMemberException("사용자를 찾을 수 없습니다.")
 
-            if (member.authority == Authority.ROLE_OVERDUE) {
+            if (member.overdueStatus) {
                 throw OverdueException("연체 상태에서는 대여할 수 없습니다.")
             }
 
@@ -56,12 +56,12 @@ class RentalService(
             }
 
             if (member.lendingBook.rentalCount >= availableRentalCount) {
-                throw NoMoreRentalException("$username 사용자는 더 이상 대여할 수 없습니다.")
+                throw NoMoreRentalException("더 이상 대여할 수 없습니다.")
             }
 
             val firstReservation = validateReservationPriority(bookAffiliationId, member.id!!)
             val bookDetail = bookDetailPort.findRentalBookDetailByBookAffiliationId(bookAffiliationId)
-                ?: throw NotExistBookDetailException("bookAffiliationId: $bookAffiliationId 에서 대여 가능한 책이 없습니다.")
+                ?: throw NotExistBookDetailException("대여 가능한 책이 없습니다.")
 
             val rental = Rental(
                 memberId = member.id,
@@ -111,9 +111,7 @@ class RentalService(
             ?: return null
 
         if (firstReservation.member.id != memberId) {
-            throw NotFirstReservationException(
-                "bookAffiliationId: $bookAffiliationId 의 첫 번째 예약자만 대여 요청할 수 있습니다."
-            )
+            throw NotFirstReservationException("첫 번째 예약자만 대여 요청할 수 있습니다.")
         }
 
         return firstReservation

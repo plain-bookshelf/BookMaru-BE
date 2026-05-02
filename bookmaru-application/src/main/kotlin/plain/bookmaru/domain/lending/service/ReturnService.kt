@@ -86,7 +86,7 @@ class ReturnService(
         val returnDate = calculateReturnDate(reservationMember.authority)
 
         reservationMember.decrementReservationCount()
-        reservationMember.incrementRentalCount()
+        reservationMember.decrementRentalCount()
 
         val autoRental = Rental(
             memberId = reservationMember.id!!,

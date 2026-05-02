@@ -4,7 +4,6 @@ import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.persistent.entity.QAffiliationEntity
-import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.book.persistent.entity.QBookEntity
 import plain.bookmaru.domain.inventory.persistent.entity.QBookAffiliationEntity
 import plain.bookmaru.domain.inventory.persistent.entity.QBookDetailEntity.bookDetailEntity
@@ -55,23 +54,23 @@ class BookRentalRecordPersistenceAdapter(
 
         val recordEntity = queryFactory
             .selectFrom(bookRentalRecord)
-            .join(bookRentalRecord.bookDetail, bookDetail).fetchJoin()
-            .join(bookDetail.memberEntity, member).fetchJoin()
+            .join(bookRentalRecord.bookDetailEntity, bookDetail).fetchJoin()
+            .join(bookRentalRecord.memberEntity, member).fetchJoin()
             .where(
-                bookRentalRecord.bookDetail.id.eq(bookDetailId),
+                bookRentalRecord.bookDetailEntity.id.eq(bookDetailId),
                 bookRentalRecord.returnDate.isNull
             )
             .fetchOne() ?: throw NotFoundRentalRecordException("해당 책의 진행 중인 대여 기록을 찾지 못했습니다.")
 
-        val detailEntity = recordEntity.bookDetail
-        val memberEntity = detailEntity.memberEntity
+        val detailEntity = recordEntity.bookDetailEntity
+        val memberEntity = recordEntity.memberEntity
         val expectedReturnDate = detailEntity.returnDate
 
         if (expectedReturnDate != null && now.isAfter(expectedReturnDate)) {
             val overdueDays = ChronoUnit.DAYS.between(expectedReturnDate, now)
 
-            memberEntity?.let {
-                it.role = Authority.ROLE_OVERDUE
+            memberEntity.let {
+                it.overdueStatus = true
 
                 val existingOverdueTerm = it.overdueTerm
                 if (existingOverdueTerm != null && existingOverdueTerm.isAfter(currentDateTime)) {
@@ -82,9 +81,7 @@ class BookRentalRecordPersistenceAdapter(
             }
         }
 
-        memberEntity?.let {
-            it.rentalCount = (it.rentalCount - 1).coerceAtLeast(0)
-        }
+        memberEntity.rentalCount = (memberEntity.rentalCount - 1).coerceAtLeast(0)
 
         recordEntity.returnDate = now
 
@@ -106,11 +103,11 @@ class BookRentalRecordPersistenceAdapter(
                 )
             )
             .from(bookRentalRecord)
-            .innerJoin(bookRentalRecord.bookDetail, bookDetail)
+            .innerJoin(bookRentalRecord.bookDetailEntity, bookDetail)
             .innerJoin(bookDetail.bookAffiliationEntity, bookAffiliation)
             .innerJoin(bookAffiliation.bookEntity, book)
             .innerJoin(bookAffiliation.affiliationEntity, affiliation)
-            .innerJoin(bookRentalRecord.member, member)
+            .innerJoin(bookRentalRecord.memberEntity, member)
             .where(
                 bookDetail.rentalStatus.eq(RentalStatus.RENTAL_REQUEST),
                 affiliation.id.eq(affiliationId)
@@ -135,11 +132,11 @@ class BookRentalRecordPersistenceAdapter(
                 )
             )
             .from(bookRentalRecord)
-            .innerJoin(bookRentalRecord.bookDetail, bookDetail)
+            .innerJoin(bookRentalRecord.bookDetailEntity, bookDetail)
             .innerJoin(bookDetail.bookAffiliationEntity, bookAffiliation)
             .innerJoin(bookAffiliation.bookEntity, book)
             .innerJoin(bookAffiliation.affiliationEntity, affiliation)
-            .innerJoin(bookRentalRecord.member, member)
+            .innerJoin(bookRentalRecord.memberEntity, member)
             .where(
                 bookDetail.id.eq(bookDetailId),
                 bookDetail.rentalStatus.eq(RentalStatus.RENTAL_REQUEST),
