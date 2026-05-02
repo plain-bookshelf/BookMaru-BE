@@ -82,8 +82,14 @@ class RentalService(
                 LocalDate.now().plusDays(14)
             }
 
+            val requestedBookDetail = bookDetail.requestRental(member.id, returnDate)
+
             transactionPort.withTransaction {
-                bookDetailPort.updateRental(rental, returnDate)
+                val updatedCount = bookDetailPort.updateRental(requestedBookDetail)
+                if (updatedCount == 0L) {
+                    throw NotExistBookDetailException("대여 가능한 책이 없습니다.")
+                }
+
                 memberPort.save(member)
                 bookRentalRecordPort.save(rental)
 

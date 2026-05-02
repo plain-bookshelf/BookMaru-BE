@@ -16,6 +16,7 @@ import plain.bookmaru.domain.display.port.`in`.ViewMainPagePopularBookUseCase
 import plain.bookmaru.domain.display.port.`in`.ViewMainPageRecentBookUseCase
 import plain.bookmaru.domain.display.port.`in`.command.ViewMainPageBookCommand
 import plain.bookmaru.domain.display.port.`in`.command.ViewMainPageEventCommand
+import plain.bookmaru.domain.display.presentation.dto.response.ViewMainPageAppBookResponseDto
 import plain.bookmaru.domain.display.presentation.dto.response.ViewMainPageWebBookResponseDto
 import plain.bookmaru.domain.display.vo.BookFindType
 import plain.bookmaru.global.security.userdetails.CustomUserDetails
@@ -67,7 +68,7 @@ class MainPageAdapter(
         val response = if (enumPlatformType == PlatformType.WEB) {
             ViewMainPageWebBookResponseDto.from(result)
         } else {
-            ViewMainPageWebBookResponseDto.from(result)
+            ViewMainPageAppBookResponseDto.from(result)
         }
 
         return ResponseEntity.status(HttpStatus.OK)

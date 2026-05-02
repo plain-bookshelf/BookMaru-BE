@@ -67,7 +67,6 @@ class SecurityConfig(
                      */
                     "/api/verification/email/send",
                     "/api/verification/email/verify",
-                    "/api/verification/find-id",
                     "/api/verification/find-password",
                     "/api/verification/password-reset",
 
