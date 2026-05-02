@@ -26,7 +26,7 @@ class LogoutService(
             runCatching {
                 memberDevicePort.deleteByMemberUsername(command.username, command.deviceToken)
             }.onFailure {
-                log.warn(it) { "logout ?곹깭?먯꽌 deviceToken ?쒓굅 以묒뿉 ?ㅻ쪟媛 諛쒖깮?덉뒿?덈떎. username=${command.username}" }
+                log.warn(it) { "logout 과정에서 deviceToken 제거 중 오류가 발생했습니다." }
             }
         }
     }

@@ -33,19 +33,19 @@ class ReissueService(
         val platformType = reissueCommand.platformType
 
         val authentication = refreshTokenPort.findByTokenAndPlatformType(refreshToken, platformType)
-            ?: throw NotFoundAuthenticationException("$refreshToken, $platformType 議댁옱?섏? ?딅뒗 ?좏겙 ?뺣낫?낅땲??")
+            ?: throw NotFoundAuthenticationException("존재하지 않는 토큰 정보입니다.")
 
         affiliationPort.findById(authentication.affiliationId)
-            ?: throw NotFoundAffiliationException("?뚯냽 ?뺣낫瑜?李얠? 紐??덉뒿?덈떎.")
+            ?: throw NotFoundAffiliationException("소속 정보를 찾을 수 없습니다.")
 
         val member = memberPort.findByUsername(authentication.username)
-            ?: throw NotFoundMemberException("${authentication.username} ?좎? ?뺣낫瑜?李얠? 紐??덉뒿?덈떎.")
+            ?: throw NotFoundMemberException("유저 정보를 찾을 수 없습니다.")
 
         if (member.deleteStatus == true) {
-            throw NotFoundMemberException("${authentication.username} ?좎? ?뺣낫瑜?李얠? 紐??덉뒿?덈떎.")
+            throw NotFoundMemberException("유저 정보를 찾을 수 없습니다.")
         }
 
-        log.info { "?좏겙 ?щ컻湲??꾨즺" }
+        log.info { "토큰 재발급을 완료했습니다." }
 
         return jwtPort.responseToken(
             id = member.id!!,
@@ -68,7 +68,7 @@ class ReissueService(
         runCatching {
             memberDevicePort.upsert(memberId, deviceToken, platformType)
         }.onFailure {
-            log.warn(it) { "reissue ?뺤퐫?먯꽌 deviceToken ?깃린 ?갹텧 以묒뿉 ?ㅻ쪟媛 諛쒖깮?덉뒿?덈떎. memberId=$memberId" }
+            log.warn(it) { "reissue 과정에서 deviceToken 등록 또는 갱신 중 오류가 발생했습니다. memberId=$memberId" }
         }
     }
 }

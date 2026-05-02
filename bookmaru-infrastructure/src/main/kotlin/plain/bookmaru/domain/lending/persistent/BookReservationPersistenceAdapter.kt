@@ -1,6 +1,7 @@
 package plain.bookmaru.domain.lending.persistent
 
 import com.querydsl.jpa.impl.JPAQueryFactory
+import jakarta.persistence.LockModeType
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.lending.model.Reservation
 import plain.bookmaru.domain.lending.persistent.entity.QBookReservationEntity
@@ -43,6 +44,19 @@ class BookReservationPersistenceAdapter(
         val member = memberMapper.toDomain(memberRepository.getReferenceById(reservationEntity.memberEntity.id!!))
 
         return@withReadOnly reservationEntity.let { reservationMapper.toDomain(it, member) }
+    }
+
+    override fun findFirstReservationByBookAffiliationIdForUpdate(bookAffiliationId: Long): Reservation? {
+        val reservationEntity = queryFactory
+            .selectFrom(bookReservation)
+            .where(bookReservation.id.bookAffiliationId.eq(bookAffiliationId))
+            .orderBy(bookReservation.waitingRank.asc())
+            .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+            .fetchFirst() ?: return null
+
+        val member = memberMapper.toDomain(memberRepository.getReferenceById(reservationEntity.memberEntity.id!!))
+
+        return reservationMapper.toDomain(reservationEntity, member)
     }
 
     override suspend fun findReservation(bookAffiliationId: Long, memberId: Long): Reservation? = dbProtection.withReadOnly {

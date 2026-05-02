@@ -29,10 +29,10 @@ class LoginMemberService(
 ) : LoginUseCase {
 
     override suspend fun execute(command: LoginMemberCommand): TokenResult {
-        log.info { "${command.accountInfo.username} 유저 로그인 시도." }
+        log.info { "유저 로그인 시도." }
 
         val member = memberPort.findByEmail(command.accountInfo.username)
-            ?: throw NotFoundMemberException("${command.accountInfo.username} 유저 정보를 찾지 못 했습니다.")
+            ?: throw NotFoundMemberException("유저 정보를 찾지 못 했습니다.")
 
         return validationAndResponse(command, member, command.platformType)
     }
@@ -42,23 +42,23 @@ class LoginMemberService(
         member: Member,
         platformType: PlatformType
     ): TokenResult {
+        log.info { "로그인을 할 수 있는 유저인지 검증을 시작합니다." }
 
-        log.info { "${command.accountInfo.username} 로그인을 할 수 있는 유저인지 검증 시작." }
+        val encodedPassword = member.accountInfo?.password
+            ?: throw NotFoundMemberException("유저 정보를 찾지 못 했습니다.")
 
-        if (!securityPort.isPasswordMatch(command.accountInfo.password!!, member.accountInfo?.password
-                ?: throw NotFoundMemberException("$member 유저 정보를 찾지 못 했습니다."))
-        ) {
-            throw PasswordNotMatchException("${command.accountInfo.password} 아이디나 비밀번호 정보가 일치하지 않습니다.")
+        if (!securityPort.isPasswordMatch(command.accountInfo.password!!, encodedPassword)) {
+            throw PasswordNotMatchException("아이디나 비밀번호 정보가 일치하지 않습니다.")
         }
 
         affiliationPort.findById(member.affiliationId!!)
-            ?: throw NotFoundAffiliationException("소속 정보를 찾지 못 했습니다.")
+            ?: throw NotFoundAffiliationException("소속 정보를 찾을 수 없습니다.")
 
         if (member.deleteStatus == true) {
-            throw NotFoundMemberException("유저 정보를 찾지 못 했습니다..")
+            throw NotFoundMemberException("유저 정보를 찾지 못 했습니다.")
         }
 
-        log.info { "로그인 완료" }
+        log.info { "로그인을 완료했습니다." }
 
         return jwtPort.responseToken(
             id = member.id!!,
@@ -81,7 +81,7 @@ class LoginMemberService(
         runCatching {
             memberDevicePort.upsert(memberId, deviceToken, platformType)
         }.onFailure {
-            log.warn(it) { "deviceToken ?깃린 ?갹텧 以묒뿉 ?ㅻ쪟媛 諛쒖깮?덉뒿?덈떎. memberId=$memberId" }
+            log.warn(it) { "deviceToken 등록 또는 갱신 중 오류가 발생했습니다. memberId=$memberId" }
         }
     }
 }

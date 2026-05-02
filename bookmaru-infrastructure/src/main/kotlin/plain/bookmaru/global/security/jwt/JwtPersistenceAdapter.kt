@@ -135,6 +135,9 @@ class JwtPersistenceAdapter(
         profileImage: String,
         deviceToken: String?
     ): TokenResult {
+        val affiliation = affiliationPort.findById(affiliationId)
+            ?: throw NotFoundAffiliationException("소속 정보를 찾을 수 없습니다.")
+
         val accessToken = generateAccessToken(id, username, authority, platformType, affiliationId, oAuthProvider)
         jwtLog.info { "액세스 토큰 발급을 완료했습니다." }
         val refreshToken = generateRefreshToken(
@@ -147,9 +150,6 @@ class JwtPersistenceAdapter(
             deviceToken
         )
         jwtLog.info { "리프레시 토큰 발급을 완료했습니다." }
-
-        val affiliation = affiliationPort.findById(affiliationId)
-            ?: throw NotFoundAffiliationException("소속 정보를 찾을 수 없습니다.")
 
         val now = System.currentTimeMillis()
 

@@ -46,16 +46,15 @@ class ReturnService(
 
             val bookDetail = bookDetailPort.findRentalBookByBookDetailId(command.bookDetailId)
                 ?: throw NotFoundBookDetailException("책 상세 정보를 찾을 수 없습니다.")
-
-            val reservation = bookReservationPort.findFirstReservationByBookAffiliationId(bookDetail.bookAffiliationId)
-            val bookInfo = reservation?.let {
-                bookDetailPort.findBookNotificationInfoByBookDetailId(command.bookDetailId)
-            }
+            val bookInfo = bookDetailPort.findBookNotificationInfoByBookDetailId(command.bookDetailId)
             var notification: Notification? = null
 
             transactionPort.withTransaction {
                 bookRentalRecordPort.completeReturn(command.bookDetailId)
                 log.info { "반납 기록을 완료하고 책 상태를 초기화했습니다." }
+
+                val reservation = bookReservationPort
+                    .findFirstReservationByBookAffiliationIdForUpdate(bookDetail.bookAffiliationId)
 
                 if (reservation != null) {
                     notification = assignReturnedBookToFirstReservation(
@@ -116,7 +115,7 @@ class ReturnService(
                 targetType = TargetType.BOOK
             ),
             notificationInfo = NotificationInfo(
-                name = "예약한 도서 대여가 완료되었습니다.",
+                name = "예약한 책의 대여가 완료되었습니다.",
                 payload = NotificationPayload.ReservationPayload(
                     bookId = bookInfo.bookAffiliationId,
                     title = bookInfo.title,

@@ -29,13 +29,13 @@ class SendVerificationCodeService(
 
         mailScope.launch {
             try {
-                log.info { "${emailVerification.email.email} 주소로 인증 메일 발송을 시작합니다." }
+                log.info { "인증 메일 발송을 시작합니다. codeType=${command.codeType}" }
                 concurrencyPort.executeNetworkWithRetry("send-verification-email") {
                     mailPort.send(email.email.toString(), emailVerification.codeData.code)
                 }
-                log.info { "${emailVerification.email.email} 주소로 인증 메일 발송 작업을 등록했습니다." }
+                log.info { "인증 메일 발송 작업을 등록했습니다. codeType=${command.codeType}" }
             } catch (e: Exception) {
-                log.error(e) { "${emailVerification.email.email} 주소로 인증 메일 발송에 실패했습니다." }
+                log.error(e) { "인증 메일 발송에 실패했습니다. codeType=${command.codeType}" }
             }
         }
     }

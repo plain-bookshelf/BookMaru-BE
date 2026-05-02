@@ -23,20 +23,20 @@ class FindPasswordService(
 ) : FindPasswordUseCase {
     override suspend fun execute(command: FindPasswordCommand): Boolean {
         val email = command.email
-        val verificationCode = command.verificationCode
 
         memberPort.findByEmail(email)
-            ?: throw NotFoundMemberException("$email 를 사용하는 유저 정보를 찾을 수 없습니다.")
+            ?: throw NotFoundMemberException("유저 정보를 찾을 수 없습니다.")
 
         val emailVerification = emailVerificationCodePort.load(email)
-            ?: throw NotFoundEmailException("$email 이메일 정보로 인증 코드가 전송되지 않았습니다.")
+            ?: throw NotFoundEmailException("인증 코드 전송 정보를 찾을 수 없습니다.")
 
-        log.info { "$verificationCode 비교 시작" }
-        log.info { "${emailVerification.codeData.codeType} 타입 확인" }
+        log.info { "비밀번호 찾기 인증 코드 검증을 시작합니다. codeType=${emailVerification.codeData.codeType}" }
 
-        if (emailVerification.codeData.code != verificationCode
-            || emailVerification.codeData.codeType != VerificationCodeType.FIND_PASSWORD)
-            throw NotMatchVerificationCodeException("$verificationCode 인증코드가 틀렸거나 다른 타입의 인증코드를 입력하였습니다.")
+        if (emailVerification.codeData.code != command.verificationCode ||
+            emailVerification.codeData.codeType != VerificationCodeType.FIND_PASSWORD
+        ) {
+            throw NotMatchVerificationCodeException("인증코드가 틀렸거나 다른 타입의 인증코드를 입력하였습니다.")
+        }
 
         emailVerificationCodePort.delete(email)
 
