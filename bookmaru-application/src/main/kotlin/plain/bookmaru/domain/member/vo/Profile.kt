@@ -9,5 +9,6 @@ data class Profile(
     val oneMonthStatistics: Int? = 0,
     val overdueTerm: LocalDateTime? = null,
     val oftenBookReadTime: LocalTime? = null,
-) {
-}
+    val overdueStatus: Boolean = false,
+    val deleteStatus: Boolean = false
+)

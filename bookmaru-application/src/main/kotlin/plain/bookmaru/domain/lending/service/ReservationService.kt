@@ -31,9 +31,9 @@ class ReservationService(
             val bookAffiliationId = command.bookAffiliationId
 
             val member = membersPort.findByUsername(username)
-                ?: throw NotFoundMemberException("$username 사용자를 찾을 수 없습니다.")
+                ?: throw NotFoundMemberException("사용자를 찾을 수 없습니다.")
 
-            if (member.authority == Authority.ROLE_OVERDUE) {
+            if (member.overdueStatus) {
                 throw OverdueException("연체 상태에서는 예약할 수 없습니다.")
             }
 
@@ -45,9 +45,7 @@ class ReservationService(
             }
 
             if (count >= availableReservationCount) {
-                throw NoMoreReservationException(
-                    "bookAffiliationId: $bookAffiliationId 에 대해 $username 사용자는 더 이상 예약할 수 없습니다."
-                )
+                throw NoMoreReservationException("더 이상 예약할 수 없습니다.")
             }
 
             val waitingRank = bookReservationPort.waiting(bookAffiliationId)
@@ -64,9 +62,9 @@ class ReservationService(
                 bookReservationPort.save(reservation)
                 log.info { "책 예약에 성공했습니다." }
                 membersPort.save(member)
-                log.info { "책 예약에 성공했습니다.." }
+                log.info { "회원 예약 카운트 증가에 성공했습니다." }
                 bookAffiliationPort.incrementReservationCount(bookAffiliationId)
-                log.info { "책 소속 예약자 카운트 증가를 성공했습니다." }
+                log.info { "책 소속 예약 카운트 증가에 성공했습니다." }
             }
         }
     }

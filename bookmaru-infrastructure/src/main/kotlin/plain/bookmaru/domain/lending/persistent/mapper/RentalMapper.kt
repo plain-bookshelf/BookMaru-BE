@@ -37,8 +37,8 @@ class RentalMapper {
             id = embeddedId,
             rentalDate = domain.bookRecord.rentalDate,
             returnDate = domain.bookRecord.returnDate,
-            member = memberProxy,
-            bookDetail = bookDetailProxy
+            memberEntity = memberProxy,
+            bookDetailEntity = bookDetailProxy
         ).apply {
             this.returnDate = domain.bookRecord.returnDate
         }

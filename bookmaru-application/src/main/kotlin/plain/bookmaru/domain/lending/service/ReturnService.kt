@@ -6,6 +6,7 @@ import plain.bookmaru.common.port.ConcurrencyPort
 import plain.bookmaru.common.port.TransactionPort
 import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.inventory.exception.NotFoundBookDetailException
+import plain.bookmaru.domain.inventory.model.BookDetail
 import plain.bookmaru.domain.inventory.port.out.BookAffiliationPort
 import plain.bookmaru.domain.inventory.port.out.BookDetailPort
 import plain.bookmaru.domain.inventory.port.out.result.BookNotificationInfo
@@ -51,6 +52,7 @@ class ReturnService(
 
             transactionPort.withTransaction {
                 bookRentalRecordPort.completeReturn(command.bookDetailId)
+                bookDetail.returnBook()
                 log.info { "반납 기록을 완료하고 책 상태를 초기화했습니다." }
 
                 val reservation = bookReservationPort
@@ -58,7 +60,7 @@ class ReturnService(
 
                 if (reservation != null) {
                     notification = assignReturnedBookToFirstReservation(
-                        bookDetailId = command.bookDetailId,
+                        bookDetail = bookDetail,
                         reservation = reservation,
                         bookInfo = bookInfo
                     )
@@ -78,7 +80,7 @@ class ReturnService(
     }
 
     private fun assignReturnedBookToFirstReservation(
-        bookDetailId: Long,
+        bookDetail: BookDetail,
         reservation: Reservation,
         bookInfo: BookNotificationInfo?
     ): Notification? {
@@ -88,9 +90,11 @@ class ReturnService(
         reservationMember.decrementReservationCount()
         reservationMember.incrementRentalCount()
 
+        val assignedBookDetail = bookDetail.assignReturnedRental(reservationMember.id!!, returnDate)
+
         val autoRental = Rental(
-            memberId = reservationMember.id!!,
-            bookDetailId = bookDetailId,
+            memberId = reservationMember.id,
+            bookDetailId = assignedBookDetail.id!!,
             bookRecord = BookRecord(
                 rentalDate = LocalDateTime.now()
             )
@@ -99,11 +103,14 @@ class ReturnService(
         bookReservationPort.deleteReservation(reservationMember.id, reservation.bookAffiliationId)
         bookAffiliationPort.decrementReservationCount(reservation.bookAffiliationId)
         memberPort.save(reservationMember)
-        bookDetailPort.assignReturnedRental(bookDetailId, reservationMember.id, returnDate)
+        val updatedCount = bookDetailPort.assignReturnedRental(assignedBookDetail)
+        if (updatedCount == 0L) {
+            throw NotFoundBookDetailException("자동 대여 가능한 책 상세 정보를 찾을 수 없습니다.")
+        }
         bookRentalRecordPort.save(autoRental)
 
         log.info {
-            "반납된 책을 첫 예약자에게 자동 대여했습니다. bookDetailId=$bookDetailId, memberId=${reservationMember.id}"
+            "반납된 책을 첫 예약자에게 자동 대여했습니다. bookDetailId=${assignedBookDetail.id}, memberId=${reservationMember.id}"
         }
 
         if (bookInfo == null) return null
@@ -111,7 +118,7 @@ class ReturnService(
         return Notification(
             memberId = reservationMember.id,
             targetInfo = TargetInfo(
-                targetId = bookDetailId,
+                targetId = assignedBookDetail.id,
                 targetType = TargetType.BOOK
             ),
             notificationInfo = NotificationInfo(

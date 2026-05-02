@@ -71,6 +71,9 @@ class MemberEntity(
 
     var overdueTerm: LocalDateTime? = null
 
+    @Column(name = "overdue_status", nullable = false)
+    var overdueStatus: Boolean = false
+
     var oftenBookReadTime: LocalTime? = null
 
     @Column(nullable = false)

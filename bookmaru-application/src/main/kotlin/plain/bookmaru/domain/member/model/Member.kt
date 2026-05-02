@@ -19,7 +19,6 @@ class Member(
     accountInfo: AccountInfo? = null,
     email: Email,
     lendingBook: LendingBook,
-    deleteStatus: Boolean = false,
     oAuthInfo: OAuthInfo? = null,
 ) {
     var accountInfo: AccountInfo? = accountInfo
@@ -37,11 +36,14 @@ class Member(
     var lendingBook: LendingBook = lendingBook
         private set
 
-    var deleteStatus: Boolean = deleteStatus
-        private set
-
     var email: Email = email
         private set
+
+    val overdueStatus: Boolean
+        get() = profile.overdueStatus
+
+    val deleteStatus: Boolean
+        get() = profile.deleteStatus
 
     fun linkOAuthAccount(provider: OAuthProvider, providerId: String) {
         this.oAuthInfo = OAuthInfo(provider, providerId)
@@ -139,6 +141,8 @@ class Member(
     }
 
     fun deleteStatus() {
-        this.deleteStatus = true
+        this.profile = profile.copy(
+            deleteStatus = true
+        )
     }
 }

@@ -15,7 +15,6 @@ import plain.bookmaru.domain.inventory.persistent.mapper.BookDetailMapper
 import plain.bookmaru.domain.inventory.persistent.repository.BookDetailRepository
 import plain.bookmaru.domain.inventory.port.out.BookDetailPort
 import plain.bookmaru.domain.inventory.vo.RentalStatus
-import plain.bookmaru.domain.lending.model.Rental
 import plain.bookmaru.domain.manager.port.out.result.RentalBookStatusCheckResult
 import plain.bookmaru.domain.member.persistent.entity.QMemberEntity
 import plain.bookmaru.global.config.DbProtection
@@ -46,6 +45,24 @@ class BookDetailPersistenceAdapter(
                 bookDetail.rentalStatus.eq(RentalStatus.RETURN)
             )
             .fetchFirst()
+
+        return@withReadOnly bookDetailEntity?.let { bookDetailMapper.toDomain(it) }
+    }
+
+    override suspend fun findRentalRequestBookDetailById(
+        bookDetailId: Long,
+        affiliationId: Long
+    ): BookDetail? = dbProtection.withReadOnly {
+        val bookDetailEntity = queryFactory
+            .selectFrom(bookDetail)
+            .innerJoin(bookDetail.bookAffiliationEntity, bookAffiliation)
+            .innerJoin(bookAffiliation.affiliationEntity, affiliation)
+            .where(
+                bookDetail.id.eq(bookDetailId),
+                affiliation.id.eq(affiliationId),
+                bookDetail.rentalStatus.eq(RentalStatus.RENTAL_REQUEST)
+            )
+            .fetchOne()
 
         return@withReadOnly bookDetailEntity?.let { bookDetailMapper.toDomain(it) }
     }
@@ -161,36 +178,46 @@ class BookDetailPersistenceAdapter(
             .fetchOne()
     }
 
-    override fun updateRental(rental: Rental, returnDate: LocalDate) {
-        queryFactory.update(bookDetail)
-            .set(bookDetail.rentalStatus, RentalStatus.RENTAL_REQUEST)
-            .set(bookDetail.memberEntity.id, rental.memberId)
-            .set(bookDetail.returnDate, returnDate)
+    override fun updateRental(bookDetail: BookDetail): Long {
+        val bookDetailId = requireNotNull(bookDetail.id) { "책 상세 식별자 정보가 없습니다." }
+        val memberId = requireNotNull(bookDetail.memberId) { "대여 요청 회원 정보가 없습니다." }
+        val returnDate = requireNotNull(bookDetail.returnDate) { "반납 예정일 정보가 없습니다." }
+
+        return queryFactory.update(this.bookDetail)
+            .set(this.bookDetail.rentalStatus, bookDetail.rentalStatus)
+            .set(this.bookDetail.memberEntity.id, memberId)
+            .set(this.bookDetail.returnDate, returnDate)
             .where(
-                bookDetail.id.eq(rental.bookDetailId),
-                bookDetail.rentalStatus.eq(RentalStatus.RETURN)
+                this.bookDetail.id.eq(bookDetailId),
+                this.bookDetail.rentalStatus.eq(RentalStatus.RETURN)
             )
             .execute()
     }
 
-    override fun approveRentalRequest(bookDetailId: Long): Long {
-        return queryFactory.update(bookDetail)
-            .set(bookDetail.rentalStatus, RentalStatus.RENTAL)
+    override fun approveRentalRequest(bookDetail: BookDetail): Long {
+        val bookDetailId = requireNotNull(bookDetail.id) { "책 상세 식별자 정보가 없습니다." }
+
+        return queryFactory.update(this.bookDetail)
+            .set(this.bookDetail.rentalStatus, bookDetail.rentalStatus)
             .where(
-                bookDetail.id.eq(bookDetailId),
-                bookDetail.rentalStatus.eq(RentalStatus.RENTAL_REQUEST)
+                this.bookDetail.id.eq(bookDetailId),
+                this.bookDetail.rentalStatus.eq(RentalStatus.RENTAL_REQUEST)
             )
             .execute()
     }
 
-    override fun assignReturnedRental(bookDetailId: Long, memberId: Long, returnDate: LocalDate) {
-        queryFactory.update(bookDetail)
-            .set(bookDetail.rentalStatus, RentalStatus.RENTAL)
-            .set(bookDetail.memberEntity.id, memberId)
-            .set(bookDetail.returnDate, returnDate)
+    override fun assignReturnedRental(bookDetail: BookDetail): Long {
+        val bookDetailId = requireNotNull(bookDetail.id) { "책 상세 식별자 정보가 없습니다." }
+        val memberId = requireNotNull(bookDetail.memberId) { "자동 대여 회원 정보가 없습니다." }
+        val returnDate = requireNotNull(bookDetail.returnDate) { "반납 예정일 정보가 없습니다." }
+
+        return queryFactory.update(this.bookDetail)
+            .set(this.bookDetail.rentalStatus, bookDetail.rentalStatus)
+            .set(this.bookDetail.memberEntity.id, memberId)
+            .set(this.bookDetail.returnDate, returnDate)
             .where(
-                bookDetail.id.eq(bookDetailId),
-                bookDetail.rentalStatus.eq(RentalStatus.RETURN)
+                this.bookDetail.id.eq(bookDetailId),
+                this.bookDetail.rentalStatus.eq(RentalStatus.RETURN)
             )
             .execute()
     }

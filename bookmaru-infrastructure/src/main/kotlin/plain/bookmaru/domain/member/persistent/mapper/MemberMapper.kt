@@ -22,12 +22,13 @@ class MemberMapper{
                 entity.profileImage,
                 entity.oneMonthStatistics,
                 entity.overdueTerm,
-                entity.oftenBookReadTime
+                entity.oftenBookReadTime,
+                entity.overdueStatus,
+                entity.deleteStatus
             ),
             authority = entity.role,
             email = Email(email = entity.email),
-            lendingBook = LendingBook(entity.rentalCount, entity.reservationCount),
-            deleteStatus = entity.deleteStatus
+            lendingBook = LendingBook(entity.rentalCount, entity.reservationCount)
         )
     }
 
@@ -39,7 +40,7 @@ class MemberMapper{
             nickname = domain.profile.nickname,
             email = domain.email.email,
             role = domain.authority,
-            deleteStatus = domain.deleteStatus
+            deleteStatus = domain.profile.deleteStatus
         )
     }
 
@@ -56,9 +57,10 @@ class MemberMapper{
         entity.profileImage = domain.profile.profileImage ?: entity.profileImage
         entity.oneMonthStatistics = domain.profile.oneMonthStatistics ?: entity.oneMonthStatistics
         entity.overdueTerm = domain.profile.overdueTerm
+        entity.overdueStatus = domain.profile.overdueStatus
         entity.oftenBookReadTime = domain.profile.oftenBookReadTime
         entity.rentalCount = domain.lendingBook.rentalCount
         entity.reservationCount = domain.lendingBook.reservationCount
-        entity.deleteStatus = domain.deleteStatus
+        entity.deleteStatus = domain.profile.deleteStatus
     }
 }

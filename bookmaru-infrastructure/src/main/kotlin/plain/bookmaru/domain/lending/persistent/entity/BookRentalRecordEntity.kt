@@ -34,10 +34,10 @@ class BookRentalRecordEntity(
     @MapsId("memberId")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    val member: MemberEntity,
+    val memberEntity: MemberEntity,
 
     @MapsId("bookDetailId")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_detail_id")
-    val bookDetail: BookDetailEntity
+    val bookDetailEntity: BookDetailEntity
 ) : BaseEntity()

@@ -5,7 +5,6 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.persistent.entity.QAffiliationEntity
 import plain.bookmaru.domain.affiliation.persistent.repository.AffiliationRepository
-import plain.bookmaru.domain.auth.vo.Authority
 import plain.bookmaru.domain.display.port.out.result.UserRankInfoResult
 import plain.bookmaru.domain.member.exception.AlreadyUsedNicknameException
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
@@ -33,7 +32,7 @@ class MemberPersistenceAdapter(
             ?.let(memberMapper::toDomain)
     }
 
-    override fun save(member: Member) : Member {
+    override fun save(member: Member): Member {
         val affiliationProxy = affiliationRepository.getReferenceById(member.affiliationId!!)
 
         if (member.id == null) {
@@ -56,13 +55,50 @@ class MemberPersistenceAdapter(
             .orElseThrow { throw NotFoundMemberException("존재하지 않는 사용자입니다.") }
         val currentDateTime = LocalDateTime.now()
 
-        memberEntity.role = Authority.ROLE_OVERDUE
+        memberEntity.overdueStatus = true
         val existingOverdueTerm = memberEntity.overdueTerm
         memberEntity.overdueTerm = if (existingOverdueTerm != null && existingOverdueTerm.isAfter(currentDateTime)) {
             existingOverdueTerm.plusDays(overdueDays)
         } else {
             currentDateTime.plusDays(overdueDays)
         }
+    }
+
+    override suspend fun markOverdueMembers(memberIds: Collection<Long>): Long = dbProtection.withTransaction {
+        if (memberIds.isEmpty()) return@withTransaction 0
+
+        return@withTransaction queryFactory
+            .update(member)
+            .set(member.overdueStatus, true)
+            .where(
+                member.id.`in`(memberIds),
+                member.deleteStatus.eq(false)
+            )
+            .execute()
+    }
+
+    override suspend fun releaseExpiredOverduePenalties(
+        now: LocalDateTime,
+        activeOverdueMemberIds: Collection<Long>
+    ): Long = dbProtection.withTransaction {
+        val conditions = mutableListOf(
+            member.overdueStatus.eq(true),
+            member.overdueTerm.isNotNull,
+            member.overdueTerm.loe(now),
+            member.deleteStatus.eq(false)
+        )
+
+        if (activeOverdueMemberIds.isNotEmpty()) {
+            conditions += member.id.notIn(activeOverdueMemberIds)
+        }
+
+        return@withTransaction queryFactory
+            .update(member)
+            .set(member.overdueStatus, false)
+            .set(member.overdueTerm, null as LocalDateTime?)
+            .where(*conditions.toTypedArray())
+            .execute()
+
     }
 
     override suspend fun findByEmail(email: String): Member? = dbProtection.withReadOnly {

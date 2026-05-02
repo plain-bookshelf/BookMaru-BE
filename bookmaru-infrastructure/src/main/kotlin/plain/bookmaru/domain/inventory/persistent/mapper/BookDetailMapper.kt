@@ -17,7 +17,10 @@ class BookDetailMapper {
             bookDetailDiscernment = BookDetailDiscernment(
                 registrationNumber = entity.registrationNumber,
                 callNumber = entity.callNumber,
-            )
+            ),
+            rentalStatus = entity.rentalStatus,
+            memberId = entity.memberEntity?.id,
+            returnDate = entity.returnDate
         )
     }
 
