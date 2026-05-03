@@ -173,7 +173,7 @@ class MemberAdapter(
             .body(SuccessResponse.success(CustomHttpStatus.OK, "유저 닉네임을 변경하는데 성공하였습니다.", ""))
     }
 
-    @PatchMapping("/profileImage-change")
+    @PatchMapping("/profile-image/change")
     @LogExecution
     suspend fun profileImageChange(
         @AuthenticationPrincipal principal: UserDetails,
