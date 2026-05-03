@@ -20,6 +20,6 @@ class FindPasswordPersistenceAdapter(
     override suspend fun load(email: String): String? = redisTemplate.opsForValue().get(email)
 
     override suspend fun delete(email: String) {
-        redisTemplate.delete(email)
+        redisTemplate.unlink(email)
     }
 }

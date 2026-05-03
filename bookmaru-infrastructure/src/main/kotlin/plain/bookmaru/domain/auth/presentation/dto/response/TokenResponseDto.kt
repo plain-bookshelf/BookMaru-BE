@@ -7,6 +7,7 @@ import plain.bookmaru.domain.auth.vo.PlatformType
 
 data class TokenResponseDto(
     val username: String,
+    val nickname: String,
     val accessToken: String,
     val authority: Authority,
     val platformType: PlatformType,
@@ -18,6 +19,7 @@ data class TokenResponseDto(
     companion object {
         fun toWebResponse(tokenResult: TokenResult) = TokenResponseDto(
             tokenResult.username,
+            tokenResult.nickname,
             tokenResult.accessToken,
             tokenResult.authority,
             tokenResult.platformType,
@@ -29,6 +31,7 @@ data class TokenResponseDto(
         fun toAppResponse(tokenResult: TokenResult) = TokenResponseDto(
             tokenResult.username,
             tokenResult.accessToken,
+            tokenResult.nickname,
             tokenResult.authority,
             tokenResult.platformType,
             tokenResult.affiliationName,

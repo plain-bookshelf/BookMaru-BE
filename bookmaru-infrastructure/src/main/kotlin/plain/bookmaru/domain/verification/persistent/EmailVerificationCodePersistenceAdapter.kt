@@ -33,6 +33,6 @@ class EmailVerificationCodePersistenceAdapter(
     }
 
     override suspend fun delete(email: String) {
-        redisTemplate.delete(email)
+        redisTemplate.unlink(email)
     }
 }

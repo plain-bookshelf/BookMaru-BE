@@ -97,7 +97,7 @@ class ViewMainPagePersistenceAdapter(
 
     private fun <T> deleteWhenEmpty(values: List<T>, key: String): Boolean {
         if (values.isEmpty()) {
-            cacheRedisTemplate.delete(key)
+            cacheRedisTemplate.unlink(key)
             return true
         }
         return false

@@ -27,7 +27,7 @@ class ViewRankingPagePersistenceAdapter(
     override suspend fun saveRanking(ranking: List<UserRankInfoResult>, affiliationId: Long) {
         val key = "$RANKING_KEY:affiliationId:$affiliationId"
         if (ranking.isEmpty()) {
-            cacheRedisTemplate.delete(key)
+            cacheRedisTemplate.unlink(key)
             return
         }
 
@@ -43,7 +43,7 @@ class ViewRankingPagePersistenceAdapter(
         return runCatching {
             ProtoBuf.decodeFromByteArray<RankingListWrapper>(byteArray).ranking
         }.getOrElse {
-            cacheRedisTemplate.delete(key)
+            cacheRedisTemplate.unlink(key)
             null
         }
     }

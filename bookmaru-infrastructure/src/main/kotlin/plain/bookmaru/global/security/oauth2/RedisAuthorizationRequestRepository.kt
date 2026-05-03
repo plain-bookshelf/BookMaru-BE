@@ -42,7 +42,7 @@ class RedisAuthorizationRequestRepository(
     ): OAuth2AuthorizationRequest? {
         val state = request.getParameter("state") ?: return null
         val authRequest = loadAuthorizationRequest(request)
-        redisTemplate.delete("oauth2_req:$state")
+        redisTemplate.unlink("oauth2_req:$state")
         return authRequest
     }
 

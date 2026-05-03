@@ -8,6 +8,7 @@ import plain.bookmaru.domain.auth.service.BlackListProfessor
 import plain.bookmaru.domain.display.scope.CacheCoroutineScope
 import plain.bookmaru.domain.display.service.cache.RankingPageCacheService
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
+import plain.bookmaru.domain.member.exception.RentalOrReservationBookExistException
 import plain.bookmaru.domain.member.port.`in`.DeleteMemberUseCase
 import plain.bookmaru.domain.member.port.`in`.command.DeleteMemberCommand
 import plain.bookmaru.domain.member.port.out.MemberDevicePort
@@ -31,7 +32,10 @@ class DeleteMemberService(
         val accessToken = resolveToken(command.accessToken)
 
         val member = memberPort.findByUsername(username)
-            ?: throw NotFoundMemberException("Member not found for username: $username")
+            ?: throw NotFoundMemberException("$username 아이디의 유저를 찾지 못 했습니다.")
+
+        if (member.lendingBook.rentalCount != 0 || member.lendingBook.reservationCount != 0)
+            throw RentalOrReservationBookExistException()
 
         val uuid = UUID.randomUUID().toString()
         val suffix = uuid.take(8)

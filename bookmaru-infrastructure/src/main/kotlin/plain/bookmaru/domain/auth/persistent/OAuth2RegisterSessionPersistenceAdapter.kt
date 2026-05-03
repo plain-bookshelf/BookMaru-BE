@@ -47,7 +47,7 @@ class OAuth2RegisterSessionPersistenceAdapter(
     }
 
     override suspend fun removePendingUser(token: String) {
-        val isDeleted = redisTemplate.delete(OAUTH_TOKEN_KEY + token)
+        val isDeleted = redisTemplate.unlink(OAUTH_TOKEN_KEY + token)
 
         if (!isDeleted) {
             log.warn { "삭제할 OAuth2 회원가입 대기 세션이 없습니다." }
