@@ -14,5 +14,6 @@ enum class LendingErrorCode(
     OVERDUE(CustomHttpStatus.BAD_REQUEST, "LENDING-004", "연체 상태입니다."),
     NOT_FOUND_RENTAL_RECORD(CustomHttpStatus.NOT_FOUND, "LENDING-005", "대여 기록을 찾을 수 없습니다."),
     NOT_FIRST_RESERVATION(CustomHttpStatus.CONFLICT, "LENDING-006", "첫 번째 예약자만 대여 요청이 가능합니다."),
-    NOT_FOUND_RESERVATION(CustomHttpStatus.NOT_FOUND, "LENDING-007", "예약 정보를 찾을 수 없습니다.")
+    NOT_FOUND_RESERVATION(CustomHttpStatus.NOT_FOUND, "LENDING-007", "예약 정보를 찾을 수 없습니다."),
+    CANNOT_RESERVE_AVAILABLE_BOOK(CustomHttpStatus.CONFLICT, "LENDING-008", "대여 가능한 책이 있어 예약할 수 없습니다.")
 }

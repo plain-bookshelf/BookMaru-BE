@@ -5,7 +5,9 @@ import plain.bookmaru.common.annotation.Service
 import plain.bookmaru.common.port.ConcurrencyPort
 import plain.bookmaru.common.port.TransactionPort
 import plain.bookmaru.domain.auth.vo.Authority
+import plain.bookmaru.domain.inventory.port.out.BookDetailPort
 import plain.bookmaru.domain.inventory.port.out.BookAffiliationPort
+import plain.bookmaru.domain.lending.exception.CannotReserveAvailableBookException
 import plain.bookmaru.domain.lending.exception.NoMoreReservationException
 import plain.bookmaru.domain.lending.exception.OverdueException
 import plain.bookmaru.domain.lending.model.Reservation
@@ -21,6 +23,7 @@ private val log = KotlinLogging.logger {}
 class ReservationService(
     private val membersPort: MemberPort,
     private val bookAffiliationPort: BookAffiliationPort,
+    private val bookDetailPort: BookDetailPort,
     private val bookReservationPort: BookReservationPort,
     private val concurrencyPort: ConcurrencyPort,
     private val transactionPort: TransactionPort
@@ -46,6 +49,11 @@ class ReservationService(
 
             if (count >= availableReservationCount) {
                 throw NoMoreReservationException("더 이상 예약할 수 없습니다.")
+            }
+
+            val availableBook = bookDetailPort.findRentalBookDetailByBookAffiliationId(bookAffiliationId)
+            if (availableBook != null) {
+                throw CannotReserveAvailableBookException("대여 가능한 책이 있어 예약할 수 없습니다.")
             }
 
             val waitingRank = bookReservationPort.waiting(bookAffiliationId)
