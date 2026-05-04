@@ -18,26 +18,26 @@ data class TokenResponseDto(
 ) {
     companion object {
         fun toWebResponse(tokenResult: TokenResult) = TokenResponseDto(
-            tokenResult.username,
-            tokenResult.nickname,
-            tokenResult.accessToken,
-            tokenResult.authority,
-            tokenResult.platformType,
-            tokenResult.affiliationName,
-            tokenResult.oAuthProvider,
-            tokenResult.profileImage
+            username = tokenResult.username,
+            nickname = tokenResult.nickname,
+            accessToken = tokenResult.accessToken,
+            authority = tokenResult.authority,
+            platformType = tokenResult.platformType,
+            affiliationName = tokenResult.affiliationName,
+            oAuthProvider = tokenResult.oAuthProvider,
+            profileImage = tokenResult.profileImage
         )
 
         fun toAppResponse(tokenResult: TokenResult) = TokenResponseDto(
-            tokenResult.username,
-            tokenResult.accessToken,
-            tokenResult.nickname,
-            tokenResult.authority,
-            tokenResult.platformType,
-            tokenResult.affiliationName,
-            tokenResult.oAuthProvider,
-            tokenResult.profileImage,
-            tokenResult.refreshToken
+            username = tokenResult.username,
+            nickname = tokenResult.nickname,
+            accessToken = tokenResult.accessToken,
+            authority = tokenResult.authority,
+            platformType = tokenResult.platformType,
+            affiliationName = tokenResult.affiliationName,
+            oAuthProvider = tokenResult.oAuthProvider,
+            profileImage = tokenResult.profileImage,
+            refreshToken = tokenResult.refreshToken
         )
     }
 }

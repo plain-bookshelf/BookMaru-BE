@@ -43,7 +43,7 @@ class AuthAdapter(
         val command = request.toCommand(platformType, deviceToken)
         val result = loginUseCase.execute(command)
 
-        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, CustomHttpStatus.OK, "濡쒓렇?몄뿉 ?깃났?섏??듬땲??")
+        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, CustomHttpStatus.OK, "로그인에 성공하였습니다.")
     }
 
     @PutMapping("/reissue")
