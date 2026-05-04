@@ -22,6 +22,7 @@ class BookCommentLikeAdapter(
     private val commentLikeUseCase: CommentLikeUseCase,
     private val commentUnLikeUseCase: CommentUnLikeUseCase
 ) {
+
     @PostMapping("/like")
     @LogExecution
     suspend fun commentLike(
