@@ -4,5 +4,6 @@ import plain.bookmaru.common.command.PageCommand
 
 data class ViewBookDetailPageCommentCommand(
     val pageCommand: PageCommand,
-    val bookAffiliationId: Long
+    val bookAffiliationId: Long,
+    val memberId: Long
 )

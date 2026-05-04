@@ -9,6 +9,7 @@ import plain.bookmaru.common.result.SliceResult
 import plain.bookmaru.domain.community.exception.NotFoundCommentException
 import plain.bookmaru.domain.community.model.Comment
 import plain.bookmaru.domain.community.persistent.entity.QBookCommentEntity
+import plain.bookmaru.domain.community.persistent.entity.QBookCommentLikeEntity
 import plain.bookmaru.domain.community.persistent.mapper.BookCommentMapper
 import plain.bookmaru.domain.community.persistent.repository.BookCommentRepository
 import plain.bookmaru.domain.community.port.out.CommentPort
@@ -28,9 +29,14 @@ class CommentPersistenceAdapter(
     private val dbProtection: DbProtection
 ) : CommentPort {
     private val comment = QBookCommentEntity.bookCommentEntity
+    private val commentLike = QBookCommentLikeEntity.bookCommentLikeEntity
     private val member = QMemberEntity.memberEntity
 
-    override suspend fun findByBookAffiliationId(bookAffiliationId: Long, pageCommend: PageCommand): SliceResult<CommentResult> = dbProtection.withReadOnly {
+    override suspend fun findByBookAffiliationId(
+        bookAffiliationId: Long,
+        memberId: Long,
+        pageCommend: PageCommand
+    ): SliceResult<CommentResult> = dbProtection.withReadOnly {
         val size = pageCommend.size
 
         val limit = size.toLong()
@@ -43,11 +49,16 @@ class CommentPersistenceAdapter(
                     comment.id,
                     member.nickname,
                     comment.comment,
-                    comment.likeCount
+                    comment.likeCount,
+                    commentLike.id.memberId.isNotNull
                 )
             )
             .from(comment)
             .leftJoin(comment.memberEntity, member)
+            .leftJoin(commentLike).on(
+                commentLike.id.bookCommentId.eq(comment.id),
+                commentLike.id.memberId.eq(memberId)
+            )
             .where(
                 comment.bookAffiliationEntity.id.eq(bookAffiliationId)
             )

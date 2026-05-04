@@ -61,7 +61,7 @@ class AuthAdapter(
         )
         val result = reissueUseCase.execute(command)
 
-        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, CustomHttpStatus.OK, "?좏겙 ?щ컻湲됱뿉 ?깃났?섏뿿?듬땲??")
+        return webOrAppResponseUtil.toWebOrAppTokenResponse(platformType, result, CustomHttpStatus.OK, "로그인에 성공하였습니다.")
     }
 
     @PostMapping("/logout")

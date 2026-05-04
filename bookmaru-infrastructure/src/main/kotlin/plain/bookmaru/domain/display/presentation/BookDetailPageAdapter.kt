@@ -47,6 +47,7 @@ class BookDetailPageAdapter(
     @LogExecution
     suspend fun commentPage(
         @PathVariable("bookAffiliationId") bookAffiliationId: Long,
+        @AuthenticationPrincipal principal: CustomUserDetails,
         @PageableDefault(size = 20) pageable: Pageable
     ) : ResponseEntity<SuccessResponse> {
         val command = ViewBookDetailPageCommentCommand(
@@ -54,7 +55,8 @@ class BookDetailPageAdapter(
                 size = pageable.pageSize,
                 page = pageable.pageNumber
             ),
-            bookAffiliationId = bookAffiliationId
+            bookAffiliationId = bookAffiliationId,
+            memberId = principal.id
         )
 
         val result = viewBookDetailPageCommentUseCase.execute(command)

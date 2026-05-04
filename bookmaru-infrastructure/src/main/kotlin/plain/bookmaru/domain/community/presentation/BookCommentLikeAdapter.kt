@@ -17,7 +17,7 @@ import plain.bookmaru.domain.community.port.`in`.command.CommentLikeCommand
 import plain.bookmaru.global.security.userdetails.CustomUserDetails
 
 @RestController
-@RequestMapping("/api/bookDetail/{commentId}")
+@RequestMapping("/api/comment/{commentId}")
 class BookCommentLikeAdapter(
     private val commentLikeUseCase: CommentLikeUseCase,
     private val commentUnLikeUseCase: CommentUnLikeUseCase

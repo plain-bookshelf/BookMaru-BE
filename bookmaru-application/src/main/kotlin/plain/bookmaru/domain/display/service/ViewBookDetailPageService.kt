@@ -41,7 +41,11 @@ class ViewBookDetailPageService(
     }
 
     override suspend fun execute(command: ViewBookDetailPageCommentCommand): SliceResult<CommentResult> {
-        val commentList = commentPort.findByBookAffiliationId(command.bookAffiliationId, command.pageCommand)
+        val commentList = commentPort.findByBookAffiliationId(
+            bookAffiliationId = command.bookAffiliationId,
+            memberId = command.memberId,
+            pageCommand = command.pageCommand
+        )
 
         return SliceResult(
             commentList.content,

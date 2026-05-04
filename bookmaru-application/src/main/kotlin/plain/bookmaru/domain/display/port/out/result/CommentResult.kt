@@ -5,5 +5,6 @@ data class CommentResult(
     val commentId: Long,
     val nickname: String,
     val comment: String,
-    val likeCount: Int
+    val likeCount: Int,
+    val isLiked: Boolean
 )
