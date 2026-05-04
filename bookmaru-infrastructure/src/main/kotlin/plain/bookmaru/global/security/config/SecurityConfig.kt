@@ -87,6 +87,8 @@ class SecurityConfig(
                      */
                     "/api/auth/login",
                     "/api/auth/reissue",
+                    "/oauth2/**",
+                    "/login/oauth2/**",
 
                     /*
                     error
@@ -110,6 +112,8 @@ class SecurityConfig(
                      */
                     "/api/verification/officialCode/save"
                 ).hasRole("ADMIN")
+
+                it.anyRequest().authenticated()
             }
         return http.build()
     }
