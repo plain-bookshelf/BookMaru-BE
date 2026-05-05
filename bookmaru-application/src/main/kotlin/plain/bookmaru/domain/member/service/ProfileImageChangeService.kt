@@ -55,10 +55,11 @@ class ProfileImageChangeService(
         val previousImageKey = member.profile.profileImage
 
         validateFileSize(command.fileSize)
-        val extension = resolveExtension(command.fileName, command.contentType)
+        val contentType = resolveContentType(command.fileName, command.contentType)
+        val extension = extensionFromContentType(contentType)
         val imageKey = "members/$memberId/profile/${UUID.randomUUID()}.$extension"
 
-        memberProfileImageStoragePort.upload(imageKey, command.content, command.contentType)
+        memberProfileImageStoragePort.upload(imageKey, command.content, contentType)
 
         member.modifyProfileImage(imageKey)
         transactionPort.withTransaction {
@@ -98,25 +99,22 @@ class ProfileImageChangeService(
         }
     }
 
-    private fun resolveExtension(fileName: String, contentType: String): String {
+    private fun resolveContentType(fileName: String, contentType: String): String {
+        val normalizedContentType = contentType.lowercase()
+        if (normalizedContentType in ALLOWED_CONTENT_TYPES) {
+            return normalizedContentType
+        }
+
         val extension = normalizeExtension(fileName.substringAfterLast('.', ""))
             .lowercase()
             .takeIf { it.isNotBlank() }
-            ?: extensionFromContentType(contentType)
+            ?: ""
 
         require(extension in ALLOWED_EXTENSIONS) {
             "Unsupported profile image extension."
         }
 
-        require(contentType in ALLOWED_CONTENT_TYPES) {
-            "Unsupported profile image content type."
-        }
-
-        require(extension == extensionFromContentType(contentType)) {
-            "Profile image extension does not match content type."
-        }
-
-        return extension
+        return contentTypeFromExtension(extension)
     }
 
     private fun extensionFromContentType(contentType: String): String {
@@ -124,6 +122,15 @@ class ProfileImageChangeService(
             "image/jpeg" -> "jpg"
             "image/png" -> "png"
             "image/webp" -> "webp"
+            else -> ""
+        }
+    }
+
+    private fun contentTypeFromExtension(extension: String): String {
+        return when (extension.lowercase()) {
+            "jpg", "jpeg" -> "image/jpeg"
+            "png" -> "image/png"
+            "webp" -> "image/webp"
             else -> ""
         }
     }
