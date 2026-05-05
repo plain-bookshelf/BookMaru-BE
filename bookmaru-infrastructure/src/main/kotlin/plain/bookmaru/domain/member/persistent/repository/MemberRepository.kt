@@ -7,5 +7,6 @@ interface MemberRepository : JpaRepository<MemberEntity, Long> {
     fun findByUsername(username: String): MemberEntity?
     fun findByEmail(email: String): MemberEntity?
     fun findAllByAffiliationEntityIdAndDeleteStatusFalse(affiliationId: Long): List<MemberEntity>
+    fun findByNickname(nickname: String): MemberEntity?
     override fun getReferenceById(id: Long): MemberEntity
 }

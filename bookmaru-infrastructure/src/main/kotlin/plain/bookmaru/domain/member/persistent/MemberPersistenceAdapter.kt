@@ -147,17 +147,9 @@ class MemberPersistenceAdapter(
         }
     }
 
-    override suspend fun validateNickname(nickname: String): Boolean = dbProtection.withReadOnly {
-        val memberEntity = queryFactory
-            .selectFrom(member)
-            .where(member.nickname.eq(nickname))
-
-        if (memberEntity != null) {
-            throw AlreadyUsedNicknameException("$nickname 닉네임은 이미 기존에 사용되던 닉네임입니다.")
-            return@withReadOnly false
-        }
-
-        return@withReadOnly true
+    override suspend fun validateNickname(nickname: String): Member? = dbProtection.withReadOnly {
+        return@withReadOnly memberRepository.findByNickname(nickname)
+            ?.let { memberMapper.toDomain(it) }
     }
 
     override suspend fun delete(member: Member): Unit = dbProtection.withTransaction {

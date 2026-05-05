@@ -10,7 +10,7 @@ interface MemberPort {
     suspend fun findByEmail(email: String) : Member?
     suspend fun findAllByAffiliationId(affiliationId: Long): List<Member>
     suspend fun findUserRanking(affiliationId: Long): List<UserRankInfoResult>
-    suspend fun validateNickname(nickname: String): Boolean
+    suspend fun validateNickname(nickname: String): Member?
 
     fun save(member: Member) : Member
     fun applyOverduePenalty(memberId: Long, overdueDays: Long)
