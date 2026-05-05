@@ -10,6 +10,7 @@ import plain.bookmaru.domain.verification.port.`in`.FindPasswordUseCase
 import plain.bookmaru.domain.verification.port.`in`.command.FindPasswordCommand
 import plain.bookmaru.domain.verification.port.out.EmailVerificationCodePort
 import plain.bookmaru.domain.verification.port.out.FindPasswordPort
+import plain.bookmaru.domain.verification.port.out.result.RegisterTokenResult
 import plain.bookmaru.domain.verification.vo.VerificationCodeType
 import java.util.UUID
 
@@ -21,7 +22,7 @@ class FindPasswordService(
     private val memberPort: MemberPort,
     private val findPasswordPort: FindPasswordPort
 ) : FindPasswordUseCase {
-    override suspend fun execute(command: FindPasswordCommand): Boolean {
+    override suspend fun execute(command: FindPasswordCommand): RegisterTokenResult {
         val email = command.email
 
         memberPort.findByEmail(email)
@@ -43,6 +44,6 @@ class FindPasswordService(
         val uuid = UUID.randomUUID().toString()
         findPasswordPort.save(uuid, email)
 
-        return true
+        return RegisterTokenResult(uuid)
     }
 }
