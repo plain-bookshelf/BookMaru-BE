@@ -81,6 +81,7 @@ class SecurityConfig(
                     "/api/member/signup-member",
                     "/api/member/signup-official",
                     "/api/member/signup-social",
+                    "/api/member/valid-nickname",
 
                     /*
                     auth
