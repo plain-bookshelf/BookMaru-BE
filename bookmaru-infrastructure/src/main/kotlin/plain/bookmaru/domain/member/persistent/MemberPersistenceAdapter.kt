@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.persistent.entity.QAffiliationEntity
 import plain.bookmaru.domain.affiliation.persistent.repository.AffiliationRepository
 import plain.bookmaru.domain.display.port.out.result.UserRankInfoResult
-import plain.bookmaru.domain.member.exception.AlreadyUsedNicknameException
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.persistent.entity.QMemberEntity
