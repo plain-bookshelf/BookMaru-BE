@@ -23,7 +23,10 @@ class BookLikePersistenceAdapter(
         bookAffiliationId: Long,
         memberId: Long
     ): BookLike? = dbProtection.withReadOnly {
-        val embeddedId = BookLikeEmbeddedId(bookAffiliationId, memberId)
+        val embeddedId = BookLikeEmbeddedId(
+            memberId = memberId,
+            bookAffiliationId = bookAffiliationId
+        )
         val bookLikeEntity = bookLikeRepository.findBookLikeEntityById(embeddedId)
 
         bookLikeEntity?.let { bookLikeMapper.toDomain(it) }

@@ -19,7 +19,10 @@ class CommentLikePersistenceAdapter(
         commentId: Long,
         memberId: Long
     ): CommentLike? = dbProtection.withReadOnly {
-        val embeddedId = BookCommentLikeEmbeddedId(commentId, memberId)
+        val embeddedId = BookCommentLikeEmbeddedId(
+            memberId = memberId,
+            bookCommentId = commentId
+        )
 
         val entity = bookCommentLikeRepository.findByIdOrNull(embeddedId)
 
