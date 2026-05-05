@@ -1,7 +1,8 @@
-package plain.bookmaru.global.sse
+package plain.bookmaru.domain.notification.persistent.sse
 
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter
+import plain.bookmaru.global.sse.BaseSseEmitterManager
 
 @Component
 class NotificationSseEmitterManager : BaseSseEmitterManager(

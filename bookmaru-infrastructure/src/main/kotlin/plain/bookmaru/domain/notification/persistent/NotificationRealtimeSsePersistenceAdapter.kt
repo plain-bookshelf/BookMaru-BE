@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component
 import plain.bookmaru.domain.notification.model.Notification
 import plain.bookmaru.domain.notification.port.out.NotificationRealtimePort
 import plain.bookmaru.domain.notification.presentation.dto.response.NotificationSseResponse
-import plain.bookmaru.global.sse.NotificationSseEmitterManager
+import plain.bookmaru.domain.notification.persistent.sse.NotificationSseEmitterManager
 
 @Component
 class NotificationRealtimeSsePersistenceAdapter(

@@ -1,4 +1,4 @@
-package plain.bookmaru.domain.notification.fcm
+package plain.bookmaru.domain.notification.persistent.fcm
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.firebase.messaging.FirebaseMessaging

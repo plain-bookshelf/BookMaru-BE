@@ -17,7 +17,7 @@ import plain.bookmaru.common.success.SuccessResponse
 import plain.bookmaru.domain.notification.port.out.NotificationPort
 import plain.bookmaru.domain.notification.presentation.dto.response.NotificationSnapshotResponse
 import plain.bookmaru.global.security.userdetails.CustomUserDetails
-import plain.bookmaru.global.sse.NotificationSseEmitterManager
+import plain.bookmaru.domain.notification.persistent.sse.NotificationSseEmitterManager
 
 @RestController
 @RequestMapping("/api/notification")
