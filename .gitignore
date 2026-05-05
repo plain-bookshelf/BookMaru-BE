@@ -41,6 +41,8 @@ out/
 
 deploy.env
 local.env
-bookmaru-infrastructure/src/main/resources/deploy.env
-bookmaru-infrastructure/src/main/resources/local.env
 bookmaru-firebase-adminsdk.json
+
+.codex-tmp/
+es_data/
+postgres_data/

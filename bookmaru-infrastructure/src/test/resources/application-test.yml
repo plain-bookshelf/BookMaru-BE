@@ -1,0 +1,53 @@
+firebase:
+  json-content: '{"type":"authorized_user","client_id":"test-client-id","client_secret":"test-client-secret","refresh_token":"test-refresh-token"}'
+
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:bookmaru;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+    username: sa
+    password:
+    hikari:
+      connection-init-sql: ""
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+
+  mail:
+    host: localhost
+    port: 2525
+    username: test
+    password: test
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: test-google-client
+            client-secret: test-google-secret
+          naver:
+            client-id: test-naver-client
+            client-secret: test-naver-secret
+            redirect-uri: http://localhost/login/oauth2/code/naver
+          kakao:
+            client-id: test-kakao-client
+            client-secret: test-kakao-secret
+            redirect-uri: http://localhost/login/oauth2/code/kakao
+
+jwt:
+  header: Authorization
+  prefix: Bearer
+  accessExp: 30m
+  refreshExp: 14d
+  secret: test-secret-key-for-context-loading-only-test-secret-key
