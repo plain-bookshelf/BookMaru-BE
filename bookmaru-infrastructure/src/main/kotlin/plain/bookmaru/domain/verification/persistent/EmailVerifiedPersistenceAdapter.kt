@@ -12,16 +12,25 @@ import java.time.Instant
 class EmailVerifiedPersistenceAdapter(
     private val redisTemplate: StringRedisTemplate
 ) : EmailVerifiedPort {
+
+    companion object {
+        private const val EMAIL_VERIFIED_PREFIX = "verification:verified:"
+    }
+
     override suspend fun save(emailVerified: EmailVerified) {
         redisTemplate.opsForValue().set(
-            emailVerified.email.email.toString(),
+            generateKey(emailVerified.email.email),
             "True",
             Duration.between(Instant.now(), emailVerified.expiredAt)
         )
     }
 
     override suspend fun load(email: String): EmailVerified? {
-        val value = redisTemplate.opsForValue().get(email) ?: return null
+        val value = redisTemplate.opsForValue().get(generateKey(email)) ?: return null
         return EmailVerified(Email(email), value, Instant.now())
+    }
+
+    private fun generateKey(email: String): String {
+        return "$EMAIL_VERIFIED_PREFIX$email"
     }
 }

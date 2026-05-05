@@ -9,6 +9,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.serializer.RedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
+import org.springframework.util.StringUtils
 import plain.bookmaru.global.properties.RedisProperties
 
 @Configuration
@@ -23,6 +24,7 @@ class RedisConfig(
     fun authRedisConnectionFactory(): RedisConnectionFactory? {
         val config = RedisStandaloneConfiguration(redisProperties.host, redisProperties.port)
         config.database = redisProperties.dbIndex.auth
+        applyPassword(config)
 
         return LettuceConnectionFactory(config)
     }
@@ -46,6 +48,7 @@ class RedisConfig(
     fun cacheRedisConnectionFactory(): RedisConnectionFactory {
         val config = RedisStandaloneConfiguration(redisProperties.host, redisProperties.port)
         config.database = redisProperties.dbIndex.cache
+        applyPassword(config)
 
         return LettuceConnectionFactory(config)
     }
@@ -61,5 +64,11 @@ class RedisConfig(
         template.hashValueSerializer = RedisSerializer.byteArray()
 
         return template
+    }
+
+    private fun applyPassword(config: RedisStandaloneConfiguration) {
+        if (StringUtils.hasText(redisProperties.password)) {
+            config.setPassword(redisProperties.password)
+        }
     }
 }

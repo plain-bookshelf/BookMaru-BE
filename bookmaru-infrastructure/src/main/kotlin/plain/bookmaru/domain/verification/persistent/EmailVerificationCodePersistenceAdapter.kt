@@ -15,24 +15,33 @@ class EmailVerificationCodePersistenceAdapter(
     private val redisTemplate: StringRedisTemplate,
     private val objectMapper: ObjectMapper
 ) : EmailVerificationCodePort {
+
+    companion object {
+        private const val EMAIL_VERIFICATION_CODE_PREFIX = "verification:code:"
+    }
+
     override suspend fun save(emailVerification: EmailVerification) {
         val jsonData = objectMapper.writeValueAsString(emailVerification.codeData)
 
         redisTemplate.opsForValue().set(
-            emailVerification.email.email.toString(),
+            generateKey(emailVerification.email.email),
             jsonData,
             Duration.between(Instant.now(), emailVerification.expiredAt)
         )
     }
 
     override suspend fun load(email: String): EmailVerification? {
-        val jsonData = redisTemplate.opsForValue().get(email) ?: return null
+        val jsonData = redisTemplate.opsForValue().get(generateKey(email)) ?: return null
         val codeData = objectMapper.readValue(jsonData, VerificationData::class.java)
 
         return EmailVerification(Email(email), codeData, Instant.now())
     }
 
     override suspend fun delete(email: String) {
-        redisTemplate.unlink(email)
+        redisTemplate.unlink(generateKey(email))
+    }
+
+    private fun generateKey(email: String): String {
+        return "$EMAIL_VERIFICATION_CODE_PREFIX$email"
     }
 }
