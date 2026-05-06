@@ -1,5 +1,8 @@
 package plain.bookmaru.common.port
 
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+
 interface ConcurrencyPort {
     suspend fun <T> executeWithRetry(
         operationName: String,
@@ -13,8 +16,8 @@ interface ConcurrencyPort {
         maxRetries: Int = 3,
         baseDelay: Long = 2000L,
         shouldRetry: (Throwable) -> Boolean= { e ->
-                    e is java.net.SocketTimeoutException ||
-                    e is java.net.ConnectException
+                    e is SocketTimeoutException ||
+                    e is ConnectException
         },
         block: suspend () -> T
     ): T

@@ -65,8 +65,6 @@ class RentalService(
                 )
             )
 
-            member.incrementRentalCount()
-
             val returnDate = if (member.authority == Authority.ROLE_TEACHER || member.authority == Authority.ROLE_LIBRARIAN) {
                 LocalDate.now().plusDays(365)
             } else {

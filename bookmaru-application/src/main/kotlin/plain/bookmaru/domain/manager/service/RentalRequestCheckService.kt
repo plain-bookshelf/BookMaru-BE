@@ -16,7 +16,7 @@ class RentalRequestCheckService(
     override suspend fun execute(command: RentalRequestCheckCommand): List<RentalRequestCheckResult>? {
         val affiliationId = command.affiliationId
         log.debug { "affiliationId: $affiliationId 소속의 대여 요청 정보를 불러오기를 시도 했습니다." }
-        val result = bookRentalRecordPort.findRentalRequestBookByAffiliationId(command.affiliationId)
+        val result = bookRentalRecordPort.findRentalRequestBookByAffiliationIdForPlatform(command.affiliationId, command.platformType)
 
         return result
     }

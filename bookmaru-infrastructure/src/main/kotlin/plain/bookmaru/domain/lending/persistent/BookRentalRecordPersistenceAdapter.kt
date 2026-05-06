@@ -3,6 +3,7 @@ package plain.bookmaru.domain.lending.persistent
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Component
+import plain.bookmaru.domain.auth.vo.PlatformType
 import plain.bookmaru.domain.affiliation.persistent.entity.QAffiliationEntity
 import plain.bookmaru.domain.book.persistent.entity.QBookEntity
 import plain.bookmaru.domain.inventory.persistent.entity.QBookAffiliationEntity
@@ -15,9 +16,11 @@ import plain.bookmaru.domain.lending.persistent.entity.QBookRentalRecordEntity
 import plain.bookmaru.domain.lending.persistent.mapper.RentalMapper
 import plain.bookmaru.domain.lending.persistent.repository.BookRentalRecordRepository
 import plain.bookmaru.domain.lending.port.out.BookRentalRecordPort
+import plain.bookmaru.domain.lending.port.out.result.AppRentalRequestCheckResult
 import plain.bookmaru.domain.lending.port.out.result.OverdueNotificationTarget
 import plain.bookmaru.domain.lending.port.out.result.RentalRequestApprovalInfo
 import plain.bookmaru.domain.lending.port.out.result.RentalRequestCheckResult
+import plain.bookmaru.domain.lending.port.out.result.WebRentalRequestCheckResult
 import plain.bookmaru.domain.member.persistent.entity.QMemberEntity
 import plain.bookmaru.domain.member.persistent.repository.MemberRepository
 import plain.bookmaru.global.config.DbProtection
@@ -90,17 +93,24 @@ class BookRentalRecordPersistenceAdapter(
         detailEntity.returnDate = null
     }
 
-    override suspend fun findRentalRequestBookByAffiliationId(affiliationId: Long): List<RentalRequestCheckResult> = dbProtection.withReadOnly {
-        return@withReadOnly queryFactory
+    override suspend fun findRentalRequestBookByAffiliationId(
+        affiliationId: Long
+    ): List<RentalRequestCheckResult> {
+        return findRentalRequestBookByAffiliationIdForPlatform(affiliationId, PlatformType.ANDROID)
+    }
+
+    override suspend fun findRentalRequestBookByAffiliationIdForPlatform(
+        affiliationId: Long,
+        platformType: PlatformType
+    ): List<RentalRequestCheckResult> = dbProtection.withReadOnly {
+        val contentTuple = queryFactory
             .select(
-                Projections.constructor(
-                    RentalRequestCheckResult::class.java,
-                    bookDetail.id,
-                    member.id,
-                    member.nickname,
-                    book.title,
-                    bookDetail.callNumber
-                )
+                bookDetail.id,
+                member.id,
+                member.nickname,
+                book.title,
+                bookDetail.callNumber,
+                bookRentalRecord.rentalDate
             )
             .from(bookRentalRecord)
             .innerJoin(bookRentalRecord.bookDetailEntity, bookDetail)
@@ -114,6 +124,29 @@ class BookRentalRecordPersistenceAdapter(
             )
             .orderBy(book.id.desc())
             .fetch()
+
+        return@withReadOnly contentTuple.map {
+            if (platformType == PlatformType.WEB) {
+                WebRentalRequestCheckResult(
+                    bookDetailId = it.get(bookDetail.id) ?: 0L,
+                    memberId = it.get(member.id) ?: 0L,
+                    nickName = it.get(member.nickname) ?: "",
+                    title = it.get(book.title) ?: "",
+                    callNumber = it.get(bookDetail.callNumber) ?: "",
+                    rentalRequestDate = requireNotNull(it.get(bookRentalRecord.rentalDate)) {
+                        "rentalRequestDate must exist in rental record."
+                    }
+                )
+            } else {
+                AppRentalRequestCheckResult(
+                    bookDetailId = it.get(bookDetail.id) ?: 0L,
+                    memberId = it.get(member.id) ?: 0L,
+                    nickName = it.get(member.nickname) ?: "",
+                    title = it.get(book.title) ?: "",
+                    callNumber = it.get(bookDetail.callNumber) ?: ""
+                )
+            }
+        }
     }
 
     override suspend fun findRentalRequestApprovalInfo(

@@ -80,7 +80,7 @@ class ViewMyPagePersistenceAdapter(
 
         return@withReadOnly ViewMyPageResult(
             profileImage = memberInfo.get(member.profileImage) ?: "",
-            username = memberInfo.get(member.username) ?: username,
+            nickname = memberInfo.get(member.nickname) ?: username,
             mostLittleLeftRentalTitle = mostLittleLeftRentalBook?.get(book.title) ?: "",
             mostLittleLeftRentalDate = daysLeft.toInt(),
             rentedBookCount = memberInfo.get(member.rentalCount) ?: 0,

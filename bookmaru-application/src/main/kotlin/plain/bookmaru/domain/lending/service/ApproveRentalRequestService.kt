@@ -53,6 +53,7 @@ class ApproveRentalRequestService(
             val rentalMember = memberPort.findById(requestInfo.memberId)
                 ?: throw NotFoundMemberException("memberId: ${requestInfo.memberId} member not found.")
 
+            rentalMember.incrementRentalCount()
             rentalMember.incrementOneMonthStatistics()
 
             val updatedCount = transactionPort.withTransaction {

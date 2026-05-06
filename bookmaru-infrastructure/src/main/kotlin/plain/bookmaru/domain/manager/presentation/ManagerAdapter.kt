@@ -16,6 +16,7 @@ import plain.bookmaru.common.annotation.LogExecution
 import plain.bookmaru.common.command.PageCommand
 import plain.bookmaru.common.error.CustomHttpStatus
 import plain.bookmaru.common.success.SuccessResponse
+import plain.bookmaru.domain.auth.vo.PlatformType
 import plain.bookmaru.domain.manager.port.`in`.RentalBookStatusCheckSearchMemberUseCase
 import plain.bookmaru.domain.manager.port.`in`.RentalBookStatusCheckUseCase
 import plain.bookmaru.domain.manager.port.`in`.RentalRequestCheckUseCase
@@ -38,9 +39,11 @@ class ManagerAdapter(
     @LogExecution
     suspend fun getRentalRequestCheck(
         @AuthenticationPrincipal principal: CustomUserDetails,
-        @RequestHeader(name = "Last-Event-ID", required = false) lastEventId: String?
+        @RequestHeader(name = "Last-Event-ID", required = false) lastEventId: String?,
+        @RequestParam platformType: String
     ): SseEmitter {
-        val command = RentalRequestCheckCommand(principal.affiliationId)
+        val parsedPlatformType = PlatformType.valueOf(platformType)
+        val command = RentalRequestCheckCommand(principal.affiliationId, parsedPlatformType)
         val emitter = managerRentalRequestEmitterManager.subscribe(principal.affiliationId, lastEventId)
         val result = rentalRequestCheckUseCase.execute(command).orEmpty()
 

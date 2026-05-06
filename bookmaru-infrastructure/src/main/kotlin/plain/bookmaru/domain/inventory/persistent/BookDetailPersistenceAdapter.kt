@@ -1,5 +1,7 @@
 package plain.bookmaru.domain.inventory.persistent
 
+import com.querydsl.core.Tuple
+import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
@@ -165,7 +167,7 @@ class BookDetailPersistenceAdapter(
     override suspend fun findBookNotificationInfoByBookDetailId(bookDetailId: Long): BookNotificationInfo? = dbProtection.withReadOnly {
         return@withReadOnly queryFactory
             .select(
-                com.querydsl.core.types.Projections.constructor(
+                Projections.constructor(
                     BookNotificationInfo::class.java,
                     bookAffiliation.id,
                     book.title,
@@ -227,7 +229,7 @@ class BookDetailPersistenceAdapter(
     private helper method
      */
 
-    private fun mapToRentalBookStatusCheckResult(contentTuple: List<com.querydsl.core.Tuple>): List<RentalBookStatusCheckResult> {
+    private fun mapToRentalBookStatusCheckResult(contentTuple: List<Tuple>): List<RentalBookStatusCheckResult> {
         val today = LocalDate.now()
 
         return contentTuple.map {

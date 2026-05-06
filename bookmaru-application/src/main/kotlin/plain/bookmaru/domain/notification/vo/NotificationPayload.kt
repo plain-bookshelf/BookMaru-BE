@@ -15,8 +15,31 @@ import plain.bookmaru.domain.notification.vo.NotificationPayload.ReservationPayl
     JsonSubTypes.Type(value = OverduePayload::class, name = "OVERDUE")
 )
 sealed interface NotificationPayload {
-    data class RentalPayload(val bookId: Long, val title: String, val returnDate: String, val bookImage: String) : NotificationPayload
-    data class ReservationPayload(val bookId: Long, val title: String, val returnDate: String, val bookImage: String) : NotificationPayload
-    data class EventPayload(val eventId: Long, val title: String, val startDate: String, val endDate: String) : NotificationPayload
-    data class OverduePayload(val bookId: Long, val title: String, val returnDate: String, val bookImage: String) : NotificationPayload
+    data class RentalPayload(
+        val bookId: Long,
+        val title: String,
+        val returnDate: String,
+        val bookImage: String = ""
+    ) : NotificationPayload
+
+    data class ReservationPayload(
+        val bookId: Long,
+        val title: String,
+        val returnDate: String,
+        val bookImage: String = ""
+    ) : NotificationPayload
+
+    data class EventPayload(
+        val eventId: Long,
+        val title: String,
+        val startDate: String,
+        val endDate: String
+    ) : NotificationPayload
+
+    data class OverduePayload(
+        val bookId: Long,
+        val title: String,
+        val returnDate: String,
+        val bookImage: String = ""
+    ) : NotificationPayload
 }
