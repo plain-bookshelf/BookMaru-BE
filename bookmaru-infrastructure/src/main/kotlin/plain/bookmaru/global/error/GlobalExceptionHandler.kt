@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.HttpMediaTypeNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -69,6 +70,20 @@ class GlobalExceptionHandler {
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST.value())
             .body(ErrorResponse("ILLEGAL_STATE_ERROR", e.message ?: "객체 상태가 정상적이지 않습니다.", HttpStatus.BAD_REQUEST.value(), requestPath(request)))
+    }
+
+    @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+    @ExceptionHandler(HttpMediaTypeNotSupportedException::class)
+    fun handlerHttpMediaTypeNotSupportedException(
+        e: HttpMediaTypeNotSupportedException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponse> {
+        storeException(e, request)
+        log.error(e) { "HttpMediaTypeNotSupportedException: ${e.message}, Path: ${requestPath(request)}" }
+
+        return ResponseEntity
+            .status(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value())
+            .body(ErrorResponse("UNSUPPORTED_MEDIA_TYPE", "Content-Type is not supported.", HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(), requestPath(request)))
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

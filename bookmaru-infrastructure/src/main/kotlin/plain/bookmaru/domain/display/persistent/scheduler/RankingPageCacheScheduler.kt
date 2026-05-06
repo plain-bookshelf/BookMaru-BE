@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
 import plain.bookmaru.domain.display.scope.CacheCoroutineScope
 import plain.bookmaru.domain.display.service.cache.RankingPageCacheService
+import plain.bookmaru.domain.member.port.out.MemberPort
 
 private val log = KotlinLogging.logger {}
 
@@ -19,6 +20,7 @@ private val log = KotlinLogging.logger {}
 class RankingPageCacheScheduler(
     private val rankingPageCacheService: RankingPageCacheService,
     private val affiliationPort: AffiliationPort,
+    private val memberPort: MemberPort,
     private val cacheCoroutineScope: CacheCoroutineScope
 ) {
 
@@ -45,5 +47,13 @@ class RankingPageCacheScheduler(
                 async { rankingPageCacheService.upRanking(affiliationId) }
             }.awaitAll()
         }
+    }
+
+    @Scheduled(cron = "0 0 0 1 * *", zone = "Asia/Seoul")
+    suspend fun resetMonthlyRankingStatistics() {
+        log.info { "[cache] reset monthly rental ranking statistics." }
+        val resetCount = memberPort.resetAllOneMonthStatistics()
+        upRankingData()
+        log.info { "[cache] reset monthly rental ranking statistics complete. resetCount=$resetCount" }
     }
 }

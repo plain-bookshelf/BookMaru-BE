@@ -210,6 +210,35 @@ class MemberAdapter(
             .body(SuccessResponse.success(CustomHttpStatus.OK, "프로필 이미지 업로드 URL을 발급했습니다.", result))
     }
 
+    @PostMapping(
+        "/profile-image/url",
+        consumes = [
+            MediaType.APPLICATION_OCTET_STREAM_VALUE,
+            MediaType.IMAGE_JPEG_VALUE,
+            MediaType.IMAGE_PNG_VALUE,
+            "image/webp"
+        ]
+    )
+    @LogExecution
+    suspend fun uploadProfileImageFromBody(
+        @AuthenticationPrincipal principal: UserDetails,
+        @RequestBody content: ByteArray,
+        @RequestHeader("Content-Type", required = false) contentType: String?,
+        @RequestParam(required = false) fileName: String?
+    ): ResponseEntity<SuccessResponse> {
+        val command = UploadProfileImageCommand(
+            username = principal.username,
+            fileName = fileName ?: "",
+            contentType = contentType ?: "",
+            fileSize = content.size.toLong(),
+            content = content
+        )
+        val result = uploadProfileImageUseCase.execute(command)
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(SuccessResponse.success(CustomHttpStatus.OK, "Profile image uploaded successfully.", result))
+    }
+
     @GetMapping("/valid-nickname")
     @LogExecution
     suspend fun validNickname(

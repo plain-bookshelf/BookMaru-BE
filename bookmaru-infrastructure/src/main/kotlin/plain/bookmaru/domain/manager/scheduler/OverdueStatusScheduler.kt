@@ -83,7 +83,8 @@ class OverdueStatusScheduler(
                 payload = NotificationPayload.OverduePayload(
                     bookId = target.bookAffiliationId,
                     title = target.title,
-                    returnDate = target.returnDate.toString()
+                    returnDate = target.returnDate.toString(),
+                    bookImage = target.bookImage
                 ),
                 type = NotificationType.OVERDUE,
                 url = "/book/${target.bookAffiliationId}"

@@ -55,7 +55,7 @@ class BookAffiliationPersistenceAdapter(
             )
             .where(
                 bookAffiliation.affiliationEntity.id.eq(affiliationId),
-                book.bookImage.isNotNull
+                book.bookImage.eq("").not()
             )
             .limit(MAX_BOOKS_SIZE)
             .fetch()
@@ -76,7 +76,7 @@ class BookAffiliationPersistenceAdapter(
             )
             .where(
                 bookAffiliation.affiliationEntity.id.eq(affiliationId),
-                book.bookImage.isNotNull
+                book.bookImage.eq("").not()
             )
             .limit(MAX_BOOKS_SIZE)
             .fetch()

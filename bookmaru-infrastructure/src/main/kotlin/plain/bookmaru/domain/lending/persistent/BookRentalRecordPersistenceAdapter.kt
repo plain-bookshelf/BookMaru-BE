@@ -128,6 +128,7 @@ class BookRentalRecordPersistenceAdapter(
                     bookDetail.id,
                     bookAffiliation.id,
                     book.title,
+                    book.bookImage.coalesce(""),
                     bookDetail.returnDate
                 )
             )
@@ -154,6 +155,7 @@ class BookRentalRecordPersistenceAdapter(
                     bookDetail.id,
                     bookAffiliation.id,
                     book.title,
+                    book.bookImage.coalesce(""),
                     bookDetail.returnDate
                 )
             )

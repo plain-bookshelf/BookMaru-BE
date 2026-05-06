@@ -168,7 +168,8 @@ class BookDetailPersistenceAdapter(
                 com.querydsl.core.types.Projections.constructor(
                     BookNotificationInfo::class.java,
                     bookAffiliation.id,
-                    book.title
+                    book.title,
+                    book.bookImage.coalesce("")
                 )
             )
             .from(bookDetail)

@@ -100,6 +100,13 @@ class MemberPersistenceAdapter(
 
     }
 
+    override suspend fun resetAllOneMonthStatistics(): Long = dbProtection.withTransaction {
+        return@withTransaction queryFactory
+            .update(member)
+            .set(member.oneMonthStatistics, 0)
+            .execute()
+    }
+
     override suspend fun findByEmail(email: String): Member? = dbProtection.withReadOnly {
         memberRepository.findByEmail(email)?.let {
             memberMapper.toDomain(it)
