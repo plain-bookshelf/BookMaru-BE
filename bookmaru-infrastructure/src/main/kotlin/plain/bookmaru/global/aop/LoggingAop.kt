@@ -18,7 +18,7 @@ class LoggingAop {
     fun logExecution(joinPoint: JoinPoint) {
         val methodName = joinPoint.signature.name
         val className = joinPoint.signature.declaringType.simpleName
-        val args = joinPoint.args.joinToString(", ") { it.toString() }
+        val args = joinPoint.args.joinToString(", ") { it?.toString() ?: "null" }
 
         val startTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
 
