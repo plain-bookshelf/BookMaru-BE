@@ -12,6 +12,8 @@ import plain.bookmaru.domain.lending.port.`in`.command.ApproveRentalRequestComma
 import plain.bookmaru.domain.lending.port.out.BookRentalRecordPort
 import plain.bookmaru.domain.lending.port.out.result.RentalRequestApprovalInfo
 import plain.bookmaru.domain.manager.port.out.RentalRequestRealtimePort
+import plain.bookmaru.domain.member.exception.NotFoundMemberException
+import plain.bookmaru.domain.member.port.out.MemberPort
 import plain.bookmaru.domain.notification.model.Notification
 import plain.bookmaru.domain.notification.port.`in`.PublishNotificationUseCase
 import plain.bookmaru.domain.notification.vo.NotificationInfo
@@ -26,6 +28,7 @@ private val log = KotlinLogging.logger {}
 class ApproveRentalRequestService(
     private val bookRentalRecordPort: BookRentalRecordPort,
     private val bookDetailPort: BookDetailPort,
+    private val memberPort: MemberPort,
     private val publishNotificationUseCase: PublishNotificationUseCase,
     private val rentalRequestRealtimePort: RentalRequestRealtimePort,
     private val transactionPort: TransactionPort,
@@ -47,9 +50,17 @@ class ApproveRentalRequestService(
             ) ?: throw NotFoundBookDetailException("bookDetailId: ${command.bookDetailId} 승인 가능한 대여 요청을 찾을 수 없습니다.")
 
             val approvedBookDetail = bookDetail.approveRental()
+            val rentalMember = memberPort.findById(requestInfo.memberId)
+                ?: throw NotFoundMemberException("memberId: ${requestInfo.memberId} member not found.")
+
+            rentalMember.incrementOneMonthStatistics()
 
             val updatedCount = transactionPort.withTransaction {
-                bookDetailPort.approveRentalRequest(approvedBookDetail)
+                val updatedCount = bookDetailPort.approveRentalRequest(approvedBookDetail)
+                if (updatedCount > 0L) {
+                    memberPort.save(rentalMember)
+                }
+                updatedCount
             }
 
             if (updatedCount == 0L) {
@@ -79,7 +90,8 @@ class ApproveRentalRequestService(
                         payload = NotificationPayload.RentalPayload(
                             bookId = requestInfo.bookAffiliationId,
                             title = requestInfo.title,
-                            returnDate = requestInfo.returnDate.toString()
+                            returnDate = requestInfo.returnDate.toString(),
+                            bookImage = requestInfo.bookImage
                         ),
                         type = NotificationType.RENTAL,
                         url = "/book/${requestInfo.bookAffiliationId}"

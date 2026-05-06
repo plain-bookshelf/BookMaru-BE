@@ -120,6 +120,10 @@ class Member(
         this.profile = profile.copy(profileImage = newProfileImageUrl)
     }
 
+    fun incrementOneMonthStatistics() {
+        this.profile = profile.copy(oneMonthStatistics = (profile.oneMonthStatistics ?: 0) + 1)
+    }
+
     fun incrementRentalCount() {
         this.lendingBook = lendingBook.copy(rentalCount = this.lendingBook.rentalCount + 1)
     }

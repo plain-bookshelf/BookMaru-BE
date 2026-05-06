@@ -7,5 +7,6 @@ data class OverdueNotificationTarget(
     val bookDetailId: Long,
     val bookAffiliationId: Long,
     val title: String,
+    val bookImage: String,
     val returnDate: LocalDate
 )

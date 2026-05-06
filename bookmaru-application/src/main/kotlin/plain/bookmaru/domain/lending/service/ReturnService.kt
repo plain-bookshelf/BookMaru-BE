@@ -126,7 +126,8 @@ class ReturnService(
                 payload = NotificationPayload.ReservationPayload(
                     bookId = bookInfo.bookAffiliationId,
                     title = bookInfo.title,
-                    returnDate = returnDate.toString()
+                    returnDate = returnDate.toString(),
+                    bookImage = bookInfo.bookImage
                 ),
                 type = NotificationType.RESERVATION,
                 url = "/book/${bookInfo.bookAffiliationId}"
