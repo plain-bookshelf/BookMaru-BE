@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -42,6 +41,7 @@ import plain.bookmaru.domain.member.presentation.dto.request.OftenReadBookTimeRe
 import plain.bookmaru.domain.member.presentation.dto.request.ProfileImageChangeRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SignupMemberRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SignupOfficialRequestDto
+import plain.bookmaru.global.security.userdetails.CustomUserDetails
 
 @RestController
 @RequestMapping("/api/member")
@@ -105,10 +105,10 @@ class MemberAdapter(
     suspend fun passwordChange(
         @RequestBody request: PasswordChangeRequestDto,
         @RequestHeader("Authorization") accessToken: String,
-        @AuthenticationPrincipal user: UserDetails,
+        @AuthenticationPrincipal user: CustomUserDetails,
     ) : ResponseEntity<SuccessResponse> {
 
-        val command = request.toCommand(accessToken, user.username)
+        val command = request.toCommand(accessToken, user.username.toString())
 
         changePasswordUseCase.execute(command)
 
@@ -120,10 +120,10 @@ class MemberAdapter(
     @LogExecution
     suspend fun oftenReadBookTime(
         @RequestBody request: OftenReadBookTimeRequestDto,
-        @AuthenticationPrincipal user: UserDetails
+        @AuthenticationPrincipal user: CustomUserDetails
     ) : ResponseEntity<SuccessResponse> {
 
-        val command = request.toCommand(user.username)
+        val command = request.toCommand(user.username.toString())
 
         oftenReadBookTimeSetUseCase.execute(command)
 
@@ -134,11 +134,11 @@ class MemberAdapter(
     @DeleteMapping("/delete")
     @LogExecution
     suspend fun deleteMember(
-        @AuthenticationPrincipal principal: UserDetails,
+        @AuthenticationPrincipal principal: CustomUserDetails,
         @RequestHeader("Authorization") accessToken: String
     ) : ResponseEntity<SuccessResponse> {
 
-        val command = DeleteMemberCommand(principal.username, accessToken)
+        val command = DeleteMemberCommand(principal.username.toString(), accessToken)
 
         deleteMemberUseCase.deleteMember(command)
 
@@ -149,12 +149,12 @@ class MemberAdapter(
     @PatchMapping("/affiliation-change")
     @LogExecution
     suspend fun changeAffiliation(
-        @AuthenticationPrincipal principal: UserDetails,
+        @AuthenticationPrincipal principal: CustomUserDetails,
         @RequestParam platformType: String,
         @RequestBody request: AffiliationInfoChangeRequestDto
     ) : ResponseEntity<SuccessResponse> {
 
-        val command = request.toCommand(platformType, principal.username)
+        val command = request.toCommand(platformType, principal.username.toString())
 
         val result = affiliationInfoChangeUseCase.execute(command)
 
@@ -164,11 +164,11 @@ class MemberAdapter(
     @PatchMapping("nickname-change")
     @LogExecution
     suspend fun changeNickname(
-        @AuthenticationPrincipal principal: UserDetails,
+        @AuthenticationPrincipal principal: CustomUserDetails,
         @RequestBody request: NicknameChangeRequestDto
     ) : ResponseEntity<SuccessResponse> {
 
-        val command = request.toCommand(principal.username)
+        val command = request.toCommand(principal.username.toString())
 
         nicknameChangeUseCase.execute(command)
 
@@ -179,11 +179,11 @@ class MemberAdapter(
     @PatchMapping("/profile-image/change")
     @LogExecution
     suspend fun profileImageChange(
-        @AuthenticationPrincipal principal: UserDetails,
+        @AuthenticationPrincipal principal: CustomUserDetails,
         @RequestBody request: ProfileImageChangeRequestDto
     ) : ResponseEntity<SuccessResponse> {
 
-        val command = request.toCommand(principal.username)
+        val command = request.toCommand(principal.username.toString())
 
         profileImageChangeUseCase.execute(command)
 
@@ -194,11 +194,11 @@ class MemberAdapter(
     @PostMapping("/profile-image/url", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @LogExecution
     suspend fun createProfileImageUploadUrl(
-        @AuthenticationPrincipal principal: UserDetails,
+        @AuthenticationPrincipal principal: CustomUserDetails,
         @RequestPart("file") file: MultipartFile
     ): ResponseEntity<SuccessResponse> {
         val command = UploadProfileImageCommand(
-            username = principal.username,
+            username = principal.username.toString(),
             fileName = file.originalFilename ?: "",
             contentType = file.contentType ?: "",
             fileSize = file.size,
@@ -221,13 +221,13 @@ class MemberAdapter(
     )
     @LogExecution
     suspend fun uploadProfileImageFromBody(
-        @AuthenticationPrincipal principal: UserDetails,
+        @AuthenticationPrincipal principal: CustomUserDetails,
         @RequestBody content: ByteArray,
         @RequestHeader("Content-Type", required = false) contentType: String?,
         @RequestParam(required = false) fileName: String?
     ): ResponseEntity<SuccessResponse> {
         val command = UploadProfileImageCommand(
-            username = principal.username,
+            username = principal.username.toString(),
             fileName = fileName ?: "",
             contentType = contentType ?: "",
             fileSize = content.size.toLong(),

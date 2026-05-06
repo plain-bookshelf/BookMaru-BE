@@ -50,8 +50,8 @@ class ProfileImageChangeService(
 
     override suspend fun execute(command: UploadProfileImageCommand): ProfileImageUploadResult {
         val member = memberPort.findByUsername(command.username)
-            ?: throw NotFoundMemberException("?ъ슜?먮? 李얠쓣 ???놁뒿?덈떎.")
-        val memberId = member.id ?: throw NotFoundMemberException("?ъ슜?먮? 李얠쓣 ???놁뒿?덈떎.")
+            ?: throw NotFoundMemberException("유저 정보를 찾지 못 했습니다..")
+        val memberId = member.id ?: throw NotFoundMemberException("유저 정보를 찾지 못 했습니다.")
         val previousImageKey = member.profile.profileImage
 
         validateFileSize(command.fileSize)

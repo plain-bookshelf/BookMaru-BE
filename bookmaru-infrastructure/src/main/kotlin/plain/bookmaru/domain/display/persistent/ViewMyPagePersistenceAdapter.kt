@@ -49,7 +49,7 @@ class ViewMyPagePersistenceAdapter(
         val memberInfo = queryFactory
             .select(
                 member.profileImage,
-                member.username,
+                member.nickname,
                 member.rentalCount,
                 member.reservationCount,
                 overdueCountSub
