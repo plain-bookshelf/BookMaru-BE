@@ -63,7 +63,7 @@ class MemberEntity(
     @Column(nullable = false, unique = true)
     override val id: Long? = null
 
-    @Column(nullable = true, length = 100)
+    @Column(nullable = true, length = 1000)
     var profileImage: String? = null
 
     @Column(nullable = false, precision = 1000)
