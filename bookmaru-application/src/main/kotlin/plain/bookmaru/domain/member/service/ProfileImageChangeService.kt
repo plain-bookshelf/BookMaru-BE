@@ -55,8 +55,8 @@ class ProfileImageChangeService(
         val previousImageKey = member.profile.profileImage
 
         validateFileSize(command.fileSize)
-        val contentType = resolveContentType(command.fileName, command.contentType)
-        val extension = extensionFromContentType(contentType)
+        val extension = resolveExtension(command.fileName, command.contentType)
+        val contentType = contentTypeFromExtension(extension)
         val imageKey = "members/$memberId/profile/${UUID.randomUUID()}.$extension"
 
         memberProfileImageStoragePort.upload(imageKey, command.content, contentType)
@@ -99,22 +99,17 @@ class ProfileImageChangeService(
         }
     }
 
-    private fun resolveContentType(fileName: String, contentType: String): String {
-        val normalizedContentType = contentType.lowercase()
-        if (normalizedContentType in ALLOWED_CONTENT_TYPES) {
-            return normalizedContentType
-        }
-
+    private fun resolveExtension(fileName: String, contentType: String): String {
         val extension = normalizeExtension(fileName.substringAfterLast('.', ""))
             .lowercase()
             .takeIf { it.isNotBlank() }
-            ?: ""
+            ?: extensionFromContentType(contentType)
 
         require(extension in ALLOWED_EXTENSIONS) {
             "Unsupported profile image extension."
         }
 
-        return contentTypeFromExtension(extension)
+        return extension
     }
 
     private fun extensionFromContentType(contentType: String): String {

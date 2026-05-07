@@ -7,7 +7,7 @@ class RefreshCookieUtil {
         fun createRefreshCookie(refreshToken: String, maxAge: Long): ResponseCookie
         = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
                 .maxAge(maxAge)
                 .sameSite("None")

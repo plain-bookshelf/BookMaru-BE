@@ -24,9 +24,10 @@ class CreateProfileImageUploadUrlService(
 
         validateFileSize(command.fileSize)
         val extension = resolveExtension(command.fileName, command.contentType)
+        val contentType = contentTypeFromExtension(extension)
         val imageKey = "members/$memberId/profile/${UUID.randomUUID()}.$extension"
 
-        return memberProfileImageStoragePort.createPresignedUploadUrl(imageKey, command.contentType)
+        return memberProfileImageStoragePort.createPresignedUploadUrl(imageKey, contentType)
     }
 
     private fun validateFileSize(fileSize: Long) {
@@ -45,11 +46,13 @@ class CreateProfileImageUploadUrlService(
             "지원하지 않는 이미지 확장자입니다."
         }
 
-        require(contentType in ALLOWED_CONTENT_TYPES) {
+        val resolvedContentType = contentTypeFromExtension(extension)
+
+        require(resolvedContentType in ALLOWED_CONTENT_TYPES) {
             "지원하지 않는 이미지 타입입니다."
         }
 
-        require(extension == extensionFromContentType(contentType)) {
+        require(extension == extensionFromContentType(resolvedContentType)) {
             "파일 확장자와 이미지 타입이 일치하지 않습니다."
         }
 
@@ -61,6 +64,15 @@ class CreateProfileImageUploadUrlService(
             "image/jpeg" -> "jpg"
             "image/png" -> "png"
             "image/webp" -> "webp"
+            else -> ""
+        }
+    }
+
+    private fun contentTypeFromExtension(extension: String): String {
+        return when (extension.lowercase()) {
+            "jpg", "jpeg" -> "image/jpeg"
+            "png" -> "image/png"
+            "webp" -> "image/webp"
             else -> ""
         }
     }

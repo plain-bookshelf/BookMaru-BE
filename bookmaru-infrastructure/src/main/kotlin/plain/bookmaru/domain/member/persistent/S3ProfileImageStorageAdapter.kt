@@ -77,6 +77,12 @@ class S3ProfileImageStorageAdapter(
     }
 
     override fun toPublicUrl(imageKey: String): String {
-        return "${properties.publicBaseUrl.trimEnd('/')}/$imageKey"
+        val trimmedImageKey = imageKey.trim()
+        if (trimmedImageKey.isBlank()) return ""
+        if (trimmedImageKey.startsWith("http://") || trimmedImageKey.startsWith("https://")) {
+            return trimmedImageKey
+        }
+
+        return "${properties.publicBaseUrl.trimEnd('/')}/${trimmedImageKey.trimStart('/')}"
     }
 }
