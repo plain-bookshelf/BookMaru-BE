@@ -14,6 +14,7 @@ import plain.bookmaru.domain.display.port.out.result.ViewMyPageResult
 import plain.bookmaru.domain.inventory.persistent.entity.QBookAffiliationEntity
 import plain.bookmaru.domain.inventory.persistent.entity.QBookDetailEntity
 import plain.bookmaru.domain.inventory.vo.RentalStatus
+import plain.bookmaru.domain.lending.persistent.entity.QBookRentalRecordEntity
 import plain.bookmaru.domain.lending.persistent.entity.QBookReservationEntity
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.persistent.entity.QMemberEntity
@@ -28,6 +29,7 @@ class ViewMyPagePersistenceAdapter(
 ) : MyPagePort {
     private val bookAffiliation = QBookAffiliationEntity.bookAffiliationEntity
     private val bookDetail = QBookDetailEntity.bookDetailEntity
+    private val bookRentalRecord = QBookRentalRecordEntity.bookRentalRecordEntity
     private val book = QBookEntity.bookEntity
     private val bookLike = QBookLikeEntity.bookLikeEntity
     private val member = QMemberEntity.memberEntity
@@ -112,13 +114,13 @@ class ViewMyPagePersistenceAdapter(
                 book.title,
                 bookDetail.returnDate
             )
-            .from(bookDetail)
+            .from(bookRentalRecord)
+            .innerJoin(bookRentalRecord.bookDetailEntity, bookDetail)
             .innerJoin(bookDetail.bookAffiliationEntity, bookAffiliation)
             .innerJoin(bookAffiliation.bookEntity, book)
             .where(
                 bookDetail.memberEntity.id.eq(memberId),
-                bookDetail.rentalStatus.eq(RentalStatus.RENTAL),
-                bookDetail.returnDate.goe(today)
+                bookRentalRecord.returnDate.isNull.or(bookDetail.returnDate?.before(today))
             )
             .orderBy(bookDetail.returnDate.asc())
             .fetch()
