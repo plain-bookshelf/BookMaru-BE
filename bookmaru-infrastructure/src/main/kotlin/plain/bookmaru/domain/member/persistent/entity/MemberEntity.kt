@@ -1,0 +1,84 @@
+package plain.bookmaru.domain.member.persistent.entity
+
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Index
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.SequenceGenerator
+import jakarta.persistence.Table
+import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
+import plain.bookmaru.domain.auth.vo.Authority
+import plain.bookmaru.global.entity.BaseEntity
+import java.time.LocalDateTime
+import java.time.LocalTime
+
+@Entity
+@SequenceGenerator(
+    name = "member_seq_generator",
+    sequenceName = "members_seq",
+    allocationSize = 50
+)
+@Table(
+    name = "member",
+    indexes = [
+        Index(name = "idx_member_username", columnList = "username"),
+        Index(name = "idx_member_email", columnList = "email"),
+        Index(name = "idx_member_nickname", columnList = "nickname"),
+        Index(name = "idx_member_affiliation_delete_stats", columnList = "affiliation_id, delete_status, one_month_statistics")
+    ]
+)
+class MemberEntity(
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "affiliation_id", nullable = false )
+    var affiliationEntity: AffiliationEntity,
+
+    @Column(nullable = true, length = 100)
+    var username: String,
+
+    @Column(nullable = true, length = 100)
+    var password: String? = null,
+
+    @Column(nullable = false, length = 100)
+    var nickname: String,
+
+    @Column(unique = true,length = 100)
+    var email: String,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    var role: Authority,
+
+    @Column(nullable = false)
+    var deleteStatus: Boolean = false
+) : BaseEntity() {
+
+    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq_generator")
+    @Column(nullable = false, unique = true)
+    override val id: Long? = null
+
+    @Column(nullable = true, length = 1000)
+    var profileImage: String? = null
+
+    @Column(nullable = false, precision = 1000)
+    var oneMonthStatistics: Int? = 0
+
+    var overdueTerm: LocalDateTime? = null
+
+    @Column(name = "overdue_status", nullable = false)
+    var overdueStatus: Boolean = false
+
+    var oftenBookReadTime: LocalTime? = null
+
+    @Column(nullable = false)
+    var rentalCount: Int = 0
+
+    @Column(nullable = false)
+    var reservationCount: Int = 0
+}

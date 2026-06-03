@@ -1,0 +1,54 @@
+plugins {
+    id("org.springframework.boot") version "3.5.9" apply false
+    id("io.spring.dependency-management") version "1.1.6" apply false
+    id("com.google.devtools.ksp") version "2.0.21-1.0.28" apply false
+    kotlin("jvm") version "2.0.21" apply false
+    kotlin("plugin.spring") version "2.0.21" apply false
+    kotlin("plugin.jpa") version "2.0.21" apply false
+    kotlin("plugin.serialization") version "2.0.21" apply false
+}
+
+allprojects {
+    group = "Plain"
+    version = "0.0.1-SNAPSHOT"
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply(plugin = "java")
+    apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jetbrains.kotlin.plugin.spring")
+    apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
+    apply(plugin = "org.springframework.boot")
+    apply(plugin = "io.spring.dependency-management")
+    apply(plugin = "com.google.devtools.ksp")
+    apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
+
+    configure<JavaPluginExtension> {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(21))
+        }
+    }
+
+    dependencies {
+        // 모든 자식 모듈이 공통
+        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+        "implementation"("org.jetbrains.kotlin:kotlin-reflect")
+        "implementation"("com.fasterxml.jackson.module:jackson-module-kotlin")
+        "implementation"("io.github.oshai:kotlin-logging-jvm:5.1.0")
+        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.6.3")
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
+
+    configurations.all {
+        exclude(group = "org.slf4j", module = "slf4j-nop")
+
+        exclude(group = "org.mock-server", module = "mockserver-junit-rule-no-dependencies")
+    }
+}
