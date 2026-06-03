@@ -45,7 +45,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
     // firebase
-    implementation("com.google.firebase:firebase-admin:9.4.0") {
+    implementation("com.google.firebase:firebase-admin:9.5.0") {
         exclude(group = "org.slf4j", module = "slf4j-nop")
     }
 
