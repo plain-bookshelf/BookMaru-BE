@@ -16,11 +16,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
     // query dsl
-    implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+    implementation("io.github.openfeign.querydsl:querydsl-jpa:6.12")
 
-    kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
-    kapt("jakarta.persistence:jakarta.persistence-api")
-    kapt("jakarta.annotation:jakarta.annotation-api")
+    ksp("io.github.openfeign.querydsl:querydsl-apt:6.12:jakarta")
+    ksp("jakarta.persistence:jakarta.persistence-api")
+    ksp("jakarta.annotation:jakarta.annotation-api")
 
     // security
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
@@ -50,7 +50,7 @@ dependencies {
     }
 
     // config
-    kapt("org.springframework.boot:spring-boot-configuration-processor")
+    ksp("org.springframework.boot:spring-boot-configuration-processor")
 
     // test
     testImplementation("org.springframework.security:spring-security-test")

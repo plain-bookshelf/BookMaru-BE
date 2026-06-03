@@ -1,10 +1,10 @@
 plugins {
     id("org.springframework.boot") version "3.5.9" apply false
     id("io.spring.dependency-management") version "1.1.6" apply false
+    id("com.google.devtools.ksp") version "2.0.21-1.0.28" apply false
     kotlin("jvm") version "2.0.21" apply false
     kotlin("plugin.spring") version "2.0.21" apply false
     kotlin("plugin.jpa") version "2.0.21" apply false
-    kotlin("kapt") version "2.0.21" apply false
     kotlin("plugin.serialization") version "2.0.21" apply false
 }
 
@@ -24,7 +24,7 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
     apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
-    apply(plugin = "org.jetbrains.kotlin.kapt")
+    apply(plugin = "com.google.devtools.ksp")
     apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
 
     configure<JavaPluginExtension> {
