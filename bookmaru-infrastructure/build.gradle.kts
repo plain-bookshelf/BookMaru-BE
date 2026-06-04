@@ -18,9 +18,9 @@ dependencies {
     // query dsl
     implementation("io.github.openfeign.querydsl:querydsl-jpa:6.12")
 
-    ksp("io.github.openfeign.querydsl:querydsl-apt:6.12:jakarta")
-    ksp("jakarta.persistence:jakarta.persistence-api")
-    ksp("jakarta.annotation:jakarta.annotation-api")
+    ksp("io.github.openfeign.querydsl:querydsl-ksp-codegen:6.12")
+    compileOnly("jakarta.persistence:jakarta.persistence-api")
+    compileOnly("jakarta.annotation:jakarta.annotation-api")
 
     // security
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
@@ -50,33 +50,13 @@ dependencies {
     }
 
     // config
-    ksp("org.springframework.boot:spring-boot-configuration-processor")
+    compileOnly("org.springframework.boot:spring-boot-configuration-processor")
 
     // test
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("com.h2database:h2")
 }
-
-val generated = file("src/main/generated")
-// querydsl QClass 파일 생성 위치를 지정
-tasks.withType<JavaCompile> {
-    options.generatedSourceOutputDirectory.set(generated)
-}
-// kotlin source set 에 querydsl QClass 위치 추가
-sourceSets {
-    main {
-        kotlin.srcDirs += generated
-    }
-}
-// gradle clean 시에 QClass 디렉토리 삭제
-tasks.named("clean") {
-    doLast {
-        generated.deleteRecursively()
-    }
-}
-// (Querydsl 설정부 추가 - end)
-
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict")

@@ -7,7 +7,7 @@ import plain.bookmaru.domain.auth.vo.PlatformType
 import plain.bookmaru.domain.affiliation.persistent.entity.QAffiliationEntity
 import plain.bookmaru.domain.book.persistent.entity.QBookEntity
 import plain.bookmaru.domain.inventory.persistent.entity.QBookAffiliationEntity
-import plain.bookmaru.domain.inventory.persistent.entity.QBookDetailEntity.bookDetailEntity
+import plain.bookmaru.domain.inventory.persistent.entity.QBookDetailEntity
 import plain.bookmaru.domain.inventory.persistent.repository.BookDetailRepository
 import plain.bookmaru.domain.inventory.vo.RentalStatus
 import plain.bookmaru.domain.lending.exception.NotFoundRentalRecordException
@@ -39,7 +39,7 @@ class BookRentalRecordPersistenceAdapter(
 ) : BookRentalRecordPort {
     private val member = QMemberEntity.memberEntity
     private val book = QBookEntity.bookEntity
-    private val bookDetail = bookDetailEntity
+    private val bookDetail = QBookDetailEntity.bookDetailEntity
     private val bookAffiliation = QBookAffiliationEntity.bookAffiliationEntity
     private val affiliation = QAffiliationEntity.affiliationEntity
     private val bookRentalRecord = QBookRentalRecordEntity.bookRentalRecordEntity
