@@ -199,22 +199,20 @@ class ViewMyPagePersistenceAdapter(
 
     override suspend fun findLikeBookByMemberId(memberId: Long): List<ViewMyPageLikeBookResult> = dbProtection.withReadOnly {
         return@withReadOnly queryFactory
+            .select(
+                Projections.constructor(
+                    ViewMyPageLikeBookResult::class.java,
+                    bookAffiliation.id,
+                    book.title,
+                    book.bookImage
+                )
+            )
             .from(bookLike)
             .join(bookLike.bookAffiliationEntity, bookAffiliation)
             .join(bookAffiliation.bookEntity, book)
-            .join(bookLike.memberEntity, member)
             .where(
-                member.id.eq(memberId)
+                bookLike.memberEntity.id.eq(memberId)
             )
-            .transform(
-                groupBy(member.id).list(
-                    Projections.constructor(
-                        ViewMyPageLikeBookResult::class.java,
-                        bookAffiliation.id,
-                        book.title,
-                        book.bookImage
-                    )
-                )
-            )
+            .fetch()
     }
 }
