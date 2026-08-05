@@ -15,6 +15,7 @@ import jakarta.persistence.SequenceGenerator
 import jakarta.persistence.Table
 import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.auth.vo.Authority
+import plain.bookmaru.domain.auth.vo.OAuthProvider
 import plain.bookmaru.global.entity.BaseEntity
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -54,6 +55,10 @@ class MemberEntity(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     var role: Authority,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    var oAuthProvider: OAuthProvider = OAuthProvider.DEFAULT,
 
     @Column(nullable = false)
     var deleteStatus: Boolean = false

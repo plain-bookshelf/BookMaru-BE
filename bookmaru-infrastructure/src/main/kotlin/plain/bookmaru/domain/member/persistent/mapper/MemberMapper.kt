@@ -3,6 +3,8 @@ package plain.bookmaru.domain.member.persistent.mapper
 import org.springframework.stereotype.Component
 import plain.bookmaru.domain.affiliation.persistent.entity.AffiliationEntity
 import plain.bookmaru.domain.auth.vo.AccountInfo
+import plain.bookmaru.domain.auth.vo.OAuthInfo
+import plain.bookmaru.domain.auth.vo.OAuthProvider
 import plain.bookmaru.domain.member.model.Member
 import plain.bookmaru.domain.member.persistent.entity.MemberEntity
 import plain.bookmaru.domain.member.vo.Email
@@ -17,6 +19,9 @@ class MemberMapper{
             id = entity.id,
             affiliationId = entity.affiliationEntity.id!!,
             accountInfo = AccountInfo(entity.username, entity.password),
+            oAuthInfo = if (entity.oAuthProvider != OAuthProvider.DEFAULT)
+                OAuthInfo(entity.oAuthProvider, "")
+            else null,
             profile = Profile(
                 entity.nickname,
                 entity.profileImage,
@@ -40,6 +45,7 @@ class MemberMapper{
             nickname = domain.profile.nickname,
             email = domain.email.email,
             role = domain.authority,
+            oAuthProvider = domain.oAuthInfo?.provider ?: OAuthProvider.DEFAULT,
             deleteStatus = domain.profile.deleteStatus
         )
     }
@@ -54,6 +60,7 @@ class MemberMapper{
         entity.password = domain.accountInfo?.password ?: entity.password
         entity.email = domain.email.email
         entity.nickname = domain.profile.nickname
+        entity.oAuthProvider = domain.oAuthInfo?.provider ?: entity.oAuthProvider
         entity.profileImage = domain.profile.profileImage ?: entity.profileImage
         entity.oneMonthStatistics = domain.profile.oneMonthStatistics ?: entity.oneMonthStatistics
         entity.overdueTerm = domain.profile.overdueTerm

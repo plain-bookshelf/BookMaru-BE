@@ -8,6 +8,7 @@ import plain.bookmaru.domain.affiliation.exception.NotFoundAffiliationException
 import plain.bookmaru.domain.affiliation.port.out.AffiliationPort
 import plain.bookmaru.domain.auth.port.out.JwtPort
 import plain.bookmaru.domain.auth.port.out.result.TokenResult
+import plain.bookmaru.domain.auth.vo.OAuthProvider
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.port.`in`.AffiliationInfoChangeUseCase
 import plain.bookmaru.domain.member.port.`in`.command.AffiliationInfoChangeCommand
@@ -49,7 +50,7 @@ class AffiliationInfoChangeService(
             platformType = command.platformType,
             authority = savedMember.authority,
             affiliationId = savedMember.affiliationId!!,
-            oAuthProvider = savedMember.oAuthInfo!!.provider,
+            oAuthProvider = savedMember.oAuthInfo?.provider ?: OAuthProvider.DEFAULT,
             profileImage = savedMember.profile.profileImage.toString()
         )
     }

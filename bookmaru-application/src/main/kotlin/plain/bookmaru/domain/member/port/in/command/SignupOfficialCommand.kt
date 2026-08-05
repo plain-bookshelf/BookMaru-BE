@@ -24,7 +24,6 @@ data class SignupOfficialCommand(
         require(affiliationName.length < 45) { "소속명 자릿수는 45자리 미만이어야 합니다. " }
         require(affiliationName.isNotBlank()) { "소속명은 비어있으면 안 됩니다." }
         require(password.length <= 20 && password.length >= 8) { "비밀번호 자릿수는 8자 이상에서 20자 이하 이여야 합니다." }
-        require(password.length < 20) { "비밀번호 자릿수는 20자리 미만이어야 합니다." }
         require(passwordFirst in 'a'..'z' || passwordFirst in 'A'..'Z') { "비밀번호 첫째 자리는 영문자이어야 합니다." }
         require(passwordLast in 'a'..'z' || passwordLast in 'A'..'Z' || passwordLast in '0'..'9' || passwordLast == '!' || passwordLast == '~' || passwordLast == '#') { "비밀번호 마지막 자리는 영문자, 숫자, !,~,# 중 하나 이어야 합니다." }
     }

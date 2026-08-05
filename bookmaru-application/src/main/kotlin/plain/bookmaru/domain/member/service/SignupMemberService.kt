@@ -63,7 +63,7 @@ class SignupMemberService(
     }
 
     override suspend fun execute(command: SignupOfficialCommand): TokenResult {
-        val affiliation = validationInfo(command.accountInfo.username, command.email, command.affiliationName)
+        val affiliation = validationOfficialInfo(command.accountInfo.username, command.email, command.affiliationName)
         val officialCode = isMatch(command.affiliationName, command.verificationCode)
 
         val newMember = Member.createMember(
@@ -93,6 +93,19 @@ class SignupMemberService(
 
         return officialCodePort.load(code, affiliation)
             ?: throw NotMatchOfficialCodeException("인증 코드가 일치하지 않습니다.")
+    }
+
+    private suspend fun validationOfficialInfo(username: String, email: Email, affiliationName: String): Affiliation {
+        if (memberPort.findByUsername(username) != null) {
+            throw AlreadyExistsMemberException("이미 존재하는 유저 아이디입니다.")
+        }
+
+        if (memberPort.findByEmail(email.email) != null) {
+            throw AlreadyUsedEmailException("이미 사용되는 이메일입니다.")
+        }
+
+        return affiliationPort.findByAffiliationName(affiliationName)
+            ?: throw NotFoundAffiliationException("존재하지 않는 도서관 정보입니다.")
     }
 
     private suspend fun validationInfo(username: String, email: Email, affiliationName: String): Affiliation {
