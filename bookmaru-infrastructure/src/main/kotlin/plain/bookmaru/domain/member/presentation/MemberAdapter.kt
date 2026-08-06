@@ -29,16 +29,14 @@ import plain.bookmaru.domain.member.port.`in`.OftenReadBookTimeSetUseCase
 import plain.bookmaru.domain.member.port.`in`.ProfileImageChangeUseCase
 import plain.bookmaru.domain.member.port.`in`.SignupMemberUseCase
 import plain.bookmaru.domain.member.port.`in`.SignupOfficialUseCase
-import plain.bookmaru.domain.member.port.`in`.UploadProfileImageUseCase
+import plain.bookmaru.domain.member.port.`in`.command.ProfileImageChangeCommand
 import plain.bookmaru.domain.member.port.`in`.command.DeleteMemberCommand
 import plain.bookmaru.domain.member.port.`in`.command.NicknameValidCommand
-import plain.bookmaru.domain.member.port.`in`.command.UploadProfileImageCommand
 import plain.bookmaru.domain.member.presentation.dto.request.AffiliationInfoChangeRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.NicknameChangeRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SocialSignupRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.PasswordChangeRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.OftenReadBookTimeRequestDto
-import plain.bookmaru.domain.member.presentation.dto.request.ProfileImageChangeRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SignupMemberRequestDto
 import plain.bookmaru.domain.member.presentation.dto.request.SignupOfficialRequestDto
 import plain.bookmaru.global.security.userdetails.CustomUserDetails
@@ -55,7 +53,6 @@ class MemberAdapter(
     private val affiliationInfoChangeUseCase: AffiliationInfoChangeUseCase,
     private val nicknameChangeUseCase: NicknameChangeUseCase,
     private val profileImageChangeUseCase: ProfileImageChangeUseCase,
-    private val uploadProfileImageUseCase: UploadProfileImageUseCase,
     private val nicknameValidUseCase: NicknameValidUseCase,
 
     private val webOrAppResponseUtil: WebOrAppResponseUtil
@@ -176,38 +173,25 @@ class MemberAdapter(
             .body(SuccessResponse.success(CustomHttpStatus.OK, "유저 닉네임을 변경하는데 성공하였습니다.", ""))
     }
 
-    @PatchMapping("/profile-image/change")
+    @PatchMapping("/profile-image/change", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @LogExecution
     suspend fun profileImageChange(
         @AuthenticationPrincipal principal: CustomUserDetails,
-        @RequestBody request: ProfileImageChangeRequestDto
+        @RequestPart("file") file: MultipartFile
     ) : ResponseEntity<SuccessResponse> {
 
-        val command = request.toCommand(principal.username.toString())
-
-        profileImageChangeUseCase.execute(command)
-
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(SuccessResponse.success(CustomHttpStatus.OK, "프로필 정보를 수정하는데 성공하였습니다.", ""))
-    }
-
-    @PostMapping("/profile-image/url", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    @LogExecution
-    suspend fun uploadProfileImage(
-        @AuthenticationPrincipal principal: CustomUserDetails,
-        @RequestPart("file") file: MultipartFile
-    ): ResponseEntity<SuccessResponse> {
-        val command = UploadProfileImageCommand(
+        val command = ProfileImageChangeCommand(
             username = principal.username.toString(),
             fileName = file.originalFilename ?: "",
             contentType = file.contentType ?: "",
             fileSize = file.size,
             content = file.bytes
         )
-        val result = uploadProfileImageUseCase.execute(command)
+
+        val result = profileImageChangeUseCase.execute(command)
 
         return ResponseEntity.status(HttpStatus.OK)
-            .body(SuccessResponse.success(CustomHttpStatus.OK, "프로필 이미지를 업로드했습니다.", result))
+            .body(SuccessResponse.success(CustomHttpStatus.OK, "프로필 이미지를 변경했습니다.", result))
     }
 
     @GetMapping("/valid-nickname")

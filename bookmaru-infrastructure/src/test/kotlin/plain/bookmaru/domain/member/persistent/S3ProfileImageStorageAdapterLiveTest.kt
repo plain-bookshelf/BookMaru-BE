@@ -8,7 +8,6 @@ import plain.bookmaru.global.properties.ProfileImageStorageProperties
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.presigner.S3Presigner
 import java.net.HttpURLConnection
 import java.net.URI
 import java.time.Duration
@@ -42,16 +41,11 @@ class S3ProfileImageStorageAdapterLiveTest {
                     .socketTimeout(Duration.ofSeconds(20))
             )
             .build()
-        val s3Presigner = S3Presigner.builder()
-            .region(Region.of(region))
-            .build()
         val adapter = S3ProfileImageStorageAdapter(
             s3Client = s3Client,
-            s3Presigner = s3Presigner,
             properties = ProfileImageStorageProperties(
                 bucket = bucket,
-                publicBaseUrl = publicBaseUrl,
-                uploadUrlTtl = Duration.ofMinutes(10)
+                publicBaseUrl = publicBaseUrl
             )
         )
 
@@ -64,8 +58,6 @@ class S3ProfileImageStorageAdapterLiveTest {
         try {
             adapter.upload(imageKey, pngBytes, "image/png")
             uploaded = true
-
-            assertTrue(adapter.exists(imageKey), "Uploaded image must exist in S3.")
 
             val connection = URI.create(adapter.toPublicUrl(imageKey)).toURL().openConnection() as HttpURLConnection
             connection.connectTimeout = 5_000
@@ -80,7 +72,6 @@ class S3ProfileImageStorageAdapterLiveTest {
                 adapter.delete(imageKey)
             }
             s3Client.close()
-            s3Presigner.close()
         }
     }
 }

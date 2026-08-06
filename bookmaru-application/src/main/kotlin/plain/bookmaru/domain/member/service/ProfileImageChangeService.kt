@@ -5,9 +5,7 @@ import plain.bookmaru.common.annotation.Service
 import plain.bookmaru.common.port.TransactionPort
 import plain.bookmaru.domain.member.exception.NotFoundMemberException
 import plain.bookmaru.domain.member.port.`in`.ProfileImageChangeUseCase
-import plain.bookmaru.domain.member.port.`in`.UploadProfileImageUseCase
 import plain.bookmaru.domain.member.port.`in`.command.ProfileImageChangeCommand
-import plain.bookmaru.domain.member.port.`in`.command.UploadProfileImageCommand
 import plain.bookmaru.domain.member.port.out.MemberPort
 import plain.bookmaru.domain.member.port.out.MemberProfileImageStoragePort
 import plain.bookmaru.domain.member.port.out.result.ProfileImageUploadResult
@@ -21,37 +19,17 @@ class ProfileImageChangeService(
     private val memberPort: MemberPort,
     private val memberProfileImageStoragePort: MemberProfileImageStoragePort,
     private val transactionPort: TransactionPort
-) : ProfileImageChangeUseCase, UploadProfileImageUseCase {
+) : ProfileImageChangeUseCase {
 
     companion object {
         private val ALLOWED_EXTENSIONS = setOf("jpg", "jpeg", "png", "webp")
         private val ALLOWED_CONTENT_TYPES = setOf("image/jpeg", "image/png", "image/webp")
     }
 
-    override suspend fun execute(command: ProfileImageChangeCommand) {
+    override suspend fun execute(command: ProfileImageChangeCommand): ProfileImageUploadResult {
         val member = memberPort.findByUsername(command.username)
             ?: throw NotFoundMemberException("사용자를 찾을 수 없습니다.")
         val memberId = member.id ?: throw NotFoundMemberException("사용자를 찾을 수 없습니다.")
-        val imageKey = command.imageKey.trim()
-        val previousImageKey = member.profile.profileImage
-
-        validateImageKey(memberId, imageKey)
-        validateImageUploaded(imageKey)
-
-        member.modifyProfileImage(imageKey)
-        transactionPort.withTransaction {
-            memberPort.save(member)
-        }
-
-        deletePreviousProfileImage(previousImageKey, imageKey, memberId)
-
-        log.info { "프로필 이미지 정보를 변경했습니다. memberId=$memberId" }
-    }
-
-    override suspend fun execute(command: UploadProfileImageCommand): ProfileImageUploadResult {
-        val member = memberPort.findByUsername(command.username)
-            ?: throw NotFoundMemberException("유저 정보를 찾지 못 했습니다..")
-        val memberId = member.id ?: throw NotFoundMemberException("유저 정보를 찾지 못 했습니다.")
         val previousImageKey = member.profile.profileImage
 
         validateFileSize(command.fileSize)
@@ -68,7 +46,7 @@ class ProfileImageChangeService(
 
         deletePreviousProfileImage(previousImageKey, imageKey, memberId)
 
-        log.info { "Profile image uploaded and changed. memberId=$memberId" }
+        log.info { "프로필 이미지를 변경했습니다. memberId=$memberId" }
 
         return ProfileImageUploadResult(
             imageKey = imageKey,
@@ -76,26 +54,9 @@ class ProfileImageChangeService(
         )
     }
 
-    private fun validateImageKey(memberId: Long, imageKey: String) {
-        require(imageKey.startsWith("members/$memberId/profile/")) {
-            "프로필 이미지 경로가 올바르지 않습니다."
-        }
-
-        val extension = imageKey.substringAfterLast('.', "").lowercase()
-        require(extension in ALLOWED_EXTENSIONS) {
-            "지원하지 않는 프로필 이미지 형식입니다."
-        }
-    }
-
-    private fun validateImageUploaded(imageKey: String) {
-        require(memberProfileImageStoragePort.exists(imageKey)) {
-            "Profile image object does not exist in S3. imageKey=$imageKey"
-        }
-    }
-
     private fun validateFileSize(fileSize: Long) {
         require(fileSize in 1..MAX_PROFILE_IMAGE_SIZE_BYTES) {
-            "Profile image must be greater than 0 bytes and less than or equal to 3MB."
+            "프로필 이미지는 1바이트 이상 3MB 이하만 업로드할 수 있습니다."
         }
     }
 
@@ -106,7 +67,7 @@ class ProfileImageChangeService(
             ?: extensionFromContentType(contentType)
 
         require(extension in ALLOWED_EXTENSIONS) {
-            "Unsupported profile image extension."
+            "지원하지 않는 이미지 확장자입니다."
         }
 
         return extension
