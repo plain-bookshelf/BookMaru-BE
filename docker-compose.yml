@@ -16,7 +16,7 @@ services:
   db:
     image: pgvector/pgvector:pg17
     env_file:
-      - local.env
+      - deploy.env
     environment:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
