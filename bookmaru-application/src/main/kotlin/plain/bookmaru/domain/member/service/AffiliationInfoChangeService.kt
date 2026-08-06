@@ -49,7 +49,7 @@ class AffiliationInfoChangeService(
             nickname = savedMember.profile.nickname,
             platformType = command.platformType,
             authority = savedMember.authority,
-            affiliationId = savedMember.affiliationId!!,
+            affiliationId = affiliation.id!!,
             oAuthProvider = savedMember.oAuthInfo?.provider ?: OAuthProvider.DEFAULT,
             profileImage = savedMember.profile.profileImage.toString()
         )

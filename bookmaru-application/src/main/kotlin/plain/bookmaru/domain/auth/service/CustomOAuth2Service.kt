@@ -112,7 +112,7 @@ class CustomOAuth2Service(
             nickname = savedMember.profile.nickname,
             platformType = pendingUser.platformType,
             authority = savedMember.authority,
-            affiliationId = savedMember.affiliationId!!,
+            affiliationId = affiliation.id!!,
             oAuthProvider = pendingUser.oAuthInfo.provider,
             profileImage = savedMember.profile.profileImage.toString()
         )
